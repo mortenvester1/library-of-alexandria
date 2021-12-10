@@ -33,16 +33,37 @@ fi
 
 if [[ -z ${USERHOME} ]];
 then
-    echo "skipping git setup"
+    echo "skipping git + dot setup"
 else
     echo "installing git"
     sudo apt install -y git wget
     mkdir -p ${USERHOME}/git
-    wget -O .bash_aliases https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/main/dot/.bash_aliases
-    wget -O .bash_profile https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/main/dot/.bash_profile
-    wget -O .bashrc https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/main/dot/.bashrc
-    wget -O .vimrc https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/main/dot/.vimrc
+
+    git clone https://github.com/mortenvester1/library-of-alexandria.git ${USERHOME}/git/library-of-alexandria
+    cp ${USERHOME}/git/library-of-alexandria/dot/.[bvt]* .
 fi
+
+if [[ -z ${USERHOME} || -z ${GITCONFIG} ]];
+then
+    echo "skipping .gitconfig"
+else
+    echo "${GITCONFIG}" >> ${USERHOME}/.gitconfig
+fi
+
+if [[ -z ${USERHOME} ]];
+then
+    echo "skipping tmux setup"
+else
+    echo "setup tmux"
+    sudo apt install -y tmux
+    mkdir -p ${USERHOME}/.tmux/plugins
+    git clone https://github.com/tmux-plugins/tmux-copycat ${USERHOME}/.tmux/plugins/tmux-copycat
+    git clone https://github.com/tmux-plugins/tmux-resurrect ${USERHOME}/.tmux/plugins/tmux-resurrect
+    git clone https://github.com/tmux-plugins/tmux-prefix-highlight.git ${USERHOME}/.tmux/plugins/tmux-prefix-highlight
+    git clone https://github.com/tmux-plugins/tmux-cpu ${USERHOME}/.tmux/plugins/tmux-cpu
+    tmux source-file ~/.tmux.conf
+fi
+
 
 if [[ -z ${FSTAB} ]];
 then
@@ -122,6 +143,8 @@ else
     sudo pip3 install docker-compose
 fi
 
+
 echo "run 'sudo reboot' to reboot and mount drives"
 echo "run 'sudo ufw enable' to enable firewall"
 echo "run 'sudo service transmission-daemon start' to start transmission"
+echo "run 'git remote set-url origin git@github.com:USERNAME/REPOSITORY.git' to make git use ssh for each repo"
