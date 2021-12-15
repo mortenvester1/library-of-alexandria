@@ -13,40 +13,49 @@ sudo apt install -y build-essential tk-dev libncurses5-dev libncursesw5-dev \
     libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev tar wget vim \
     python3 python3-pip
 
+if [[ -z ${FSTAB} ]];
+then
+    echo "skipping fstab setup"
+else
+    echo "update fstab"
+    sudo apt install -y ntfs-3g exfat-utils exfat-fuse
+    sudo mkdir -p /mnt/ntfs
+    sudo mkdir -p /mnt/storage
+    sudo mkdir -p /mnt/backup
+    sudo cat /etc/fstab >> fstab
+    echo "${FSTAB}" >> fstab
+    sudo cp fstab /etc/fstab
+    rm fstab
+    sudo mount -a
+fi
+
 if [[ -z ${USERHOME} || -z ${GITHUB_PRIVATE} || -z ${GITHUB_KEY_NAME} || -z ${GITHUB_PUBLIC} || -z ${SSHCONFIG} || -z ${USERNAME} || -z ${GROUP} ]];
 then
     echo "skipping ssh setup"
 else
     echo "setup ssh"
-    [ -d "${USERHOME}/.ssh" ] && rm -rf ${USERHOME}/.ssh
-    mkdir ${USERHOME}/.ssh
+    mkdir -p ${USERHOME}/.ssh
+    chown -R ${USERNAME}:${GROUP} ${USERHOME}/.ssh
     echo "${GITHUB_PRIVATE}" >> ${USERHOME}/.ssh/${GITHUB_KEY_NAME}
     echo "${GITHUB_PUBLIC}" >> ${USERHOME}/.ssh/${GITHUB_KEY_NAME}.pub
     echo "${SSHCONFIG}" >> ${USERHOME}/.ssh/config
     ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-    chown -R ${USERNAME}:${GROUP} ${USERHOME}/.ssh
     chmod 600 ${USERHOME}/.ssh/${GITHUB_KEY_NAME}
     eval "$(ssh-agent -s)"
     ssh-add ${USERHOME}/.ssh/${GITHUB_KEY_NAME}
 fi
 
-if [[ -z ${USERHOME} ]];
+if [[ -z ${USERHOME} || -z ${GITCONFIG} ]];
 then
     echo "skipping git + dot setup"
 else
     echo "installing git"
-    sudo apt install -y git wget
+    sudo apt install -y git
     mkdir -p ${USERHOME}/git
 
     git clone https://github.com/mortenvester1/library-of-alexandria.git ${USERHOME}/git/library-of-alexandria
-    cp ${USERHOME}/git/library-of-alexandria/dot/.[bvt]* .
-fi
-
-if [[ -z ${USERHOME} || -z ${GITCONFIG} ]];
-then
-    echo "skipping .gitconfig"
-else
+    cp ${USERHOME}/git/library-of-alexandria/dot/.[bvtg]* .
     echo "${GITCONFIG}" >> ${USERHOME}/.gitconfig
 fi
 
@@ -65,20 +74,6 @@ else
 fi
 
 
-if [[ -z ${FSTAB} ]];
-then
-    echo "skipping fstab setup"
-else
-    echo "update fstab"
-    sudo apt install -y ntfs-3g
-    sudo mkdir -p /mnt/ntfs
-    sudo mkdir -p /mnt/storage
-    sudo cat /etc/fstab >> fstab
-    echo "${FSTAB}" >> fstab
-    sudo cp fstab /etc/fstab
-    rm fstab
-fi
-
 if [[ -z ${MEDIA_DEVICE} || -z ${MEDIA_MOUNT_PATH} || -z ${MEDIA_DIR} ]];
 then
     echo "skipping minidlna setup"
@@ -87,7 +82,6 @@ else
     sudo apt install -y minidlna
     sudo service minidlna stop
     sudo usermod -aG pi minidlna
-    sudo mount ${MEDIA_DEVICE} ${MEDIA_MOUNT_PATH}
     mkdir -p ${MEDIA_DIR}
     sudo sed -i 's~media_dir=/var/lib/minidlna~media_dir=V,'${MEDIA_DIR}'~' /etc/minidlna.conf
     sudo sed -i 's/#friendly_name=/friendly_name=pidlna/' /etc/minidlna.conf
@@ -120,6 +114,12 @@ else
     sudo ln -sf /etc/transmission-daemon/settings.json ${USERHOME}/.config/transmission-daemon/
     sudo chown -R ${USERNAME}:${GROUP} ${USERHOME}/.config/transmission-daemon/
     sudo systemctl start transmission-daemon
+
+    # append to /etc/sysctl.conf?
+    #net.core.rmem_max = 16777216
+    #net.core.wmem_max = 4194304
+
+    #sudo sysctl -p to reload
 fi
 
 if [[ -z ${PEER_PORT} ]];
@@ -130,6 +130,9 @@ else
     sudo apt install -y ufw
     sudo ufw allow ${PEER_PORT}
     sudo ufw allow OpenSSH
+    sudo ufw allow 9091/tcp
+    sudo ufw allow 8200/tcp
+    sudo ufw allow 1900/udp
 fi
 
 if [[ -z ${USERNAME} ]];
