@@ -113,6 +113,7 @@ else
     mkdir -p ${USERHOME}/.config/transmission-daemon/
     sudo ln -sf /etc/transmission-daemon/settings.json ${USERHOME}/.config/transmission-daemon/
     sudo chown -R ${USERNAME}:${GROUP} ${USERHOME}/.config/transmission-daemon/
+    sudo update-rc.d transmission-daemon defaults
     sudo systemctl start transmission-daemon
 
     # append to /etc/sysctl.conf?
@@ -121,6 +122,24 @@ else
 
     #sudo sysctl -p to reload
 fi
+
+if [[ -z ${PEER_PORT} ]];
+then
+    echo "skipping samba/timemachine setup"
+else
+    echo "skipping samba/timemachine setup"
+    sudo apt-get install samba avahi-daemon
+    sudo cat /etc/samba/smb.conf >> smb.conf
+    echo "${SMB_CONF}" >> smb.conf
+    sudo cp smb.conf /etc/samba/smb.conf
+    rm smb.conf
+    echo "${AVAHI_CONF}" >> samba.service
+    sudo cp samba.service /etc/avahi/services/samba.service
+    rm samba.service
+    sudo service smbd reload
+    sudo service avahi-daemon restart
+fi
+
 
 if [[ -z ${PEER_PORT} ]];
 then
@@ -133,6 +152,8 @@ else
     sudo ufw allow 9091/tcp
     sudo ufw allow 8200/tcp
     sudo ufw allow 1900/udp
+    sudo ufw allow 139/tcp
+    sudo ufw allow 445/tcp
 fi
 
 if [[ -z ${USERNAME} ]];
@@ -148,6 +169,7 @@ fi
 
 
 echo "run 'sudo reboot' to reboot and mount drives"
+echo "run 'sudo smbpasswd -a pi' to set samba password"
 echo "run 'sudo ufw enable' to enable firewall"
 echo "run 'sudo service transmission-daemon start' to start transmission"
 echo "run 'git remote set-url origin git@github.com:USERNAME/REPOSITORY.git' to make git use ssh for each repo"
