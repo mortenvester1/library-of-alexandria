@@ -13,6 +13,9 @@ sudo apt install -y build-essential tk-dev libncurses5-dev libncursesw5-dev \
     libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev tar wget vim \
     python3 python3-pip
 
+# install fan control for case
+curl https://download.argon40.com/argon1.sh | bash
+
 if [[ -z ${FSTAB} ]];
 then
     echo "skipping fstab setup"
@@ -128,7 +131,7 @@ then
     echo "skipping samba/timemachine setup"
 else
     echo "skipping samba/timemachine setup"
-    sudo apt-get install samba avahi-daemon
+    sudo apt-get install samba avahi-daemon -y
     sudo cat /etc/samba/smb.conf >> smb.conf
     echo "${SMB_CONF}" >> smb.conf
     sudo cp smb.conf /etc/samba/smb.conf

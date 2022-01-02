@@ -51,5 +51,24 @@ Next up is preparing, simply fill out the [install-vars](bin/install-vars) file.
 ## Running Install Script
 You are now ready to go. If desired run the [pi-setup.sh](bin/pi-setup.sh) script to finish the installation. This will
 
+# Reinstall from image
+If something goes wrong you can reinstall the os without using the Raspberry Pi Imager. In short, download the OS, unzip, create loopback device, map partitions, copy to the target partition. You will have to add `ssh` and `wpa_supplicant` files to the boot partition manually and setup ssh keys on boot.
+
+```
+# Download the image file
+wget https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-11-08/2021-10-30-raspios-bullseye-armhf-lite.zip
+unzip 2021-10-30-raspios-bullseye-armhf-lite.zip
+
+# Create a loopback device to let you treat the image as a disk
+sudo losetup /dev/loop0 2021-10-30-raspios-bullseye-armhf-lite.img
+
+# Map the image's partitions
+sudo partprobe /dev/loop0
+
+#  Completely overwrite one of your partitions with one from the image
+#  MAKE SURE YOU DON'T HAVE THE PARTITION MOUNTED WHEN YOU OVERWRITE IT
+sudo dd if=/dev/loop0p2 of={TARGET_PARTITION} status=progress
+```
+
 ## automatic backup of os
 https://rsnapshot.org/
