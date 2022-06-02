@@ -1,3 +1,0 @@
-PARTUUID={PARTITION_UUID} none swap sw 0 0
-PARTUUID={PARTITION_UUID} {MOUNT_PATH} ext4 auto,exec,rw,user 0 0
-PARTUUID={PARTITION_UUID} {MOUNT_PATH} ntfs auto,exec,rw,user,dmask=002,fmask=113,uid=1000,gid=1000 0 0

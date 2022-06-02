@@ -1,0 +1,25 @@
+[user]
+    name = Morten Pedersen
+    email = mortenvester1@gmail.com
+    signingkey = 0500D81A8C58AC1B
+[core]
+    excludesfile = ~/.gitignore_global
+[alias]
+    br = branch
+    camend = "!f() { git add . && git commit --amend --no-edit; }; f"
+    co = checkout
+    comp = "!f() { git checkout master || git checkout main && git pull; }; f"
+    empty = "!f() { git commit -m 'retrigger checks' --allow-empty; }; f"
+    fco = "!f() { git fetch && git checkout $1; }; f"
+    pushup = "!f() { git push -u origin HEAD; }; f"
+    tco = "!f() { git branch | grep $1 | head -n 1 | xargs git checkout; }; f"
+    typo = "!f() { git commit -am 'typo' && git push; }; f"
+[commit]
+	gpgsign = true
+[url "ssh://git@github.com"]
+	insteadOf = https://github.com
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

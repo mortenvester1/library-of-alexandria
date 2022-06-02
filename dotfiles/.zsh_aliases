@@ -1,0 +1,40 @@
+# following https://www.thorsten-hans.com/5-types-of-zsh-aliases
+
+# Simple aliases
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+
+# use gnu ls instad
+alias ls="gls --color -alh --group-directories-first"
+
+# Functions
+
+## Docker
+# Connect to a running container and start a bash session
+docker-exec-bash() {
+  docker exec -it $1 /bin/bash;
+};
+
+# Start Docker container and connect to it in bash session
+docker-run-bash() {
+  docker run -it $1 /bin/bash;
+};
+
+# Run a Docker container and forward all AWS environment variables
+docker-run-with-aws-access(){
+  docker run -it --env-file <(aws-vault exec $1 -- env | grep ^AWS_) $2
+}
+
+# Remove all untagged images
+docker-remove-none-images(){
+    docker rmi -f $(docker images | grep '<none>' | sed  -E 's/[ ]+/,/g' | cut -f3 -d,)
+}
+
+# yaml to json
+yaml-to-json() {
+	yq -P --output-format json $1
+}
+json-to-yaml() {
+	yq -P $1
+}

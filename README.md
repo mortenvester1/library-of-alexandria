@@ -1,5 +1,14 @@
-### introduction
-This repo is intended to be used as a library of notes mostly focusing on installation and setup of various packages, SDK, etc.. It will also serve as a repo for saving .bashrc, .bash_profile, .bash_aliases that I've found to be useful over the years
+# Library of Alexandria
 
-###
-[raspberry-pi-notes](raspberry-pi.md) 
+This repo is my personal library of everything.
+
+## Install
+
+### Fresh MacOS
+
+If you starting on a see [Bootstrap MacOS](docs/bootstrap_macos.md) for instructions for how to setup the new machine.
+
+## Todo
+
+- [ ] Generalize dotfiles for Raspberry OS
+- [ ] Create bootstrap scripts for Raspberry OS

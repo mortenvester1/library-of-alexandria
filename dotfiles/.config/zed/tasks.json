@@ -1,0 +1,16 @@
+// Static tasks configuration.
+[
+  {
+    "label": "Trunk format",
+    "command": "trunk",
+    "args": ["fmt"],
+    "use_new_terminal": false,
+    "reveal": "never"
+  },
+  {
+    "label": "Format json",
+    "command": "jq . $ZED_FILE > /tmp/formatted.json && mv /tmp/formatted.json $ZED_FILE",
+    "use_new_terminal": false,
+    "reveal": "never"
+  }
+]
