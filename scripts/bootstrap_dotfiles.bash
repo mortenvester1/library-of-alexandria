@@ -1,12 +1,13 @@
 #!/bin/bash
+cd dotfiles
+if [[ "${1}" = pi ]]
+then
+  sudo apt install -y stow
+  stow -t ${HOME} zshpi
+else
+  brew install stow
+  stow -t ${HOME} zsh gnupg zed
+fi
 
-bootstrap_dotfiles() {
-  DEST=$(echo ${1} | cut -d\/ -f2-)
-
-  mkdir -p $(dirname ${HOME}/${DEST})
-  cp ${1} ${HOME}/${DEST}
-};
-export -f bootstrap_dotfiles
-
-# add pacakges to be controlled by asdf
-find dotfiles -type f | xargs -L1 bash -c 'bootstrap_dotfiles "$@"' _
+# shared packages
+stow -t ${HOME} asdf git starship vim

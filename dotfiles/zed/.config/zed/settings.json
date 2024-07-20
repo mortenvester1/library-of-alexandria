@@ -35,10 +35,13 @@
   },
   "format_on_save": "on",
   "soft_wrap": "editor_width",
+  "file_types": {
+    "Shell Script": ["bash", "sh"],
+    "Dockerfile": ["Dockerfile*"]
+  },
   "languages": {
     "JSON": {
-      "tab_size": 2,
-      "preferred_line_length": 120
+      "tab_size": 2
     },
     "YAML": {
       "tab_size": 2
@@ -52,5 +55,8 @@
     "show_type_hints": true,
     "show_parameter_hints": true,
     "show_other_hints": true
+  },
+  "indent_guides": {
+    "coloring": "indent_aware"
   }
 }

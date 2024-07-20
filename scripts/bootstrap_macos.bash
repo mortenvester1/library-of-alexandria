@@ -12,10 +12,12 @@ brew install -q asdf\
     gpg2\
     iterm2\
     jq\
+    obsidian\
     openjdk\
     k9s\
     pinentry-mac\
     starship\
+    stow\
     trunk-io\
     yq\
     zed

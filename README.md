@@ -4,11 +4,18 @@ This repo is my personal library of everything.
 
 ## Install
 
-### Fresh MacOS
+### MacOS
 
-If you starting on a see [Bootstrap MacOS](docs/bootstrap_macos.md) for instructions for how to setup the new machine.
+If you are setting up a new Mac see [Bootstrap MacOS](docs/bootstrap_macos.md) for instructions for how to setup the new machine.
+
+### Raspberry Pi
+
+If you are setting up a new Raspberry see [Bootstrap Pi](docs/bootstrap_pi.md) for instructions for how to setup the new machine.
 
 ## Todo
 
-- [ ] Generalize dotfiles for Raspberry OS
-- [ ] Create bootstrap scripts for Raspberry OS
+- [x] Create bootstrap scripts for Raspberry OS
+- [x] Adopt `stow` for managing dotfiles
+- [x] Create dotfiles for Raspberry OS
+- [ ] Setup `Tdarr` for offline transcoding
+- [ ] Setup `Jellyfin` for media server

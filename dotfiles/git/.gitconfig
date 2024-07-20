@@ -1,7 +1,5 @@
 [user]
     name = Morten Pedersen
-    email = mortenvester1@gmail.com
-    signingkey = 0500D81A8C58AC1B
 [core]
     excludesfile = ~/.gitignore_global
 [alias]
@@ -14,8 +12,6 @@
     pushup = "!f() { git push -u origin HEAD; }; f"
     tco = "!f() { git branch | grep $1 | head -n 1 | xargs git checkout; }; f"
     typo = "!f() { git commit -am 'typo' && git push; }; f"
-[commit]
-	gpgsign = true
 [url "ssh://git@github.com"]
 	insteadOf = https://github.com
 [filter "lfs"]
@@ -23,3 +19,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[include]
+    path = ~/.gitlocal

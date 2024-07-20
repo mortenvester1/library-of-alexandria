@@ -4,49 +4,51 @@ This document lists out all applications and tools to install on a fresh MacOS m
 
 1. Install homebrew `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 2. Setup dotfiles by running [scripts/bootstrap_dotfiles.bash](../scripts/bootstrap_dotfiles.bash) from the root of the repo
-3. Install tools managed by Homebrew by running [scripts/bootstrap_brew.bash](../scripts/bootstrap_brew.bash) from the root of the repo
+3. Install tools managed by Homebrew by running [scripts/bootstrap_macos.bash](../scripts/bootstrap_macos.bash) from the root of the repo
 4. Setup up global tools with asdf [scripts/bootstrap_asdf.bash](../scripts/bootstrap_asdf.bash) from the root of the repo
+5. Run [scripts/bootstrap_git.bash](../scripts/bootstrap_git.bash) to set global configuration options (email and signingkey) that should not be version controlled
 
 ## Managed Manually
 
-- [ ] Chrome
-- [ ] Diivy
-- [ ] Docker Desktop
-- [ ] Dropbox
-- [ ] Firefox
-- [ ] Google Drive
-- [ ] Ollama
-- [ ] Xcode
-- [ ] Homebrew
+- Chrome
+- Diivy
+- Docker Desktop
+- Dropbox
+- Firefox
+- Google Drive
+- Ollama
+- Xcode
+- Homebrew
 
 ## Managed with Homebrew
 
-- [ ] asdf
-- [ ] Bitwarden
-- [ ] coreutils
-- [ ] direnv
-- [ ] Docker
-- [ ] Docker Compose
-- [ ] Drawio
-- [ ] Fzf
-- [ ] Git-lfs
-- [ ] Gpg
-- [ ] Iterm2
-- [ ] Java
-- [ ] jq
-- [ ] k9s
-- [ ] Lunar
-- [ ] Pinetry
-- [ ] starship
-- [ ] Trunk
-- [ ] yq
-- [ ] Zed
+- asdf
+- Bitwarden
+- coreutils
+- direnv
+- Docker
+- Docker Compose
+- Drawio
+- Fzf
+- Git-lfs
+- Gpg
+- Iterm2
+- Java
+- jq
+- k9s
+- Lunar
+- Pinetry
+- starship
+- stow
+- Trunk
+- yq
+- Zed
 
 ## Managed with asdf
 
-- [ ] just
-- [ ] golang
-- [ ] kubectl
-- [ ] poetry
-- [ ] python
-- [ ] Terraform
+- just
+- golang
+- kubectl
+- poetry
+- python
+- Terraform

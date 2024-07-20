@@ -1,0 +1,7 @@
+# Simple aliases
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+
+# use gnu ls instad
+alias ls="ls --color -alh --group-directories-first"
