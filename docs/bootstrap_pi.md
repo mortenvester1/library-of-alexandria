@@ -32,6 +32,7 @@ This document lists out all applications and tools to install on a fresh Raspber
 - minidlna
 - rename
 - transmission-daemon
+- unrar
 - vim
 - yq
 - zsh

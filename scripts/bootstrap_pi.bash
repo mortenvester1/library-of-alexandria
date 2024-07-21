@@ -16,6 +16,7 @@ sudo apt install -y curl\
     minidlna\
     rename\
     transmission-daemon\
+    unrar\
     vim\
     yq\
     zsh
