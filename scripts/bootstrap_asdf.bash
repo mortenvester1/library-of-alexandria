@@ -1,11 +1,10 @@
 #!/bin/bash
 
 bootstrap_asdf() {
-  asdf plugin add "$@"
+  asdf plugin add "$1"
   asdf install "$@"
-  # asdf global "$@"
 };
 export -f bootstrap_asdf
 
 # add pacakges to be controlled by asdf
-cat dotfiles/.tool-versions | xargs -L1 bash -c 'bootstrap_asdf "$@"' _
+cat dotfiles/asdf/.tool-versions | xargs -L1 bash -c 'bootstrap_asdf "$@"' _

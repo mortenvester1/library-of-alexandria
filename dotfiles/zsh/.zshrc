@@ -1,5 +1,8 @@
 # Following https://www.drupaldump.com/right-way-migrate-your-bashprofile-zsh
 # this file is for interactive sessions only
+# source aliases nand runs other configuration
+
+[ -s "$HOME/.zsh_aliases" ] && source $HOME/.zsh_aliases
 
 # plugin manager for zsh
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -14,6 +17,9 @@ zinit light zsh-users/zsh-completions
 # Not sure if I like just yet
 # zinit light zsh-users/zsh-syntax-highlighting
 # zinit light Aloxaf/fzf-tab
+
+mkdir -p "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
+asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.asdf}/completions/_asdf"
 
 # Load completions
 autoload -U compinit && compinit
@@ -31,16 +37,6 @@ setopt hist_ignore_all_dups
 setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
-
-# source aliases
-[ -s "$HOME/.zsh_aliases" ] && source $HOME/.zsh_aliases
-
-# add homebrew to path. This is here over .zshenv otherwise it occurs after /usr/local/bin
-export PATH="/opt/homebrew/bin:$PATH"
-
-# asdf
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-. $HOME/.asdf/plugins/golang/set-env.zsh # to get golang working
 
 # fzf
 source <(fzf --zsh)

@@ -3,10 +3,11 @@
 This document lists out all applications and tools to install on a fresh MacOS machine. They are divided into three sections with the latter listing tools that are usually managed by asdf on a per project basis. Some tools may be installed manual or through brew for initial setup, only for asdf to take over management later.
 
 1. Install homebrew `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-2. Setup dotfiles by running [scripts/bootstrap_dotfiles.bash](../scripts/bootstrap_dotfiles.bash) from the root of the repo
-3. Install tools managed by Homebrew by running [scripts/bootstrap_macos.bash](../scripts/bootstrap_macos.bash) from the root of the repo
-4. Setup up global tools with asdf [scripts/bootstrap_asdf.bash](../scripts/bootstrap_asdf.bash) from the root of the repo
-5. Run [scripts/bootstrap_git.bash](../scripts/bootstrap_git.bash) to set global configuration options (email and signingkey) that should not be version controlled
+1. Generate a new ssh key for [github](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+1. Setup dotfiles by running [scripts/bootstrap_dotfiles.bash](../scripts/bootstrap_dotfiles.bash) from the root of the repo
+1. Install tools managed by Homebrew by running [scripts/bootstrap_macos.bash](../scripts/bootstrap_macos.bash) from the root of the repo
+1. Setup up global tools with asdf [scripts/bootstrap_asdf.bash](../scripts/bootstrap_asdf.bash) from the root of the repo
+1. Run [scripts/bootstrap_git.bash](../scripts/bootstrap_git.bash) to set global configuration options (email and signingkey) that should not be version controlled
 
 ## Managed Manually
 
@@ -49,6 +50,6 @@ This document lists out all applications and tools to install on a fresh MacOS m
 - just
 - golang
 - kubectl
-- poetry
+- uv
 - python
 - Terraform

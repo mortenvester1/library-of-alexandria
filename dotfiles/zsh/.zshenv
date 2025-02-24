@@ -1,5 +1,12 @@
 # Following https://www.drupaldump.com/right-way-migrate-your-bashprofile-zsh
 # this file is all sessions (interactive or not)
+# This should contain all path manipulation, environment variables, etc.
+
+# add homebrew to path.
+export PATH="/opt/homebrew/bin:$PATH"
+
+# Add asdf packages to to path
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # enabled colors in ls
 export CLICOLOR=1
