@@ -3,7 +3,7 @@
 [core]
     excludesfile = ~/.gitignore_global
 [alias]
-    br = branch
+    br = "!f() { git branch | fzf | xargs git checkout; }; f"
     camend = "!f() { git add . && git commit --amend --no-edit; }; f"
     co = checkout
     comp = "!f() { git checkout master || git checkout main && git pull; }; f"

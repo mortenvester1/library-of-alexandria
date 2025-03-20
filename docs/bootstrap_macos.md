@@ -13,8 +13,6 @@ This document lists out all applications and tools to install on a fresh MacOS m
 
 - Chrome
 - Diivy
-- Docker Desktop
-- Dropbox
 - Firefox
 - Google Drive
 - Ollama
@@ -28,7 +26,6 @@ This document lists out all applications and tools to install on a fresh MacOS m
 - coreutils
 - direnv
 - Docker
-- Docker Compose
 - Drawio
 - Fzf
 - Git-lfs

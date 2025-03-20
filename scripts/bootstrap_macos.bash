@@ -5,8 +5,6 @@ brew install -q asdf\
     bitwarden\
     coreutils\
     direnv\
-    docker\
-    docker-compose\
     fzf\
     git-lfs\
     gpg2\
@@ -24,7 +22,9 @@ brew install -q asdf\
 
 # casks
 brew install --cask drawio\
-    lunar
+    lunar\
+    dropbox\
+    docker
 
 # fonts
 brew install font-caskaydia-cove-nerd-font

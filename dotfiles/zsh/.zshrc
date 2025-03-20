@@ -3,6 +3,8 @@
 # source aliases nand runs other configuration
 
 [ -s "$HOME/.zsh_aliases" ] && source $HOME/.zsh_aliases
+[ -s "$HOME/.zsh_aliases.work" ] && source $HOME/.zsh_aliases.work
+[ -s "$HOME/.zshenv.secrets" ] && source $HOME/.zshenv.secrets
 
 # plugin manager for zsh
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -18,6 +20,9 @@ zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-syntax-highlighting
 # zinit light Aloxaf/fzf-tab
 
+# Add asdf packages to path
+# export of PATH must be here and not in .zshenv, otherwise python will point to asdf and python3 to system package
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 mkdir -p "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
 asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.asdf}/completions/_asdf"
 
@@ -47,3 +52,8 @@ eval "$(direnv hook zsh)"
 # starship
 export STARSHIP_CONFIG="${XDG_CONFIG_HOME}/starship/starship.toml"
 eval "$(starship init zsh)"
+
+# Docker autocomplete
+fpath=(${HOME}/.docker/completions $fpath)
+autoload -Uz compinit
+compinit

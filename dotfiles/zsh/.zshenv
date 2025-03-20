@@ -5,9 +5,6 @@
 # add homebrew to path.
 export PATH="/opt/homebrew/bin:$PATH"
 
-# Add asdf packages to to path
-export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-
 # enabled colors in ls
 export CLICOLOR=1
 export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
