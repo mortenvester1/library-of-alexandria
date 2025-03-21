@@ -7,8 +7,5 @@ dotfiles/zed/.config/zed/prompts
 dotfiles/zed/.config/zed/themes
 
 # gnupg
-dotfiles/gnupg/.gnupg/openpgp-revocs.d/
-dotfiles/gnupg/.gnupg/private-keys-v1.d/
-dotfiles/gnupg/.gnupg/pubring.kbx
-dotfiles/gnupg/.gnupg/pubring.kbx~
-dotfiles/gnupg/.gnupg/trustdb.gpg
+dotfiles/gnupg/.gnupg/*
+!dotfiles/gnupg/.gnupg/gpg-agent.conf
