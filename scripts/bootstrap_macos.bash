@@ -1,30 +1,32 @@
 #!/bin/bash
 
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
 # Install applications/tools managed by homebrew
-brew install -q asdf\
-    bitwarden\
+/opt/homebrew/bin/brew install -q asdf\
     coreutils\
     direnv\
     fzf\
     git-lfs\
     gpg2\
-    iterm2\
     jq\
-    obsidian\
     openjdk\
     k9s\
     pinentry-mac\
     starship\
     stow\
     trunk-io\
-    yq\
-    zed
+    yq
 
 # casks
-brew install --cask drawio\
-    lunar\
+/opt/homebrew/bin/brew install --cask bitwarden\
+    docker\
+    drawio\
     dropbox\
-    docker
+    iterm2\
+    lunar\
+    obsidian\
+    zed
 
 # fonts
-brew install font-caskaydia-cove-nerd-font
+/opt/homebrew/bin/brew install font-caskaydia-cove-nerd-font
