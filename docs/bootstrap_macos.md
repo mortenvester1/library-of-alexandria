@@ -2,6 +2,8 @@
 
 This document lists out all applications and tools to install on a fresh MacOS machine. They are divided into three sections with the latter listing tools that are usually managed by asdf on a per project basis. Some tools may be installed manual or through brew for initial setup, only for asdf to take over management later.
 
+1. Install developer tools `xcode-select --install`
+1. clone repo
 1. Install homebrew `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 1. Generate a new ssh key for [github](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 1. Setup dotfiles by running [scripts/bootstrap_dotfiles.bash](../scripts/bootstrap_dotfiles.bash) from the root of the repo
