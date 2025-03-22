@@ -8,7 +8,7 @@ sudo apt-get update && sudo apt -y upgrade
 
 # install packages from apt
 sudo apt install -y curl\
-	direnv\
+    direnv\
     fzf\
     git\
     gpg\
@@ -19,6 +19,7 @@ sudo apt install -y curl\
     unrar\
     vim\
     yq\
+    stow\
     zsh
 
 # pull repo
