@@ -16,4 +16,4 @@ Media Server
 
 - [Minidlna](https://bbrks.me/rpi-minidlna-media-server/)
 - [Tdarr](https://docs.tdarr.io/docs/welcome/what)
-- [jellyfin](https://itsfoss.com/jellyfin-raspberry-pi/)
+- [Jellyfin](https://itsfoss.com/jellyfin-raspberry-pi/)

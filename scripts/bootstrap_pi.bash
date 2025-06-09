@@ -13,7 +13,6 @@ sudo apt install -y curl\
     git\
     gpg\
     jq\
-    minidlna\
     rename\
     transmission-daemon\
     unrar\
@@ -21,13 +20,13 @@ sudo apt install -y curl\
     yq\
     stow\
     zsh
+    # minidlna
 
-# pull repo
-mkdir -p "${HOME}/git"
-git clone git@github.com:mortenvester1/library-of-alexandria.git "${HOME}/git/library-of-alexandria"
-
-# asdf install
+# asdf
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.0
+
+# jellyfin
+curl https://repo.jellyfin.org/install-debuntu.sh | sudo bash
 
 # starship
 curl -sS https://starship.rs/install.sh | sh

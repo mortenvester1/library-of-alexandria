@@ -10,8 +10,8 @@
     git-lfs\
     gpg2\
     jq\
-    openjdk\
     k9s\
+    openjdk\
     pinentry-mac\
     starship\
     stow\
@@ -20,12 +20,21 @@
 
 # casks
 /opt/homebrew/bin/brew install --cask bitwarden\
+    chrome\
+    divvy\
     docker\
     drawio\
     dropbox\
+    firefox\
+    google-drive\
     iterm2\
     lunar\
+    mpv\
+    mullvadvpn\
     obsidian\
+    ollama\
+    signal\
+    whatsapp\
     zed
 
 # fonts

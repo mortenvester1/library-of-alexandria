@@ -17,6 +17,7 @@ This document lists out all applications and tools to install on a fresh Raspber
 
 - argon one v2 fan control
 - asdf
+- jellyfin
 - starship
 - trunk
 
@@ -29,7 +30,7 @@ This document lists out all applications and tools to install on a fresh Raspber
 - git
 - gpg
 - jq
-- minidlna
+- ~~minidlna~~
 - rename
 - transmission-daemon
 - unrar
