@@ -1,0 +1,37 @@
+{ config, pkgs, ... }:
+
+{
+  programs.git = {
+    enable = true;
+
+    # Ends up in ~/.config/git/ignore
+    userName = "Morten Pedersen";
+    extraConfig = {
+      url."ssh://git@github.com".insteadOf = "https://github.com";
+      filter.lfs = {
+        clean = "git-lfs clean -- %f";
+        smudge = "git-lfs smudge -- %f";
+        process = "git-lfs filter-process";
+        required = true;
+      };
+    };
+    aliases = {
+      br = "!f() { git branch | fzf | xargs git checkout; }; f";
+      camend = "!f() { git add . && git commit --amend --no-edit; }; f";
+      co = "checkout";
+      comp = "!f() { git checkout master || git checkout main && git pull; }; f";
+      empty = "!f() { git commit -m 'retrigger checks' --allow-empty; }; f";
+      fco = "!f() { git fetch && git checkout $1; }; f";
+      ftags = "!f() { git fetch --tags ; }; f";
+      hello = "!f() { echo 'hello world'; }; f";
+      pushup = "!f() { git push -u origin HEAD; }; f";
+      tco = "!f() { git branch | grep $1 | head -n 1 | xargs git checkout; }; f";
+      typo = "!f() { git commit -am 'typo' && git push; }; f";
+    };
+
+    # Global gitignore should land in ~/.config/git/ignore
+    ignores = [
+      ".DS_Store"
+    ];
+  };
+}
