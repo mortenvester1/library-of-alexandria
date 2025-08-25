@@ -7,7 +7,7 @@
 
   imports = [
     ./modules/git.nix
-    #./modules/zsh.nix
+    ./modules/zsh.nix
   ];
 
   # Common locale settings
@@ -19,13 +19,13 @@
     time = "en_GB.UTF-8"; # Monday is start of week
   };
 
-  # Common packages used on all hosts
+  # Common packages used on all hosts. Installed to user profile
   home.packages = with pkgs; [
-    coreutils
     fzf
     jq
     rename
     yq
+    asdf-vm
   ];
 
   # Cross-platform XDG directories configuration
@@ -36,10 +36,15 @@
     cacheHome = "${config.home.homeDirectory}/.cache";
   };
 
-  # # Ensure consistent file permissions across platforms
-  # home.file = {
-  #   ".config".recursive = true;
-  #   ".local/share".recursive = true;
-  #   ".cache".recursive = true;
+  # Common PATH setup for all platforms
+  home.sessionVariables = {
+    PATH = "$HOME/.local/state/nix/profiles/home-manager/home-path/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH";
+  };
+
+  # services.gpg-agent = {
+  #   enable = true;
+  #   defaultCacheTtl = 1800;
+  #   enableSshSupport = true;
   # };
+
 }

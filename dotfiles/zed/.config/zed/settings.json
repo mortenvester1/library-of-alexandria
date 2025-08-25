@@ -8,6 +8,13 @@
 // from the command palette or from `Zed` application menu.
 // This doesn't work rigt now? Break files
 {
+  "language_models": {
+    "copilot_chat": {
+      "api_url": "https://api.githubcopilot.com/chat/completions",
+      "auth_url": "https://api.github.com/copilot_internal/v2/token",
+      "models_url": "https://api.githubcopilot.com/models"
+    }
+  },
   "edit_predictions": {
     "mode": "subtle",
     "copilot": {
@@ -22,11 +29,11 @@
   "buffer_font_size": 16,
   "show_whitespaces": "all",
   "agent": {
+    "default_profile": "ask",
     "default_model": {
-      "model": "claude-3-5-sonnet",
-      "provider": "zed.dev"
+      "model": "claude-sonnet-4",
+      "provider": "copilot_chat"
     },
-    "version": "2"
   },
   "hour_format": "hour24",
   "tabs": {

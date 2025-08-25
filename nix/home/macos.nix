@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  # Import the base git module
+  # Import the base module shared across targets
   imports = [ ./common.nix ];
   home.stateVersion = "25.05";
 
@@ -14,8 +14,8 @@
     userEmail = "mortenvester1@gmail.com";
 
     extraConfig = {
-      user.signingKey = "0FECDDE7D4D64E37";  # Your macOS GPG key ID
-      commit.gpgsign = true;             # Enable signing
+      user.signingKey = "0FECDDE7D4D64E37";
+      commit.gpgsign = true;
     };
   };
 
@@ -25,12 +25,8 @@
     };
 
     envExtra = ''
-      # add homebrew to path
-      export PATH="/opt/homebrew/bin:$PATH"
-
-      # java home
-      export JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/"
-      export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+      # Add brew to path
+      export PATH="$PATH:/opt/homebrew/bin"
     '';
   };
 

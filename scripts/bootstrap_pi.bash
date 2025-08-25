@@ -17,9 +17,9 @@ sudo apt install -y curl\
     transmission-daemon\
     unrar\
     vim\
-    yq\
     stow\
     zsh
+    # yq
     # minidlna
 
 # asdf

@@ -17,4 +17,4 @@ If you are setting up a new Raspberry see [Bootstrap Pi](docs/bootstrap_pi.md) f
 - [x] Create bootstrap scripts for Raspberry OS
 - [x] Adopt `stow` for managing dotfiles
 - [x] Create dotfiles for Raspberry OS
-- [ ] Look into nixos
+- [x] Look into nixos

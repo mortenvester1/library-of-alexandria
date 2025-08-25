@@ -45,6 +45,8 @@
     zsh
   ];
 
+  environment.pathsToLink = [ "/share/zsh" ];
+
   # System version
   system.stateVersion = 5;
 }

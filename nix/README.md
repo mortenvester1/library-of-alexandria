@@ -26,8 +26,6 @@ nix search nixpkgs ${pkgname}
 
 This will download the database locally the first time and after updates.
 
-### Linux
-
 ## Uninstall
 
 Uninstall nix-darwin
@@ -35,3 +33,7 @@ Uninstall nix-darwin
 ```sh
 sudo darwin-uninstaller
 ```
+
+### Linux
+
+Coming soon ...

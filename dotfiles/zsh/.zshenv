@@ -6,12 +6,12 @@
 export PATH="/opt/homebrew/bin:$PATH"
 
 # enabled colors in ls
-export CLICOLOR=1
-export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
+#export CLICOLOR=1
+#export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
 
 # java home
-export JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/"
-export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+# export JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/"
+# export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
 
 # config stuff
 export XDG_CONFIG_HOME="${HOME}/.config"
