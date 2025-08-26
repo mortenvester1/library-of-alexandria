@@ -6,6 +6,7 @@ sh <(curl -L https://nixos.org/nix/install) --daemon
 exec $SHELL
 
 # Add base nix-darwin config
+# REVIEW: is this needed?
 sudo mkdir /etc/nix-darwin
 sudo tee /etc/nix-darwin/configuration.nix << 'EOF'
 { config, pkgs, ... }:
@@ -28,8 +29,8 @@ sudo tee /etc/nix-darwin/configuration.nix << 'EOF'
 EOF
 
 # Add the nixpkgs, nix-darwin, home-manager channels. First two must match in version
-sudo nix-channel --add https://github.com/nix-darwin/nix-darwin/archive/nix-darwin-${VERSION}.tar.gz darwin
 sudo nix-channel --add https://nixos.org/channels/nixpkgs-${VERSION}-darwin nixpkgs
+sudo nix-channel --add https://github.com/nix-darwin/nix-darwin/archive/nix-darwin-${VERSION}.tar.gz darwin
 sudo nix-channel --add https://github.com/nix-community/home-manager/archive/release-${VERSION}.tar.gz home-manager
 sudo nix-channel --update
 

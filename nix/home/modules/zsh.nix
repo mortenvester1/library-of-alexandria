@@ -80,7 +80,7 @@
       [ -s "$HOME/.zshenv.secrets" ] && source $HOME/.zshenv.secrets
 
       # starship
-      export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
+      export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship.toml"
 
       # asdf
       export ASDF_DATA_DIR="$HOME/.asdf/shims"
