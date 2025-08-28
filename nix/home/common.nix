@@ -8,7 +8,6 @@
   imports = [
     ./modules/git.nix
     ./modules/zsh.nix
-    ./modules/starship.nix
   ];
 
   # Common locale settings
@@ -42,14 +41,16 @@
     PATH = "$HOME/.local/state/nix/profiles/home-manager/home-path/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH";
   };
 
-  home.file.".tool-versions".text = ''
-    just 1.39.0
-    python 3.13.2
-    golang 1.24.0
-    kubectl 1.32.2
-    uv 0.6.2
-    terraform 1.10.5
-  '';
+  programs.starship = {
+    enable = true;
+    settings = lib.importTOML ./resources/starship.toml;
+  };
+
+  # FIXME: figure out how to install asdf
+  home.file.".tool-versions".source = ./resources/.tool-versions;
+
+  # Add .vimrc
+  home.file.".vimrc".source = ./resources/.vimrc;
 
   # services.gpg-agent = {
   #   enable = true;
