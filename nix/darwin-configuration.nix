@@ -49,4 +49,8 @@
 
   # System version
   system.stateVersion = 5;
+
+  # Nix storage
+  nix.optimise.automatic = true;
+  nix.gc.automatic = true;
 }
