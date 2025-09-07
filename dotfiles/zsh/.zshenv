@@ -1,21 +1,12 @@
-# Following https://www.drupaldump.com/right-way-migrate-your-bashprofile-zsh
-# this file is all sessions (interactive or not)
-# This should contain all path manipulation, environment variables, etc.
+# this file is read for all sessions (interactive or not, login or not)
 
-# add homebrew to path.
-export PATH="/opt/homebrew/bin:$PATH"
-
-# enabled colors in ls
-#export CLICOLOR=1
-#export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
-
-# java home
-# export JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/"
-# export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
-
-# config stuff
+# xdg base directories https://wiki.archlinux.org/title/XDG_Base_Directory
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_DATA_HOME="${HOME}/.local/share"
+export XDG_CACHE_HOME="${HOME}/.cache"
+export XDG_STATE_HOME="${HOME}/.local/state"
 
-# gpg signing
-export GPG_TTY=$(tty)
+# zsh - Use xdg dirs for configs, zinit, completion
+export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
+export ZINIT_HOME="${XDG_DATA_HOME}/zinit/zinit.git"
+export ZSH_COMPDUMP="${XDG_CACHE_HOME}/zsh/zcompdump-${ZSH_VERSION}"

@@ -31,10 +31,34 @@ docker-remove-none-images(){
     docker rmi -f $(docker images | grep '<none>' | sed  -E 's/[ ]+/,/g' | cut -f3 -d,)
 }
 
-# yaml to json
+# json <-> yaml conversion
 yaml-to-json() {
 	yq -P --output-format json $1
 }
 json-to-yaml() {
 	yq -P $1
+}
+json-minify() {
+	jq --compact-output < $1
+}
+json-maxify() {
+	# uses two spaces by default
+	jq < $1
+}
+
+
+# zinit update
+zinit-update() {
+  echo "Updating Zinit and plugins..."
+  zinit self-update && zinit update --all
+  echo "All Zinit plugins updated!"
+}
+
+# check login vs interactive
+# Just for fun/learning
+is-login-shell() {
+	[[ -o login ]] && echo 'login' || echo 'non-login'
+}
+is-interactive-shell() {
+	[[ $- == *i* ]] && echo 'interactive' || echo 'non-interactive'
 }

@@ -4,3 +4,4 @@ set encoding=utf8
 set expandtab
 set number
 set tabstop=4
+set viminfo+=n$XDG_STATE_HOME/vim/viminfo

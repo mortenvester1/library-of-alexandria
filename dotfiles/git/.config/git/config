@@ -1,7 +1,7 @@
 [user]
     name = Morten Pedersen
 [core]
-    excludesfile = ~/.gitignore_global
+    excludesfile = ~/.config/git/.gitignore_global
 [alias]
     br = "!f() { git branch | fzf | xargs git checkout; }; f"
     camend = "!f() { git add . && git commit --amend --no-edit; }; f"
@@ -9,6 +9,7 @@
     comp = "!f() { git checkout master || git checkout main && git pull; }; f"
     empty = "!f() { git commit -m 'retrigger checks' --allow-empty; }; f"
     fco = "!f() { git fetch && git checkout $1; }; f"
+    ftags = "!f() { git fetch --tags ; }; f";
     pushup = "!f() { git push -u origin HEAD; }; f"
     tco = "!f() { git branch | grep $1 | head -n 1 | xargs git checkout; }; f"
     typo = "!f() { git commit -am 'typo' && git push; }; f"
@@ -20,4 +21,4 @@
 	process = git-lfs filter-process
 	required = true
 [include]
-    path = ~/.gitlocal
+    path = ~/.config/git/.gitlocal

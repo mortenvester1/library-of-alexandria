@@ -4,13 +4,11 @@ This repo is my personal library of everything.
 
 ## Install
 
-### MacOS
+Run the [install.sh](./install.sh script) using curl
 
-If you are setting up a new Mac see [Bootstrap MacOS](docs/bootstrap_macos.md) for instructions for how to setup the new machine.
-
-### Raspberry Pi
-
-If you are setting up a new Raspberry see [Bootstrap Pi](docs/bootstrap_pi.md) for instructions for how to setup the new machine.
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/refs/heads/main/install.sh)"
+```
 
 ## Todo
 
@@ -18,3 +16,7 @@ If you are setting up a new Raspberry see [Bootstrap Pi](docs/bootstrap_pi.md) f
 - [x] Adopt `stow` for managing dotfiles
 - [x] Create dotfiles for Raspberry OS
 - [x] Look into nixos
+- [x] remove nix
+- [ ] migrate bootstrap pi to install
+- [ ] update docs
+- [ ] add cronjobs

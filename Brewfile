@@ -1,0 +1,40 @@
+# specify a directory to install
+cask_args appdir: '/Applications'
+
+# install brew packages
+brew 'asdf'
+brew 'bitwarden-cli'
+brew 'coreutils'
+brew 'fzf'
+brew 'git'
+brew 'git-lfs'
+brew 'gpg2'
+brew 'jq'
+brew 'k9s'
+brew 'openjdk'
+brew 'pinentry-mac'
+brew 'starship'
+brew 'stow'
+brew 'yq'
+
+# install brew cask applications
+cask 'bitwarden'
+cask 'google-chrome'
+cask 'divvy'
+cask 'docker-desktop'
+cask 'drawio'
+cask 'dropbox'
+cask 'firefox'
+cask 'google-drive'
+cask 'iterm2'
+cask 'lunar'
+cask 'mpv'
+cask 'mullvadvpn'
+cask 'obsidian'
+cask 'ollama'
+cask 'signal'
+cask 'whatsapp'
+cask 'zed'
+
+# install fonts
+# brew 'font-caskaydia-cove-nerd-font'
