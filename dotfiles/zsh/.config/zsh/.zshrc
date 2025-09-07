@@ -24,6 +24,7 @@ zinit light zsh-users/zsh-completions
 
 # homebrew - add to path
 export PATH="/opt/homebrew/bin:$PATH" # takes precedence over system installs and direnv from zinit
+eval "$(brew shellenv)" # will also setup completions
 
 # asdf - add packages/shims to path
 export ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf"

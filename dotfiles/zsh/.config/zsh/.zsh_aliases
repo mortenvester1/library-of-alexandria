@@ -68,3 +68,8 @@ k9s-toogle-readonly() {
   CLUSTER=$(kubectl config view --minify -o jsonpath='{.contexts[0].context.cluster}' | sed 's/[^a-zA-Z0-0]/-/g')
   yq -i '.k9s.readOnly |= not ' ${XDG_DATA_HOME}/k9s/clusters/${CLUSTER}/${CTX}/config.yaml
 }
+
+# reset zsh completions
+zsh-completion-reset() {
+  [ -s "${ZSH_COMPDUMP}" ] && rm ${ZSH_COMPDUMP}
+}
