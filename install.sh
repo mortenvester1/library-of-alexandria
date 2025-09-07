@@ -97,7 +97,7 @@ else
 fi
 
 # Install brew dependencies
-export HOMEBREW_BUNDLE_FILE_GLOBAL=${HOMEBREW_BUNDLE_FILE_GLOBAL:-${HOME}/.config/homebrew/Brewfile}
+export HOMEBREW_BUNDLE_FILE_GLOBAL=${HOMEBREW_BUNDLE_FILE_GLOBAL:-${XDG_CONFIG_HOME}/homebrew/Brewfile}
 if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}" ]]
 then
   info "installing brew bundle from global. sudo access may be requested..."

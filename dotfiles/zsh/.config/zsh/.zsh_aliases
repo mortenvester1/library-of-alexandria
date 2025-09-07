@@ -89,6 +89,7 @@ _asdf-read-to-associative-array() {
 
 asdf-merge() {
   # No local file to merge with, just move
+  export ASDF_DIR=${ASDF_DIR:-${XDG_CONFIG_HOME}/asdf}
   if [ ! -s "${ASDF_DIR}/.tool-versions.local" ]
   then
     cp "${ASDF_DIR}/.tool-versions" "${HOME}/.tool-versions"
