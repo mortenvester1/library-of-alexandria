@@ -7,7 +7,7 @@ This repo is my personal library of everything.
 Run the [install.sh](./install.sh script) using curl
 
 ```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/refs/heads/main/install.sh)"
+/bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/refs/heads/main/install.sh)"
 ```
 
 ## Development
@@ -15,7 +15,7 @@ Run the [install.sh](./install.sh script) using curl
 You can run the
 
 ```sh
-/bin/bash -c "$(curl -fsSL file:///$(pwd)/install.sh)"
+/bin/zsh -c "$(curl -fsSL file:///$(pwd)/install.sh)"
 ```
 
 ## References

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 set -u
 
@@ -114,19 +114,15 @@ then
   NONINTERACTIVE=1 brew bundle install --file "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local"
 fi
 
-# setup dotfiles
+# # setup dotfiles
 info "installing dotfiles..."
 stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R asdf git gnupg starship vim zed zsh sql-formatter k9s homebrew
 
-# setup asdf
-bootstrap_asdf() {
-  asdf plugin add "$1"
-  asdf install "$@"
-};
-export -f bootstrap_asdf
+# setup asdf - merge .tool-version files if local exist
+zsh -c "source ${REPO_DEST}/dotfiles/zsh/.config/zsh/.zsh_aliases && asdf-merge"
 
 # add packages to be controlled by asdf
 info "installing asdf dependencies..."
-cat ${HOME}/.tool-versions | xargs -L1 bash -c 'bootstrap_asdf "$@"' _
+cat ${HOME}/.tool-versions | grep -v '^#' | xargs -L1 zsh -c 'bootstrap_asdf() { asdf plugin add "$1"; asdf install "$@"; }; bootstrap_asdf "$@"' _
 
 info "installation complete. You should reload your shell with 'exec \$SHELL'"

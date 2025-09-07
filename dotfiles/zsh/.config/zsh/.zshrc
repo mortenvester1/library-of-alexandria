@@ -27,6 +27,7 @@ export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile"
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # asdf - add packages/shims to path (# takes precedence over brew install+system)
+export ASDF_DIR="${XDG_CONFIG_HOME}/asdf"
 export ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf"
 export PATH="${ASDF_DATA_DIR}/shims:$PATH"
 

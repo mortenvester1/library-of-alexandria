@@ -31,4 +31,5 @@ create-gpg-key email password:
 
 # Upgrade install based on local repo
 upgrade:
-    @SKIP_GIT=1 ./install.sh
+    #!/bin/zsh
+    SKIP_GIT=1 ./install.sh
