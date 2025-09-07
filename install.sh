@@ -98,11 +98,11 @@ fi
 
 # Install brew dependencies
 info "installing brew bundle. sudo access may be requested..."
-NONINTERACTIVE=1 brew bundle install --file Brewfile
+NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/Brewfile"
 
 # setup dotfiles
 info "installing dotfiles..."
-stow --target ${HOME} --dir dotfiles -R asdf git gnupg starship vim zed zsh sql-formatter k9s
+stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R asdf git gnupg starship vim zed zsh sql-formatter k9s
 
 # setup asdf
 bootstrap_asdf() {
