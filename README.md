@@ -4,10 +4,19 @@ This repo is my personal library of everything.
 
 ## Install
 
-Run the [install.sh](./install.sh script) using curl
+Run the [install.sh](./install.sh) script using curl
 
 ```sh
 /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/refs/heads/main/install.sh)"
+```
+
+After initial install, overrides and additional tool installations can be configurd in the following files. Simply rerun the install script for the overrides to take effect.
+
+```sh
+${XDG_CONFIG_HOME}/asdf/.tool-versions.local
+${XDG_CONFIG_HOME}/git/.gitlocal
+${XDG_CONFIG_HOME}/homebrew/Brewfile.local
+${XDG_CONFIG_HOME}/zsh/.zshrc.local
 ```
 
 ## Development
@@ -16,6 +25,12 @@ You can run the
 
 ```sh
 /bin/zsh -c "$(curl -fsSL file:///$(pwd)/install.sh)"
+```
+
+or
+
+```sh
+just upgrade
 ```
 
 ## References

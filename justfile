@@ -2,12 +2,12 @@ default:
     just --list
 
 # create a gitlocal file
-create-gitlocal email gpg-key:
+create-gitlocal email gpg_key:
     #!/bin/bash
     cat > ${XDG_CONFIG_HOME}/git/.gitlocal << EOL
     [user]
       email = {{ email }}
-      signingkey = {{ gpg-key }}
+      signingkey = {{ gpg_key }}
     [commit]
       gpgsign = true
     EOL
