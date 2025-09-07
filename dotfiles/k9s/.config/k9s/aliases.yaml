@@ -1,0 +1,20 @@
+aliases:
+  dp: apps/v1/deployments
+  jo: batch/v1/jobs
+  no: v1/nodes
+  #pf: v1/portforwards
+  po: v1/pods
+  sec: v1/secrets
+  svc: v1/services
+  cr: rbac.authorization.k8s.io/v1/clusterroles
+  crb: rbac.authorization.k8s.io/v1/clusterrolebindings
+  rb: rbac.authorization.k8s.io/v1/rolebindings
+  ro: rbac.authorization.k8s.io/v1/roles
+  np: networking.k8s.io/v1/networkpolicies
+  ap: security.istio.io/v1/authorizationpolicies
+  wf: argoproj.io/v1alpha1/workflows
+  nb: kubeflow.org/v1/notebooks
+  pd: kubeflow.org/v1alpha1/poddefaults
+  swf: kubeflow.org/v1beta1/scheduledworkflows
+  pm: monitoring.coreos.com/v1/podmonitors
+  sm: monitoring.coreos.com/v1/servicemonitors

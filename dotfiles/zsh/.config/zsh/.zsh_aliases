@@ -7,26 +7,26 @@ alias ....="cd ../../.."
 
 # use gnu ls instad
 alias ls="gls --color -alh --group-directories-first"
+alias activate-venv="source .venv/bin/activate"
 
 # Functions
 
-## Docker
-# Connect to a running container and start a bash session
+# Docker - connect to a running container and start a bash session
 docker-exec-bash() {
   docker exec -it $1 /bin/bash;
 };
 
-# Start Docker container and connect to it in bash session
+# Docker - Start Docker container and connect to it in bash session
 docker-run-bash() {
   docker run -it $1 /bin/bash;
 };
 
-# Run a Docker container and forward all AWS environment variables
+# Docker - Run a Docker container and forward all AWS environment variables
 docker-run-with-aws-access(){
   docker run -it --env-file <(aws-vault exec $1 -- env | grep ^AWS_) $2
 }
 
-# Remove all untagged images
+# Docker -  Remove all untagged images
 docker-remove-none-images(){
     docker rmi -f $(docker images | grep '<none>' | sed  -E 's/[ ]+/,/g' | cut -f3 -d,)
 }
@@ -54,11 +54,17 @@ zinit-update() {
   echo "All Zinit plugins updated!"
 }
 
-# check login vs interactive
-# Just for fun/learning
+# check login vs interactive - just for fun/learning
 is-login-shell() {
 	[[ -o login ]] && echo 'login' || echo 'non-login'
 }
 is-interactive-shell() {
 	[[ $- == *i* ]] && echo 'interactive' || echo 'non-interactive'
+}
+
+# k9s
+k9s-toogle-readonly() {
+  CTX=$(kubectl config current-context)
+  CLUSTER=$(kubectl config view --minify -o jsonpath='{.contexts[0].context.cluster}' | sed 's/[^a-zA-Z0-0]/-/g')
+  yq -i '.k9s.readOnly |= not ' ${XDG_DATA_HOME}/k9s/clusters/${CLUSTER}/${CTX}/config.yaml
 }

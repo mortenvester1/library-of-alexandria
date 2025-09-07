@@ -1,0 +1,9 @@
+{
+  "tabWidth": 2,
+  "keywordCase": "upper",
+  "dataTypeCase": "upper",
+  "functionCase": "upper",
+  "expressionWidth": 120,
+  "denseOperators": false,
+  "linesBetweenQueries": 2
+}

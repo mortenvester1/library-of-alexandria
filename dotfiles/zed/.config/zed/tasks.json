@@ -1,16 +1,14 @@
-// Static tasks configuration.
 [
   {
-    "label": "Trunk format",
-    "command": "trunk",
-    "args": ["fmt"],
+    "label": "json minify",
+    "command": "json-minify $ZED_FILE > $TMPDIR/$ZED_FILENAME && mv $TMPDIR/$ZED_FILENAME $ZED_FILE",
     "use_new_terminal": false,
     "reveal": "never"
   },
   {
-    "label": "Format json",
-    "command": "jq . $ZED_FILE > /tmp/formatted.json && mv /tmp/formatted.json $ZED_FILE",
+    "label": "list extensions",
+    "command": "ls ~/Library/Application\\ Support/Zed/extensions/installed",
     "use_new_terminal": false,
-    "reveal": "never"
+    "reveal": "always"
   }
 ]

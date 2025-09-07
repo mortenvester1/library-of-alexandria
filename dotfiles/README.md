@@ -24,6 +24,8 @@ I've skipped the logout files because those are rarely used. For more details se
 - `/etc/zshprofile` does exist and modifies the `PATH` variable.
 - `/etc/zshrc` does exist and sets `HISTFILE`, `HISTSIZE`, `SAVEHIST`. Also attempts to use `ZDOTDIR`
 
-Furthermore macOS always uses a login shell and given you want to type stuff into the shell using your keyboard (unless you are up to shenanigans) you are most often in a _interactive login_ shell. Because the `/etc/zprofile` modifies the existing `PATH` in macOS, you should not do any `PATH` manipulations before that file is read. Otherwise you may not have a consistent experience in lunix vs macOS and the `PATH` may be differnt from what was intended.Modifications in `~/.zshenv` should therefor not modify the `PATH` variable.
+Furthermore macOS always uses a login shell and given you want to type stuff into the shell using your keyboard you are most often in an **interactive login** shell. When you run a script from your an interactive login session, that script executes in a non-interactive, non-login mode (typically), but since it was launched from an interactive login session the script does have access to everything you do.
+
+Because the `/etc/zprofile` modifies the existing `PATH` in macOS, you should not do any `PATH` manipulations before that file is read. Otherwise you may not have a consistent experience in lunix vs macOS and the `PATH` may be different from what was intended. Modifications in `~/.zshenv` should therefore not modify the `PATH` variable.
 
 Now Zed is a different beast. They for some reason also try to do shenanignas when you open a new terminal. That is not yet understood. Somehow the order of the path is changed and duplicates appear.

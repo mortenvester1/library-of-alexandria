@@ -10,6 +10,14 @@ Run the [install.sh](./install.sh script) using curl
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/refs/heads/main/install.sh)"
 ```
 
+## Development
+
+You can run the
+
+```sh
+/bin/bash -c "$(curl -fsSL file:///$(pwd)/install.sh)"
+```
+
 ## References
 
 - [XDG Base Directories](https://specifications.freedesktop.org/basedir-spec/latest/)

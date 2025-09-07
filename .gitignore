@@ -8,3 +8,9 @@ dotfiles/zed/.config/zed/themes
 # gnupg
 dotfiles/gnupg/.config/gnupg/*
 !dotfiles/gnupg/.config/gnupg/gpg-agent.conf
+
+# zsh
+dotfiles/zsh/.config/.zshrc.local
+
+# git
+dotfiles/git/.config/git/.gitlocal

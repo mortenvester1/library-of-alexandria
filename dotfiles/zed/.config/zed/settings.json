@@ -8,13 +8,6 @@
 // from the command palette or from `Zed` application menu.
 // This doesn't work rigt now? Break files
 {
-  "language_models": {
-    "copilot_chat": {
-      "api_url": "https://api.githubcopilot.com/chat/completions",
-      "auth_url": "https://api.github.com/copilot_internal/v2/token",
-      "models_url": "https://api.githubcopilot.com/models"
-    }
-  },
   "edit_predictions": {
     "mode": "subtle",
     "copilot": {
@@ -35,26 +28,36 @@
       "provider": "copilot_chat"
     }
   },
-  "hour_format": "hour24",
   "tabs": {
     "git_status": true,
     "close_position": "right"
   },
   "preferred_line_length": 120,
-  "file_scan_exclusions": ["**/.git"],
-  "terminal": {
-    "font_family": "CaskaydiaCove Nerd Font Mono",
-    "copy_on_select": true,
-    "working_directory": "current_project_directory"
-  },
   "format_on_save": "on",
   "soft_wrap": "editor_width",
+  "file_scan_exclusions": ["**/.git", ".DS_Store", ".ropeproject", ".ruff_cache", ".pytest_cache", "__pycache__"],
+  "terminal": {
+    "copy_on_select": true,
+    "working_directory": "current_project_directory",
+    "detect_venv": "off"
+  },
   "file_types": {
-    "Shell Script": ["*bash", "*sh", "*zsh"],
-    "Dockerfile": ["Dockerfile*"]
+    "Shell Script": ["*bash", "*sh", "*zsh*", ".envrc"],
+    "Dockerfile": ["Dockerfile*"],
+    "Groovy": ["*Jenkinsfile*"],
+    "JSON": ["*.json", "*.avro"]
   },
   "languages": {
     "JSON": {
+      "tab_size": 2
+    },
+    "Groovy": {
+      "tab_size": 2
+    },
+    "JSONC": {
+      "tab_size": 2
+    },
+    "XML": {
       "tab_size": 2
     },
     "YAML": {
@@ -63,6 +66,14 @@
     "Shell Script": {
       "tab_size": 2,
       "hard_tabs": false
+    },
+    "SQL": {
+      "tab_size": 2,
+      "formatter": {
+        "external": {
+          "command": "sql-formatter"
+        }
+      }
     }
   },
   "inlay_hints": {
@@ -73,5 +84,26 @@
   },
   "indent_guides": {
     "coloring": "indent_aware"
+  },
+  "auto_install_extensions": {
+    "dockerfile": true,
+    "dracula": true,
+    "git-firefly": true,
+    "groovy": true,
+    "html": true,
+    "ini": true,
+    "java": true,
+    "jq": true,
+    "just": true,
+    "just-js": true,
+    "latex": true,
+    "rego": true,
+    "ruff": true,
+    "scala": true,
+    "sql": true,
+    "swift": true,
+    "terraform": true,
+    "toml": true,
+    "xml": true
   }
 }
