@@ -97,12 +97,26 @@ else
 fi
 
 # Install brew dependencies
-info "installing brew bundle. sudo access may be requested..."
-NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/Brewfile"
+if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}" ]]
+then
+  info "installing brew bundle from global. sudo access may be requested..."
+  # installing from
+  NONINTERACTIVE=1 brew bundle install --global
+else
+  info "installing brew bundle from repo as it has not been moved to XDG_CONFIG_HOME. sudo access may be requested..."
+  NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/dotfiles/homebrew/.config/homebrew/Brewfile"
+fi
+
+# local additions
+if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local" ]]
+then
+  info "installing local brew bundle. sudo access may be requested..."
+  NONINTERACTIVE=1 brew bundle install --file "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local"
+fi
 
 # setup dotfiles
 info "installing dotfiles..."
-stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R asdf git gnupg starship vim zed zsh sql-formatter k9s
+stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R asdf git gnupg starship vim zed zsh sql-formatter k9s homebrew
 
 # setup asdf
 bootstrap_asdf() {

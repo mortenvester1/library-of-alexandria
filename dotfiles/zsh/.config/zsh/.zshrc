@@ -22,13 +22,13 @@ zinit ice blockf
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 
-# homebrew - add to path
-export PATH="/opt/homebrew/bin:$PATH" # takes precedence over system installs and direnv from zinit
-eval "$(brew shellenv)" # will also setup completions
+# homebrew - add to path (precedence over system installs), setup completions
+export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile"
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# asdf - add packages/shims to path
+# asdf - add packages/shims to path (# takes precedence over brew install+system)
 export ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf"
-export PATH="${ASDF_DATA_DIR}/shims:$PATH" # takes precedence over brew installs
+export PATH="${ASDF_DATA_DIR}/shims:$PATH"
 
 # asdf completions requires modification of fpath before compinit is run
 [ -d "${ASDF_DATA_DIR}/completions" ] || mkdir -p "${ASDF_DATA_DIR}/completions"

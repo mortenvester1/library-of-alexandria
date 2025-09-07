@@ -29,13 +29,6 @@ cask 'firefox'
 cask 'google-drive'
 cask 'iterm2'
 cask 'lunar'
-cask 'mpv'
-cask 'mullvadvpn'
 cask 'obsidian'
 cask 'ollama'
-cask 'signal'
-cask 'whatsapp'
 cask 'zed'
-
-# install fonts
-# brew 'font-caskaydia-cove-nerd-font'
