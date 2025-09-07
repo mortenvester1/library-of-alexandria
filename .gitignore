@@ -10,7 +10,7 @@ dotfiles/gnupg/.config/gnupg/*
 !dotfiles/gnupg/.config/gnupg/gpg-agent.conf
 
 # zsh
-dotfiles/zsh/.config/.zshrc.local
+dotfiles/zsh/.config/zsh/.zshrc.local
 
 # git
 dotfiles/git/.config/git/.gitlocal
