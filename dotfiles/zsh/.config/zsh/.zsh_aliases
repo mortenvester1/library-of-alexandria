@@ -82,7 +82,11 @@ _asdf-read-to-associative-array() {
       # Skip empty lines and comments
       if [[ -n "$tool" && "$tool" != \#* && -n "$version" ]]
       then
-        eval "${array_ref}[$tool]=\"$version\""
+        local all_versions="$version"
+        if [[ -n "$rest" ]]; then
+          all_versions="$all_versions $rest"
+        fi
+        eval "${array_ref}[$tool]=\"$all_versions\""
       fi
   done < "$file_path"
 }
@@ -108,8 +112,20 @@ asdf-merge() {
     # Merge logic: start with base tools, override with local versions
     for tool in ${(k)base_tools}; do
         if [[ -n "${local_tools[$tool]:-}" ]]; then
-            # Use local version if it exists
-            all_tools[$tool]="${local_tools[$tool]}"
+          # Combine local versions first, then base versions
+          local combined="${local_tools[$tool]} ${base_tools[$tool]}"
+          # Deduplicate versions while preserving order
+          local -a versions_array
+          local -A seen_versions
+          local deduped=""
+
+          for version in ${=combined}; do
+              if [[ -z "${seen_versions[$version]:-}" ]]; then
+                  seen_versions[$version]=1
+                  deduped="$deduped $version"
+              fi
+          done
+          all_tools[$tool]="${deduped# }"  # Remove leading space
         else
             # Use base version
             all_tools[$tool]="${base_tools[$tool]}"

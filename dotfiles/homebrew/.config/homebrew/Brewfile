@@ -3,6 +3,7 @@ cask_args appdir: '/Applications'
 
 # install brew packages
 brew 'asdf'
+brew 'bash'
 brew 'bitwarden-cli'
 brew 'coreutils'
 brew 'fzf'

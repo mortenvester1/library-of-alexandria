@@ -97,6 +97,7 @@
     "just": true,
     "just-js": true,
     "latex": true,
+    "make": true,
     "rego": true,
     "ruff": true,
     "scala": true,

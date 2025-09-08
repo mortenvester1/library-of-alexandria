@@ -124,6 +124,7 @@ zsh -c "source ${REPO_DEST}/dotfiles/zsh/.config/zsh/.zsh_aliases && asdf-merge"
 
 # add packages to be controlled by asdf
 info "installing asdf dependencies..."
-cat ${HOME}/.tool-versions | grep -v '^#' | xargs -L1 zsh -c 'bootstrap_asdf() { asdf plugin add "$1"; asdf install "$@"; }; bootstrap_asdf "$@"' _
+cat ${HOME}/.tool-versions | grep -v '^#' | xargs -L1 zsh -c 'bootstrap_asdf() { asdf plugin add "$1"; }; bootstrap_asdf "$@"' _
+asdf install
 
 info "installation complete. You should reload your shell with 'exec \$SHELL'"
