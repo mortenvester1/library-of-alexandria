@@ -21,6 +21,8 @@ source "${ZINIT_HOME}/zinit.zsh"
 zinit ice blockf
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-history-substring-search
+zinit light zdharma/fast-syntax-highlighting
 
 # homebrew - add to path (precedence over system installs), setup completions
 export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile"
@@ -37,11 +39,22 @@ asdf completion zsh > "${ASDF_DATA_DIR}/completions/_asdf"
 fpath=(${ASDF_DATA_DIR}/completions $fpath)
 
 # init completions with custom path for caching
-zstyle ':completion:*' cache-path "${ZSH_COMPDUMP}"
 autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit -C -d "${ZSH_COMPDUMP}"
 
-# Load other completions
+# completion styling
+# add colors like like in the ls command when completing files/directories. gdircolors -b exports LS_COLORS
+eval $(gdircolors -b)
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' cache-path "${ZSH_COMPDUMP}"
+zstyle ':completion:*' menu select # use arrow keys to select completion (or just tab)
+zstyle ':completion:*' completer _complete _approximate # complete with typos
+
+# reverse menu select through shift+tab
+zmodload zsh/complist
+bindkey '^[[Z' reverse-menu-complete
+
+# Load completions
 source <(uv --generate-shell-completion zsh)
 source <(kubectl completion zsh)
 source <(docker completion zsh)
