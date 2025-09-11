@@ -17,12 +17,27 @@ export BASH_COMPLETION_USER_DIR="${XDG_DATA_HOME}/bash-completion"
 [ -d ${ZINIT_HOME}/.git ] || git clone https://github.com/zdharma-continuum/zinit.git "${ZINIT_HOME}"
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Add plugins for completions, suggestions
+# Add plugins
 zinit ice blockf
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-history-substring-search
 zinit light zdharma/fast-syntax-highlighting
+
+# History
+export HISTSIZE=10000
+export HISTFILE="${XDG_STATE_HOME}/zsh/history"
+export SAVEHIST="${HISTSIZE}"
+export HISTDUPE=erase
+
+setopt APPENDHISTORY
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire a duplicate event first when trimming history.
+setopt HIST_FIND_NO_DUPS         # Do not display a previously found event.
+setopt HIST_IGNORE_ALL_DUPS      # Delete an old recorded event if a new event is a duplicate.
+setopt HIST_IGNORE_DUPS          # Do not record an event that was just recorded again.
+setopt HIST_IGNORE_SPACE         # Do not record an event starting with a space.
+setopt HIST_SAVE_NO_DUPS         # Do not write a duplicate event to the history file.
+setopt SHARE_HISTORY             # Share history between all sessions.
 
 # homebrew - add to path (precedence over system installs), setup completions
 export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile"
@@ -38,39 +53,8 @@ export PATH="${ASDF_DATA_DIR}/shims:$PATH"
 asdf completion zsh > "${ASDF_DATA_DIR}/completions/_asdf"
 fpath=(${ASDF_DATA_DIR}/completions $fpath)
 
-# init completions with custom path for caching
-autoload bashcompinit && bashcompinit
-autoload -Uz compinit && compinit -C -d "${ZSH_COMPDUMP}"
-
-# completion styling
-# add colors like like in the ls command when completing files/directories. gdircolors -b exports LS_COLORS
+# Set colors for LS and alike
 eval $(gdircolors -b)
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' cache-path "${ZSH_COMPDUMP}"
-zstyle ':completion:*' menu select # use arrow keys to select completion (or just tab)
-zstyle ':completion:*' completer _complete _approximate # complete with typos
-
-# reverse menu select through shift+tab
-zmodload zsh/complist
-bindkey '^[[Z' reverse-menu-complete
-
-# Load completions
-source <(uv --generate-shell-completion zsh)
-source <(kubectl completion zsh)
-source <(docker completion zsh)
-
-# History
-HISTSIZE=10000
-HISTFILE="${XDG_STATE_HOME}/zsh/history"
-SAVEHIST="${HISTSIZE}"
-HISTDUPE=erase
-setopt appendhistory
-setopt sharehistory
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
-setopt hist_save_no_dups
-setopt hist_ignore_dups
-setopt hist_find_no_dups
 
 # direnv
 eval "$(direnv hook zsh)"
@@ -104,5 +88,6 @@ export OLLAMA_MODELS="${XDG_DATA_HOME}/ollama/models"
 [ -d "${OLLAMA_MODELS}" ] || mkdir -p ${OLLAMA_MODELS}
 
 # source additional .zsh files
-[ -s "${ZDOTDIR}/.zsh_aliases" ] && source ${ZDOTDIR}/.zsh_aliases
 [ -s "${ZDOTDIR}/.zshrc.local" ] && source ${ZDOTDIR}/.zshrc.local
+[ -s "${ZDOTDIR}/aliases.zsh" ] && source ${ZDOTDIR}/aliases.zsh
+[ -s "${ZDOTDIR}/completion.zsh" ] && source ${ZDOTDIR}/completion.zsh

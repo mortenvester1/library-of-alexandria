@@ -6,7 +6,7 @@ export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_CACHE_HOME="${HOME}/.cache"
 export XDG_STATE_HOME="${HOME}/.local/state"
 
-# zsh - Use xdg dirs for configs, zinit, completion
+# zsh - Use xdg dirs for configs, zinit, completion cache
 export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
-export ZINIT_HOME="${XDG_DATA_HOME}/zinit/zinit.git"
 export ZSH_COMPDUMP="${XDG_CACHE_HOME}/zsh/zcompdump-${ZSH_VERSION}"
+export ZINIT_HOME="${XDG_DATA_HOME}/zinit/zinit.git"

@@ -1,3 +1,4 @@
+#!/bin/zsh
 # following https://www.thorsten-hans.com/5-types-of-zsh-aliases
 
 # Simple aliases
