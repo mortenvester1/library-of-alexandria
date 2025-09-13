@@ -1,5 +1,4 @@
-#!/bin/zsh
-
+#!/bin/bash
 set -u
 
 # string formatters
@@ -62,12 +61,16 @@ do
   esac
 done
 
-# First check OS.
+# Check OS
 OS="$(uname)"
-if [[ "${OS}" != "Darwin" ]]
+LOWER_OS=$(echo "$OS" | tr '[:upper:]' '[:lower:]')
+if [[ "${OS}" != "Darwin" && "${OS}" != "Linux" ]]
 then
-  error "install is only supported on macOS"
+  error "install is only supported on macOS and Linux"
 fi
+
+# Set XDG_CONFIG_HOME if not already
+XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
 
 REPO_DEST="${HOME}/git/library-of-alexandria"
 if [[ -n "${SKIP_GIT-}" && -d ${REPO_DEST} ]]
@@ -85,19 +88,42 @@ else
  	git clone https://github.com/mortenvester1/library-of-alexandria.git $(dirname ${REPO_DEST})
 fi
 
+# Linux specific setup + install apt pkgs
+if [[ "${OS}" == "Linux" ]]
+then
+  sudo mkdir -p /home/linuxbrew/.linuxbrew
+  sudo chown -R $(whoami):$(whoami) /home/linuxbrew
+
+  # configure docker repo and install aptitude packages
+  /bin/bash ${REPO_DEST}/dotfiles/apt/.config/apt/docker-repo.sh
+  xargs sudo apt -y install < ${REPO_DEST}/dotfiles/apt/.config/apt/pkgs.txt
+  sudo apt clean
+
+  # download asdf binary
+  curl -L -o /tmp/asdf-v0.18.0-linux-arm64.tar.gz https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-arm64.tar.gz
+  sudo tar -xzf /tmp/asdf-v0.18.0-linux-arm64.tar.gz -C /usr/local/bin/
+fi
+
 # install brew + install packages
 if [[ -n $(command -v brew) ]]
 then
   info "homebrew is already installed. Will update"
   brew update
 else
-  info "homebrew already not installed. Will install"
+  info "homebrew not installed. Will install"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Add brew to path
+if [[ "${OS}" == "Linux" ]]
+then
+  export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+else
   export PATH="/opt/homebrew/bin:$PATH"
 fi
 
 # Install brew dependencies
-export HOMEBREW_BUNDLE_FILE_GLOBAL=${HOMEBREW_BUNDLE_FILE_GLOBAL:-${XDG_CONFIG_HOME}/homebrew/Brewfile}
+export HOMEBREW_BUNDLE_FILE_GLOBAL=${HOMEBREW_BUNDLE_FILE_GLOBAL:-${XDG_CONFIG_HOME}/homebrew/Brewfile}.${LOWER_OS}
 if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}" ]]
 then
   info "installing brew bundle from global. sudo access may be requested..."
@@ -105,7 +131,7 @@ then
   NONINTERACTIVE=1 brew bundle install --global
 else
   info "installing brew bundle from repo as it has not been moved to XDG_CONFIG_HOME. sudo access may be requested..."
-  NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/dotfiles/homebrew/.config/homebrew/Brewfile"
+  NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/dotfiles/homebrew/.config/homebrew/Brewfile.${LOWER_OS}"
 fi
 
 # local additions
@@ -120,7 +146,7 @@ info "installing dotfiles..."
 stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R asdf git gnupg starship vim zed zsh sql-formatter k9s homebrew
 
 # setup asdf - merge .tool-version files if local exist
-zsh -c "source ${REPO_DEST}/dotfiles/zsh/.config/zsh/.zsh_aliases && asdf-merge"
+zsh -c "source ${REPO_DEST}/dotfiles/zsh/.config/zsh/aliases.zsh && asdf-merge"
 
 # add packages to be controlled by asdf
 info "installing asdf dependencies..."

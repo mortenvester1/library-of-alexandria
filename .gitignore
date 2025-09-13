@@ -20,3 +20,6 @@ dotfiles/homebrew/.config/homebrew/Brewfile.local
 
 # asdf
 dotfiles/asdf/.config/asdf/.tool-versions.local
+
+# docker - doesn't play not with symlinks
+dotfiles/docker

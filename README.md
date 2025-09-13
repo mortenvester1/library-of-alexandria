@@ -4,7 +4,7 @@ This repo is my personal library of everything.
 
 ## Install
 
-Run the [install.sh](./install.sh) script using curl
+The install requires bash, curl, git, sudo to be installed on your system. Run the [install.sh](./install.sh) script using curl
 
 ```sh
 /bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/refs/heads/main/install.sh)"
@@ -55,6 +55,11 @@ just upgrade
 - [Minidlna](https://bbrks.me/rpi-minidlna-media-server/)
 - [Tdarr](https://docs.tdarr.io/docs/welcome/what)
 - [Jellyfin](https://itsfoss.com/jellyfin-raspberry-pi/)
+
+## zsh
+
+- [zsh completion guide](https://thevaluable.dev/zsh-completion-guide-examples/)
+- [zinit gallery](https://zdharma-continuum.github.io/zinit/wiki/GALLERY/#plugins)
 
 ## Todo
 

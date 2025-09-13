@@ -1,13 +1,24 @@
 #!/bin/zsh
 # following https://www.thorsten-hans.com/5-types-of-zsh-aliases
 
+# OS dependent
+# homebrew - add to path (precedence over system installs)
+# Set Brewfile destination
+# Set LS_COLORS
+if [[ "$(uname)" == "Darwin" ]]
+then
+  alias ls="gls --color -alh --group-directories-first"
+elif [[ "$(uname)" == "Linux" ]]
+then
+  alias ls="ls --color -alh --group-directories-first"
+fi
+
 # Simple aliases
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 
 # use gnu ls instad
-alias ls="gls --color -alh --group-directories-first"
 alias activate-venv="source .venv/bin/activate"
 
 # Functions

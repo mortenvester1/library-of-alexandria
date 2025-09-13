@@ -19,12 +19,14 @@ brew 'sql-formatter'
 brew 'starship'
 brew 'stow'
 brew 'yq'
+brew 'zsh'
 
 # install brew cask applications
 cask 'bitwarden'
 cask 'google-chrome'
 cask 'divvy'
-cask 'docker-desktop'
+cask 'docker' # cli
+cask 'docker-desktop' # gui
 cask 'drawio'
 cask 'dropbox'
 cask 'firefox'

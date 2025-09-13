@@ -39,22 +39,35 @@ setopt HIST_IGNORE_SPACE         # Do not record an event starting with a space.
 setopt HIST_SAVE_NO_DUPS         # Do not write a duplicate event to the history file.
 setopt SHARE_HISTORY             # Share history between all sessions.
 
-# homebrew - add to path (precedence over system installs), setup completions
-export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile"
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
-# asdf - add packages/shims to path (# takes precedence over brew install+system)
+# asdf variables
 export ASDF_DIR="${XDG_CONFIG_HOME}/asdf"
 export ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf"
+
+# OS dependent
+# homebrew - add to path (precedence over system installs)
+# Set Brewfile destination
+# Set LS_COLORS
+# on Linux set set source asdf
+if [[ "$(uname)" == "Darwin" ]]
+then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  eval $(gdircolors -b)
+  export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile.darwin"
+elif [[ "$(uname)" == "Linux" ]]
+then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  eval $(dircolors -b)
+  export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile.linux"
+  source ${ASDF_DIR}/asdf.sh
+fi
+
+# asdf - add packages/shims to path (# takes precedence over brew install+system)
 export PATH="${ASDF_DATA_DIR}/shims:$PATH"
 
 # asdf completions requires modification of fpath before compinit is run
 [ -d "${ASDF_DATA_DIR}/completions" ] || mkdir -p "${ASDF_DATA_DIR}/completions"
 asdf completion zsh > "${ASDF_DATA_DIR}/completions/_asdf"
 fpath=(${ASDF_DATA_DIR}/completions $fpath)
-
-# Set colors for LS and alike
-eval $(gdircolors -b)
 
 # direnv
 eval "$(direnv hook zsh)"
@@ -77,8 +90,9 @@ export PYTHONPYCACHEPREFIX=${XDG_CACHE_HOME}/python
 [ -d "${PYTHONPYCACHEPREFIX}" ] || mkdir -p ${PYTHONPYCACHEPREFIX}
 [ -d $(dirname ${PYTHON_HISTORY}) ] || mkdir -p $(dirname ${PYTHON_HISTORY})
 
-# Docker - config location
-export DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
+# Docker - config is just default. They don't yet support xdg
+# https://github.com/docker/roadmap/issues/408
+export DOCKER_CONFIG="${HOME}/.docker"
 
 # k9s - config location
 export K9SCONFIG="${XDG_CONFIG_HOME}/k9s"
