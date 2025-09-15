@@ -36,7 +36,6 @@ just upgrade
 ## References
 
 - [XDG Base Directories](https://specifications.freedesktop.org/basedir-spec/latest/)
-- [zsh](https://zsh.sourceforge.io/Doc/Release/Files.html)
 
 ## Guides
 
@@ -58,8 +57,13 @@ just upgrade
 
 ## zsh
 
+- [zsh startup files](https://zsh.sourceforge.io/Doc/Release/Files.html)
 - [zsh completion guide](https://thevaluable.dev/zsh-completion-guide-examples/)
 - [zinit gallery](https://zdharma-continuum.github.io/zinit/wiki/GALLERY/#plugins)
+
+## Jetson
+
+- [Jetson Lab](https://www.jetson-ai-lab.com/)
 
 ## Todo
 
@@ -68,6 +72,6 @@ just upgrade
 - [x] Create dotfiles for Raspberry OS
 - [x] Look into nixos
 - [x] remove nix
-- [ ] migrate bootstrap pi to install
+- [x] migrate bootstrap pi to install
 - [x] update docs
 - [ ] add cronjobs

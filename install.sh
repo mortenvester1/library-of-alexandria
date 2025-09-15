@@ -95,7 +95,7 @@ then
   sudo chown -R $(whoami):$(whoami) /home/linuxbrew
 
   # configure docker repo and install aptitude packages
-  /bin/bash ${REPO_DEST}/dotfiles/apt/.config/apt/docker-repo.sh
+  # /bin/bash ${REPO_DEST}/dotfiles/apt/.config/apt/docker-repo.sh
   xargs sudo apt -y install < ${REPO_DEST}/dotfiles/apt/.config/apt/pkgs.txt
   sudo apt clean
 
@@ -144,6 +144,10 @@ fi
 # # setup dotfiles
 info "installing dotfiles..."
 stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R asdf git gnupg starship vim zed zsh sql-formatter k9s homebrew
+if [[ "${OS}" == "Darwin" ]]
+then
+  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R zed
+if
 
 # setup asdf - merge .tool-version files if local exist
 zsh -c "source ${REPO_DEST}/dotfiles/zsh/.config/zsh/aliases.zsh && asdf-merge"
