@@ -58,7 +58,6 @@ then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
   eval $(dircolors -b)
   export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile.linux"
-  source ${ASDF_DIR}/asdf.sh
 fi
 
 # asdf - add packages/shims to path (# takes precedence over brew install+system)
