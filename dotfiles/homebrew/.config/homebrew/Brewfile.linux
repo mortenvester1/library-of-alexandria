@@ -1,11 +1,7 @@
 # install brew packages
 brew 'bitwarden-cli'
-brew 'git'
 brew 'gpg2'
-brew 'jq'
 brew 'k9s'
 brew 'openjdk'
 brew 'sql-formatter'
 brew 'starship'
-brew 'stow'
-brew 'zsh'

@@ -42,6 +42,15 @@ docker-run-with-aws-access(){
 docker-remove-none-images(){
     docker rmi -f $(docker images | grep '<none>' | sed  -E 's/[ ]+/,/g' | cut -f3 -d,)
 }
+# Docker - Open WebUI for LLM stuff. Becomes available at http://{IP}:8080
+docker-open-webui() {
+  sudo docker run -d --network=host \
+      -v ${HOME}/open-webui:/app/backend/data \
+      -e OLLAMA_BASE_URL=http://127.0.0.1:11434 \
+      --name open-webui \
+      --restart always \
+      ghcr.io/open-webui/open-webui:main
+}
 
 # json <-> yaml conversion
 yaml-to-json() {
@@ -161,3 +170,9 @@ asdf-merge() {
 
   fi
 }
+
+# Jetson
+jetson-toggle-desktop-gui() {
+  sudo systemctl set-default multi-user.target
+  sudo reboot
+};

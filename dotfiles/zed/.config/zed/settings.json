@@ -8,6 +8,49 @@
 // from the command palette or from `Zed` application menu.
 // This doesn't work rigt now? Break files
 {
+  "ssh_connections": [
+    {
+      "host": "jetson",
+      "projects": [
+        {
+          "paths": [
+            "/home/jetson/git/library-of-alexandria"
+          ]
+        }
+      ]
+    }
+  ],
+  "language_models": {
+    "ollama": {
+      "api_url": "http://orin-nano.local:11434",
+      "available_models": [
+        {
+          "name": "gemma3:1b",
+          "max_tokens": 128000,
+          "supports_tools": false,
+          "supports_images": true,
+          "supports_thinking": false,
+          "keep_alive": "1h"
+        },
+        {
+          "name": "qwen3:1.7b",
+          "max_tokens": 32768,
+          "supports_tools": true,
+          "supports_images": false,
+          "supports_thinking": true,
+          "keep_alive": "1h"
+        },
+        {
+          "name": "deepseek-r1:1.5b",
+          "max_tokens": 32768,
+          "supports_tools": true,
+          "supports_images": false,
+          "supports_thinking": true,
+          "keep_alive": "1h"
+        }
+      ]
+    }
+  },
   "edit_predictions": {
     "mode": "subtle",
     "copilot": {
@@ -24,8 +67,8 @@
   "agent": {
     "default_profile": "minimal",
     "default_model": {
-      "model": "claude-sonnet-4",
-      "provider": "copilot_chat"
+      "model": "gemma3:1b",
+      "provider": "ollama"
     }
   },
   "tabs": {

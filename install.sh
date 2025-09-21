@@ -94,14 +94,18 @@ then
   sudo mkdir -p /home/linuxbrew/.linuxbrew
   sudo chown -R $(whoami):$(whoami) /home/linuxbrew
 
-  # configure docker repo and install aptitude packages
-  # /bin/bash ${REPO_DEST}/dotfiles/apt/.config/apt/docker-repo.sh
+  # install aptitude packages
+  sudo add-apt-repository ppa:rmescandon/yq
+  sudo apt update
   xargs sudo apt -y install < ${REPO_DEST}/dotfiles/apt/.config/apt/pkgs.txt
   sudo apt clean
 
   # download asdf binary
   curl -L -o /tmp/asdf-v0.18.0-linux-arm64.tar.gz https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-arm64.tar.gz
   sudo tar -xzf /tmp/asdf-v0.18.0-linux-arm64.tar.gz -C /usr/local/bin/
+
+  # install ollama
+  curl -fsSL https://ollama.com/install.sh | sh
 fi
 
 # install brew + install packages
@@ -127,7 +131,7 @@ export HOMEBREW_BUNDLE_FILE_GLOBAL=${HOMEBREW_BUNDLE_FILE_GLOBAL:-${XDG_CONFIG_H
 if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}" ]]
 then
   info "installing brew bundle from global. sudo access may be requested..."
-  # installing from
+  # installing from global
   NONINTERACTIVE=1 brew bundle install --global
 else
   info "installing brew bundle from repo as it has not been moved to XDG_CONFIG_HOME. sudo access may be requested..."
@@ -141,13 +145,13 @@ then
   NONINTERACTIVE=1 brew bundle install --file "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local"
 fi
 
-# # setup dotfiles
+# setup dotfiles
 info "installing dotfiles..."
 stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R asdf git gnupg starship vim zed zsh sql-formatter k9s homebrew
 if [[ "${OS}" == "Darwin" ]]
 then
   stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R zed
-if
+fi
 
 # setup asdf - merge .tool-version files if local exist
 zsh -c "source ${REPO_DEST}/dotfiles/zsh/.config/zsh/aliases.zsh && asdf-merge"
