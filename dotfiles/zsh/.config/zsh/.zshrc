@@ -101,6 +101,6 @@ export OLLAMA_MODELS="${XDG_DATA_HOME}/ollama/models"
 [ -d "${OLLAMA_MODELS}" ] || mkdir -p ${OLLAMA_MODELS}
 
 # source additional .zsh files
-[ -s "${ZDOTDIR}/.zshrc.local" ] && source ${ZDOTDIR}/.zshrc.local
 [ -s "${ZDOTDIR}/aliases.zsh" ] && source ${ZDOTDIR}/aliases.zsh
 [ -s "${ZDOTDIR}/completion.zsh" ] && source ${ZDOTDIR}/completion.zsh
+[ -s "${ZDOTDIR}/.zshrc.local" ] && source ${ZDOTDIR}/.zshrc.local
