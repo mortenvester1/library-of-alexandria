@@ -1,7 +1,6 @@
 bat
 build-essential
 coreutils
-fzf
 git
 git-lfs
 jq
