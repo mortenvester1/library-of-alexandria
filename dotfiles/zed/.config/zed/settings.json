@@ -13,9 +13,7 @@
       "host": "jetson",
       "projects": [
         {
-          "paths": [
-            "/home/jetson/git/library-of-alexandria"
-          ]
+          "paths": ["/home/jetson/git/library-of-alexandria"]
         }
       ]
     }
@@ -65,7 +63,7 @@
   "buffer_font_size": 16,
   "show_whitespaces": "all",
   "agent": {
-    "default_profile": "minimal",
+    "default_profile": "ask",
     "default_model": {
       "model": "gemma3:1b",
       "provider": "ollama"
@@ -92,6 +90,9 @@
   },
   "languages": {
     "JSON": {
+      "tab_size": 2
+    },
+    "HTML": {
       "tab_size": 2
     },
     "Groovy": {
