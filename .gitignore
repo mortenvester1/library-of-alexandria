@@ -1,4 +1,5 @@
 var
+.zcompdump
 
 # zed related
 dotfiles/zed/.config/zed/conversations
