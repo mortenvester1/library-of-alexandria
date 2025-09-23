@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # init completion
-autoload bashcompinit && bashcompinit # forgot why I have this:)
+autoload bashcompinit && bashcompinit # for aws-cli and others
 autoload -Uz compinit && compinit -C -d "${ZSH_COMPDUMP}" # with cache + set location
 
 setopt GLOBDOTS      # Complete hidden files
