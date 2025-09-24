@@ -1,5 +1,7 @@
+import os
+
 from functools import lru_cache
-from typing import Optional
+from typing import override
 
 from pydantic import BaseModel
 from pydantic_settings import (
@@ -13,7 +15,7 @@ from pydantic_settings import (
 class AppConfig(BaseModel):
     name: str
     port: int
-    url_postfix: Optional[str] = ""
+    url_postfix: str | None = ""
 
 
 class Settings(BaseSettings):
@@ -22,10 +24,11 @@ class Settings(BaseSettings):
     apps: list[AppConfig]
 
     # model_config + classmethod to defined Which file to read
-    model_config = SettingsConfigDict(
-        yaml_file=".env.yaml",
+    model_config = SettingsConfigDict(     # pyright:ignore[reportUnannotatedClassAttribute]
+        yaml_file=os.environ.get("JETSON_UI_CONFIG", ".env.yaml"),
     )
 
+    @override
     @classmethod
     def settings_customise_sources(
         cls,
@@ -39,5 +42,5 @@ class Settings(BaseSettings):
 
 
 @lru_cache
-def get_settings():
-    return Settings()
+def get_settings() -> Settings:
+    return Settings() # pyright: ignore[reportCallIssue]

@@ -10,7 +10,7 @@
 export JETSON_UI_PORT=XXXX
 ```
 
-1. Configure applications in `.config.yaml`
+1. Configure applications in `.env.yaml`
 
 ```yaml
 apps:
