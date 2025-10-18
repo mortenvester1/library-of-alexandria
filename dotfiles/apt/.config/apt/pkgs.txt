@@ -13,6 +13,7 @@ minidlna
 nvidia-container
 python3
 python3-pip
+rename
 stow
 transmission-daemon
 yq

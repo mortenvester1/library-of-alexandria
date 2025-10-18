@@ -8,6 +8,15 @@
 // from the command palette or from `Zed` application menu.
 // This doesn't work rigt now? Break files
 {
+  "context_servers": {
+    "mcp-server-context7": {
+      "source": "extension",
+      "enabled": true,
+      "settings": {
+        "context7_api_key": ""
+      }
+    }
+  },
   "ssh_connections": [
     {
       "host": "jetson",
@@ -19,32 +28,79 @@
     }
   ],
   "language_models": {
+    "openai_compatible": {
+      "ollama (orin-nano)": {
+        "api_url": "http://orin-nano.local:11434",
+        "available_models": [
+          {
+            "name": "gemma3:1b",
+            "max_tokens": 128000,
+            "capabilities": {
+              "tools": false,
+              "images": true,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          },
+          {
+            "name": "qwen3:1.7b",
+            "max_tokens": 32768,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              // "supports_thinking": true,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          },
+          {
+            "name": "deepseek-r1:1.5b",
+            "max_tokens": 32768,
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              // "supports_thinking": true,
+              "parallel_tool_calls": false,
+              "prompt_cache_key": false
+            }
+          }
+        ]
+      }
+    },
     "ollama": {
-      "api_url": "http://orin-nano.local:11434",
+      "api_url": "http://localhost:11434",
       "available_models": [
+        // {
+        //   "name": "gemma3:27b",
+        //   "max_tokens": 128000,
+        //   "supports_tools": false,
+        //   "supports_images": true,
+        //   "supports_thinking": false,
+        //   "keep_alive": "15m"
+        // },
         {
-          "name": "gemma3:1b",
+          "name": "gpt-oss:20b",
           "max_tokens": 128000,
-          "supports_tools": false,
-          "supports_images": true,
+          "supports_tools": true,
+          "supports_images": false,
+          "supports_thinking": true,
+          "keep_alive": "15m"
+        },
+        {
+          "name": "qwen2.5-coder:3b",
+          "max_tokens": 32000,
+          "supports_tools": true,
+          "supports_images": false,
           "supports_thinking": false,
-          "keep_alive": "1h"
+          "keep_alive": "15m"
         },
         {
-          "name": "qwen3:1.7b",
-          "max_tokens": 32768,
+          "name": "qwen3-coder:30b",
+          "max_tokens": 256000,
           "supports_tools": true,
           "supports_images": false,
-          "supports_thinking": true,
-          "keep_alive": "1h"
-        },
-        {
-          "name": "deepseek-r1:1.5b",
-          "max_tokens": 32768,
-          "supports_tools": true,
-          "supports_images": false,
-          "supports_thinking": true,
-          "keep_alive": "1h"
+          "supports_thinking": false,
+          "keep_alive": "15m"
         }
       ]
     }
@@ -64,13 +120,19 @@
   "show_whitespaces": "all",
   "agent": {
     "default_profile": "ask",
+    "use_modifier_to_send": true,
+    "expand_edit_card": true,
     "default_model": {
-      "model": "gemma3:1b",
+      "model": "gpt-oss:20b",
       "provider": "ollama"
+    },
+    "inline_assistant_model": {
+      "provider": "ollama",
+      "model": "qwen2.5-coder:3b"
     }
   },
   "tabs": {
-    "git_status": true,
+    "file_icons": true,
     "close_position": "right"
   },
   "preferred_line_length": 120,
@@ -80,7 +142,12 @@
   "terminal": {
     "copy_on_select": true,
     "working_directory": "current_project_directory",
-    "detect_venv": "off"
+    "detect_venv": {
+      "on": {
+        "activate_script": "default",
+        "venv_name": ".venv"
+      }
+    }
   },
   "file_types": {
     "Shell Script": ["*bash", "*sh", "*zsh*", ".envrc"],
@@ -142,6 +209,7 @@
     "just-js": true,
     "latex": true,
     "make": true,
+    "mcp-server-context7": true,
     "rego": true,
     "ruff": true,
     "scala": true,
@@ -150,5 +218,11 @@
     "terraform": true,
     "toml": true,
     "xml": true
+  },
+  "minimap": {
+    "show": "always",
+    "thumb": "always",
+    "thumb_border": "left_open",
+    "current_line_highlight": "all"
   }
 }

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "disabled_providers": ["openai", "anthropic", "amazon-bedrock", "opencode"],
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama",
+      "options": {
+        "baseURL": "http://localhost:11434/v1",
+        "num_ctx": "65536"
+      },
+      "models": {
+        // "qwen2.5-coder:7b": {
+        //   "name": "qwen2.5-coder:7b"
+        // },
+        // "gemma3:27b": {
+        //   "name": "gemma3:27b"
+        // },
+        "gpt-oss:20b": {
+          "name": "gpt-oss:20b"
+        },
+        "qwen2.5-coder:3b": {
+          "name": "qwen2.5-coder:3b"
+        },
+        "qwen3-coder:30b": {
+          "name": "qwen3-coder:30b"
+        }
+      }
+    }
+  },
+  "model": "ollama/gpt-oss:20b",
+  "small_model": "ollama/qwen2.5-coder:3b",
+  "theme": "catppuccin",
+  "permission": {
+    "edit": "allow",
+    "bash": {
+      "*": "ask",
+      "pwd": "allow",
+      "ls": "allow",
+      "git status": "allow",
+      "git diff": "allow"
+    },
+    "webfetch": "ask"
+  }
+}
