@@ -1,6 +1,6 @@
 k9s:
   liveViewAutoRefresh: false
-  screenDumpDir: ${HOME}/Desktop
+  screenDumpDir: ~/Desktop
   refreshRate: 2
   maxConnRetry: 5
   readOnly: false
