@@ -100,6 +100,9 @@ export K9SCONFIG="${XDG_CONFIG_HOME}/k9s"
 export OLLAMA_MODELS="${XDG_DATA_HOME}/ollama/models"
 [ -d "${OLLAMA_MODELS}" ] || mkdir -p ${OLLAMA_MODELS}
 
+# Add LM Studio CLI (lms) to path
+export PATH="${PATH}:/Users/mortenvester1/.lmstudio/bin"
+
 # source additional .zsh files
 [ -s "${ZDOTDIR}/aliases.zsh" ] && source ${ZDOTDIR}/aliases.zsh
 [ -s "${ZDOTDIR}/completion.zsh" ] && source ${ZDOTDIR}/completion.zsh

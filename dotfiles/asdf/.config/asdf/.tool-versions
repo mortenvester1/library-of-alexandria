@@ -2,6 +2,6 @@ just 1.39.0
 python 3.13.7
 golang 1.24.0
 kubectl 1.32.2
-uv 0.8.15
+uv 0.9.17
 terraform 1.10.5
 direnv 2.37.1

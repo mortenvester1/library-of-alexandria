@@ -10,26 +10,31 @@
         "num_ctx": "65536"
       },
       "models": {
-        // "qwen2.5-coder:7b": {
-        //   "name": "qwen2.5-coder:7b"
-        // },
-        // "gemma3:27b": {
-        //   "name": "gemma3:27b"
-        // },
-        "gpt-oss:20b": {
-          "name": "gpt-oss:20b"
-        },
-        "qwen2.5-coder:3b": {
-          "name": "qwen2.5-coder:3b"
-        },
-        "qwen3-coder:30b": {
-          "name": "qwen3-coder:30b"
-        }
+        "gpt-oss:20b": { "name": "gpt-oss:20b" },
+        "qwen2.5-coder:3b": { "name": "qwen2.5-coder:3b" },
+        "gemma3:4b": { "name": "gemma3:4b" },
+        "gemma3:1b": { "name": "gemma3:1b" },
+        "ministral-3:3b": { "name": "ministral-3:3b" },
+        "qwen2.5-coder:7b": { "name": "qwen2.5-coder:7b" }
+      }
+    },
+    "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:1234/v1",
+        "num_ctx": "65536"
+      },
+      "models": {
+        "openai/gpt-oss:20b": { "name": "gpt-oss:20b" },
+        "nvidia/nemotron-3-nano": { "name": "nemotron-3-nano" },
+        "mistralai/devstral-small-2-2512": { "name": "devstral-small-2-2512" },
+        "mistralai/ministral-3-3b": { "name": "ministral-3-3b" }
       }
     }
   },
-  "model": "ollama/gpt-oss:20b",
-  "small_model": "ollama/qwen2.5-coder:3b",
+  "model": "nvidia/nemotron-3-nano",
+  "small_model": "mistralai/ministral-3-3b",
   "theme": "catppuccin",
   "permission": {
     "edit": "allow",
@@ -40,6 +45,7 @@
       "git status": "allow",
       "git diff": "allow"
     },
-    "webfetch": "ask"
+    "webfetch": "ask",
+    "doom_loop": "ask"
   }
 }
