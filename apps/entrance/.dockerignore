@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Documentation
+*.md
+AGENTS.md
+
+# Task management
+.taskmaster/
+
+# OpenCode
+.opencode/
+opencode.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# UV cache
+.uv/

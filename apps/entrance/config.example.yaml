@@ -1,0 +1,9 @@
+# Configuration for Library Entrance
+# Define your localhost applications here
+- name: "Jupyter Notebook"
+  port: 8888
+  description: "Data science notebook"
+
+- name: "Grafana"
+  port: 3000
+  description: "Monitoring and visualization"

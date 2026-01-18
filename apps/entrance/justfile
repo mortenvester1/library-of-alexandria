@@ -1,0 +1,63 @@
+# Alexandria Home - Justfile
+# Run `just --list` to see all available recipes
+
+# Default recipe (shown when just is run without arguments)
+default:
+    @just --list
+
+# UV/Python development tasks
+[group('uv')]
+fmt:
+    uvx ruff format src/
+
+[group('uv')]
+lint:
+    uvx ruff check src/
+
+[group('uv')]
+build:
+    uv build
+
+[group('uv')]
+test args="":
+    uv run pytest \
+      --cov=entrance \
+      --cov-report=html \
+      {{ args }}
+
+[group('uv')]
+sync:
+    uv sync --extra dev
+
+[group('uv')]
+dev:
+    uv run uvicorn entrance.app:app \
+      --reload \
+      --port 8000
+
+[group('uv')]
+clean:
+    rm -rf dist/
+    rm -rf htmlcov/
+    rm -f .coverage
+
+# Docker tasks
+[group('docker')]
+docker-build:
+    docker build -t entrance:latest .
+
+[group('docker')]
+docker-dev:
+    docker run --rm \
+      -v ./src/entrance:/app/src/entrance:ro \
+      -e ENTRANCE_LOG_LEVEL=debug \
+      -t entrance:latest \
+      uvicorn entrance.app:app --reload --port 8000
+
+[group('docker')]
+up:
+    docker compose up -d
+
+[group('docker')]
+down:
+    docker compose down
