@@ -8,6 +8,14 @@
 // from the command palette or from `Zed` application menu.
 // This doesn't work rigt now? Break files
 {
+  "context_servers": {
+    "taskmaster-ai": {
+      "enabled": true,
+      "command": "task-master-ai",
+      "args": [],
+      "env": {},
+    },
+  },
   "ssh_connections": [
     {
       "host": "jetson",
@@ -73,15 +81,16 @@
   "buffer_font_size": 16,
   "show_whitespaces": "all",
   "agent": {
-    "default_profile": "ask",
+    "always_allow_tool_actions": true,
+    "default_profile": "write",
     "use_modifier_to_send": true,
     "expand_edit_card": true,
     "default_model": {
-      "model": "nvidia/nemotron-3-nano",
-      "provider": "lmstudio",
+      "model": "claude-sonnet-4.5",
+      "provider": "copilot_chat",
     },
     "inline_assistant_model": {
-      "model": "nvidia/nemotron-3-nano",
+      "model": "mistralai/ministral-3-3b",
       "provider": "lmstudio",
     },
   },
