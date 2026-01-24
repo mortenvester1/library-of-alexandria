@@ -36,9 +36,7 @@ WORKDIR /app
 
 # Copy the virtual environment from builder
 COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
-
-# Copy configuration file
-COPY --chown=appuser:appuser config.yaml /app/config.yaml
+COPY --from=builder --chown=appuser:appuser /app/logging.json ./
 
 # Place the virtual environment at the front of the PATH
 ENV PATH="/app/.venv/bin:$PATH"
@@ -54,4 +52,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
 
 # Run the application
-CMD ["uvicorn", "entrance.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "entrance.app:app", "--host", "0.0.0.0", "--port", "8000", "--log-config", "logging.json" ]

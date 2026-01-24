@@ -23,6 +23,7 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-history-substring-search
 zinit light zdharma/fast-syntax-highlighting
+autoload -U zmv
 
 # History
 export HISTSIZE=10000

@@ -1,6 +1,86 @@
+import logging
+import os
+import socket
+from functools import lru_cache
 from typing import Set
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+    YamlConfigSettingsSource,
+)
+
+logger = logging.getLogger(__name__)
+
+
+def get_host_ip() -> str:
+    """Get the host machine's IP address on the local network.
+
+    Returns:
+        str: The IP address as a string, or '127.0.0.1' if unable to determine
+    """
+    try:
+        # Create a socket connection to determine the local IP
+        # We connect to an external address (doesn't actually send data)
+        # This helps us find the interface that would be used for network communication
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            ip_address = s.getsockname()[0]
+            return ip_address
+    except Exception as e:
+        logger.warning(f"Could not determine host IP address: {e}. Using 127.0.0.1")
+        return "127.0.0.1"
+
+
+class LocalhostApp(BaseModel):
+    """Configuration model for a single localhost application.
+
+    Attributes:
+        name: Display name of the application
+        port: Port number where the application is running
+        description: Optional description of the application
+
+    Security:
+        - Port must be in valid range (1-65535)
+        - Warnings logged for reserved/privileged ports
+    """
+
+    name: str = Field(..., min_length=1, description="Application name")
+    port: int = Field(..., ge=1, le=65535, description="Port number (1-65535)")
+    route: str = Field(default="", description="Optional route")
+    use_host_ip: bool = Field(default=False, description="Use host IP address instead of hostname")
+    description: str | None = Field(default=None, description="Optional application description")
+
+    @field_validator("name")
+    @classmethod
+    def validate_name_security(cls, name: str) -> str:
+        """Validate application name for security.
+
+        Args:
+            name: Application name to validate
+
+        Returns:
+            Validated name
+
+        Raises:
+            ValueError: If name contains potentially dangerous characters
+        """
+        # Check for path traversal attempts
+        if ".." in name or "/" in name or "\\" in name:
+            raise ValueError(
+                f"Application name '{name}' contains invalid characters. "
+                "Names cannot contain path separators or '..' sequences."
+            )
+
+        # Check for control characters
+        if any(ord(char) < 32 for char in name):
+            raise ValueError(
+                f"Application name '{name}' contains control characters. Only printable characters are allowed."
+            )
+
+        return name.strip()
 
 
 class Settings(BaseSettings):
@@ -8,26 +88,20 @@ class Settings(BaseSettings):
 
     Attributes:
         log_level: Logging level
-        config_file: Path to the YAML configuration file
+        apps: List of localhost applications (loaded from YAML)
         blocked_ports: Set of ports that are blocked for security reasons
         allowed_origins: List of allowed CORS origins
-        allow_localhost_any_port: Allow any port on localhost/127.0.0.1
-        allow_private_network: Allow private network ranges
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
+        yaml_file=os.environ.get("ENTRANCE_CONFIG_FILE", "config.yaml"),
+        yaml_file_encoding="utf-8",
         env_prefix="ENTRANCE_",
         extra="ignore",
     )
 
     # Application settings
     log_level: str = "INFO"
-    config_file: str = "config.yaml"
-
-    # Security settings
     blocked_ports: Set[int] = {
         # Well-known system ports (0-1023) - require root/admin privileges
         # FTP
@@ -90,47 +164,50 @@ class Settings(BaseSettings):
     }
 
     # CORS settings
-    allowed_origins: list[str] = [
-        "http://localhost",
-        "http://127.0.0.1",
-    ]
+    allowed_origins: list[str] = ["*"]
 
-    # Allow any port on localhost/127.0.0.1
-    allow_localhost_any_port: bool = True
+    apps: list[LocalhostApp] = Field(default_factory=list, description="List of localhost applications")
 
-    # Allow private network ranges (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
-    allow_private_network: bool = True
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        return (YamlConfigSettingsSource(settings_cls),)
 
-    def is_port_blocked(self, port: int) -> bool:
-        """Check if a port is blocked.
+    @field_validator("apps")
+    @classmethod
+    def validate_app_ports(cls, apps: list[LocalhostApp], info) -> list[LocalhostApp]:
+        """Validate that app ports are not blocked.
 
         Args:
-            port: Port number to check
+            apps: List of localhost applications
+            info: Validation info containing other field values
 
         Returns:
-            True if port is blocked, False otherwise
+            Validated list of apps
+
+        Raises:
+            ValueError: If any app uses a blocked port or has invalid configuration
         """
-        return port in self.blocked_ports
+        # Get blocked_ports from the validation context
+        # Note: blocked_ports will be validated before apps due to field order
+        blocked_ports = info.data.get("blocked_ports", cls.model_fields["blocked_ports"].default)
 
-    def get_cors_origin_regex(self) -> str:
-        """Get CORS origin regex pattern.
+        for app in apps:
+            if app.port in blocked_ports:
+                raise ValueError(
+                    f"Port {app.port} for app '{app.name}' is blocked for security reasons. "
+                    f"Please use a different port (recommended: 8000-9000)."
+                )
 
-        Returns:
-            Regex pattern for allowed CORS origins
-        """
-        if self.allow_private_network:
-            # Allow localhost and private network ranges
-            return (
-                r"http://(localhost|127\.0\.0\.1|"
-                r"192\.168\.\d{1,3}\.\d{1,3}|"
-                r"10\.\d{1,3}\.\d{1,3}\.\d{1,3}|"
-                r"172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3})"
-                r"(:\d+)?"
-            )
-        else:
-            # Only allow localhost
-            return r"http://(localhost|127\.0\.0\.1)(:\d+)?"
+        return apps
 
 
-# Global settings instance
-settings = Settings()
+@lru_cache
+def get_settings():
+    return Settings()

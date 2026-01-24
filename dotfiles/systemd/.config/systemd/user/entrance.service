@@ -1,0 +1,25 @@
+[Unit]
+Description=Library of Alexandria Entrance
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=%h/git/library-of-alexandria/apps/entrance
+TimeoutStartSec=300
+ExecStartPre=/bin/sleep 5
+
+# Start the docker-compose service
+ExecStart=/usr/bin/docker compose up -d
+
+# Stop the docker-compose service
+ExecStop=/usr/bin/docker compose down
+
+# Restart policy
+Restart=on-failure
+RestartSec=10s
+
+# Environment
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" "ENTRANCE_CONFIG_FILE=%h/git/library-of-alexandria/apps/entrance/config.yaml"
+
+[Install]
+WantedBy=default.target

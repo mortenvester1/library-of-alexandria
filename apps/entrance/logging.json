@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "color": {
+      "()": "colorlog.ColoredFormatter",
+      "format": "[%(asctime)s][%(log_color)s%(levelname)s%(reset)s][%(name)s] %(message)s",
+      "datefmt": "%Y-%m-%d %H:%M:%S",
+      "log_colors": {
+        "DEBUG": "cyan",
+        "INFO": "green",
+        "WARNING": "yellow",
+        "ERROR": "red",
+        "CRITICAL": "bright_red"
+      },
+      "reset": true
+    },
+    "uvicorn_access": {
+      "()": "uvicorn.logging.AccessFormatter",
+      "fmt": "[%(asctime)s][%(levelname)s] %(client_addr)s - %(request_line)s %(status_code)s",
+      "use_colors": true,
+      "datefmt": "%Y-%m-%d %H:%M:%S"
+    }
+  },
+  "handlers": {
+    "color_console": {
+      "class": "colorlog.StreamHandler",
+      "formatter": "color",
+      "stream": "ext://sys.stdout"
+    },
+    "uvicorn_access": {
+      "class": "logging.StreamHandler",
+      "formatter": "uvicorn_access",
+      "stream": "ext://sys.stdout"
+    }
+  },
+  "loggers": {
+    "entrance": {
+      "handlers": ["color_console"],
+      "level": "INFO",
+      "propagate": false
+    },
+    "uvicorn": {
+      "level": "INFO",
+      "handlers": ["color_console"],
+      "propagate": false
+    },
+    "uvicorn.access": {
+      "level": "INFO",
+      "handlers": ["uvicorn_access"],
+      "propagate": false
+    }
+  },
+  "root": {
+    "level": "WARNING",
+    "handlers": ["color_console"]
+  }
+}

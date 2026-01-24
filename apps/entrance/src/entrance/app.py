@@ -1,65 +1,34 @@
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Annotated
 
-import colorlog
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 
 import entrance
-from entrance.config import AppConfig
-from entrance.security import configure_security, security_headers_middleware
-from entrance.settings import settings
+from entrance.settings import Settings, get_host_ip, get_settings
 
-# Set up logging with colors
-handler = colorlog.StreamHandler()
-handler.setFormatter(
-    colorlog.ColoredFormatter(
-        "[%(asctime)s][%(log_color)s%(levelname)s%(reset)s][%(name)s]%(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        reset=True,
-        log_colors={
-            "DEBUG": "cyan",
-            "INFO": "green",
-            "WARNING": "yellow",
-            "ERROR": "red",
-            "CRITICAL": "red,bg_white",
-        },
-    )
-)
-
-# Configure logger for this module only
+# Initialize with default settings for logging setup
+settings = get_settings()
+entrance.set_log_level(settings.log_level)
 logger = logging.getLogger(__name__)
-logger.addHandler(handler)
-logger.setLevel(settings.log_level.upper())
 
-# Set up templates directory
-templates_dir = Path(__file__).parent / "templates"
-templates = Jinja2Templates(directory=str(templates_dir))
-
-# Global variable to hold config
-app_config: AppConfig | None = None
+templates = Jinja2Templates(directory=Path(__file__).parent / "templates")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context manager for application startup and shutdown."""
-    # Startup: Load configuration
-    global app_config
+    # Startup: Configuration already loaded via Settings
     logger.info(f"Starting {entrance.__name__.replace('_', ' ').capitalize()} v{entrance.__version__}")
-    try:
-        app_config = AppConfig.load(settings.config_file)
-    except FileNotFoundError:
-        # Config file doesn't exist
-        logger.warning("Configuration file not found, starting with empty application list")
-        app_config = AppConfig(apps=[])
-    except Exception as e:
-        logger.error(f"Failed to load config: {e}, starting with empty application list")
-        app_config = AppConfig(apps=[])
 
-    logger.info(f"Loaded {len(app_config.apps)} application(s) from configuration")
-    logger.debug(f"app config: {app_config}")
-    logger.debug(f"app settings: {settings}")
+    settings = get_settings()
+    logger.info(f"Loaded {len(settings.apps)} application(s) from configuration")
+    logger.debug("Debug logging enabled")
+    logger.debug(f"Host ip: {get_host_ip()}")
+    logger.debug(f"App settings: {settings}")
 
     yield
 
@@ -75,47 +44,60 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Configure security (CORS, headers, etc.)
-configure_security(app)
-
-# Add security headers middleware
-app.middleware("http")(security_headers_middleware)
+# Add CORS to enable serving over local network
+# Use init settings for middleware (can't use dependency injection here)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allowed_origins,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
-async def root(request: Request):
+async def root(request: Request, settings: Annotated[Settings, Depends(get_settings)]):
     """Root endpoint rendering the main UI with application list.
 
     Security: Only accessible from local network when properly configured.
     """
     logger.debug(f"Root endpoint accessed from {request.client.host if request.client else 'unknown'}")
+
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context={"apps": app_config.apps if app_config else []},
+        context={"apps": settings.apps, "host_ip": get_host_ip()},
     )
 
 
 @app.get("/apps")
-async def get_apps():
+async def get_apps(settings: Annotated[Settings, Depends(get_settings)]):
     """Return JSON list of all configured applications.
 
     Security: Returns validated application configurations only.
     """
-    apps = app_config.apps if app_config else []
-    logger.debug(f"Apps endpoint accessed, returning {len(apps)} app(s)")
-    return apps
+    logger.debug(f"Apps endpoint accessed, returning {len(settings.apps)} app(s)")
+    return settings.apps
 
 
 @app.get("/health")
-async def health_check():
+async def health_check(settings: Annotated[Settings, Depends(get_settings)]):
     """Health check endpoint for monitoring.
 
     Returns:
         dict: Status information including number of configured apps
     """
-    apps_count = len(app_config.apps) if app_config else 0
     return {
         "status": "healthy",
-        "apps_configured": apps_count,
+        "apps_configured": len(settings.apps),
     }
+
+
+@app.get("/favicon.ico")
+async def favicon(request: Request):
+    """Return a library emoji favicon to prevent 404 errors in browser logs."""
+    return templates.TemplateResponse(
+        request=request,
+        name="favicon.svg",
+        media_type="image/svg+xml",
+    )

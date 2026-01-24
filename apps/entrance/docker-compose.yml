@@ -3,19 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: entrance
-    ports:
-      - "8000:8000"
+    network_mode: "host"
     volumes:
       - ${ENTRANCE_CONFIG_FILE:-./config.yaml}:/app/config.yaml:ro
     environment:
-      - ENTRANCE_LOG_LEVEL=${ENTRANCE_LOG_LEVEL:-INFO}
       - ENTRANCE_CONFIG_FILE=/app/config.yaml
     restart: unless-stopped
-    networks:
-      - entrance-net
-
-networks:
-  entrance-net:
-    driver: bridge
-    name: entrance-network

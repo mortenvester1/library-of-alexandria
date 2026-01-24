@@ -5,19 +5,22 @@
 default:
     @just --list
 
-# UV/Python development tasks
+# Format
 [group('uv')]
 fmt:
     uvx ruff format src/
 
+# Lint
 [group('uv')]
 lint:
     uvx ruff check src/
 
+# Build wheel
 [group('uv')]
 build:
     uv build
 
+# Run unit tests
 [group('uv')]
 test args="":
     uv run pytest \
@@ -25,39 +28,74 @@ test args="":
       --cov-report=html \
       {{ args }}
 
+# Update dependencies
 [group('uv')]
 sync:
     uv sync --extra dev
 
+# Run app in dev mode
 [group('uv')]
 dev:
     uv run uvicorn entrance.app:app \
+      --log-config logging.json \
       --reload \
+      --reload-include "*.html" \
+      --reload-include "config.yaml" \
+      --reload-include "logging.json" \
+      --host 0.0.0.0 \
       --port 8000
 
+# Remove build and test artifacts
 [group('uv')]
 clean:
     rm -rf dist/
     rm -rf htmlcov/
     rm -f .coverage
 
-# Docker tasks
+# Build docker image
 [group('docker')]
 docker-build:
     docker build -t entrance:latest .
+    docker tag entrance:latest entrance-entrance:latest
 
+# Run app in docker container for development
 [group('docker')]
 docker-dev:
     docker run --rm \
+      -p 8000:8000 \
       -v ./src/entrance:/app/src/entrance:ro \
-      -e ENTRANCE_LOG_LEVEL=debug \
+      -v ./config.yaml:/app/config.yaml:ro \
+      -e ENTRANCE_CONFIG_FILE=/app/config.yaml \
+      --network host \
       -t entrance:latest \
-      uvicorn entrance.app:app --reload --port 8000
+      uvicorn entrance.app:app \
+        --reload \
+        --reload-include "*.html" \
+        --reload-include "config.yaml" \
+        --log-config logging.json \
+        --host 0.0.0.0 \
+        --port 8000
 
+# Run app with docker compose
 [group('docker')]
 up:
     docker compose up -d
 
+# Stop app in docker compose
 [group('docker')]
 down:
     docker compose down
+
+# Follow docker logs
+[group('docker')]
+logs:
+    docker compose logs -f entrance
+
+# interact with system service
+[group('systemctl')]
+service cmd:
+    systemctl --user {{ cmd }} entrance
+
+[group('systemctl')]
+service-reload:
+    systemctl --user daemon-reload

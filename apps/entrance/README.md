@@ -4,30 +4,30 @@ A local application gateway for managing and accessing self-hosted services thro
 
 ## Getting Started
 
-**Prerequisites:** [uv](https://docs.astral.sh/uv/), [just](https://github.com/casey/just/), Docker (optional)
+**Prerequisites:** [uv](https://docs.astral.sh/uv/), [just](https://github.com/casey/just/), Docker, Docker-compose
 
 1. Clone and install dependencies:
 
-   ```bash
-   uv sync --extra dev
-   ```
+    ```bash
+    uv sync --extra dev
+    ```
 
 2. Copy the example config and customize it:
 
-   ```bash
-   cp config.example.yaml config.yaml
-   ```
+    ```bash
+    cp config.example.yaml config.yaml
+    ```
 
 3. Run locally:
 
-   ```bash
-   just dev
-   ```
+    ```bash
+    just dev
+    ```
 
 4. Or run with Docker:
-   ```bash
-   docker-compose up
-   ```
+    ```bash
+    docker-compose up
+    ```
 
 Access the app at `http://localhost:8000`
 
@@ -36,24 +36,36 @@ Access the app at `http://localhost:8000`
 Edit `config.yaml` to define your localhost applications:
 
 ```yaml
-- name: "My API"
-  port: 3000
-  description: "Backend API service"
+log_level: INFO
+allowed_origins:
+    - "*"
+apps:
+    - name: "My API"
+      port: 3000
+      description: "Backend API service"
+      route: /custom
 
-- name: "Frontend"
-  port: 8080
-  description: "React development server"
+    - name: "Frontend"
+      port: 8080
+      description: "React development server"
+
+    # Use host IP instead of hostname (for services requiring IP-based access)
+    - name: "MiniDLNA"
+      port: 8200
+      use_host_ip: true
+      description: "Media server requiring IP-based access"
 ```
 
-Each app requires a `name` and `port`. The `description` is optional.
+### Configuration Options
 
-## Settings
+Each app requires:
 
-Configure the application using environment variables with the `ENTRANCE_` prefix:
+- `name` (required): Display name for the application
+- `port` (required): Port number where the service is running (e.g., `8080`)
+- `use_host_ip` (optional, default `false`): Use the host machine's IP address instead of hostname
+- `description` (optional): Brief description of the service
+- `route` (optional): Additional route path
 
-- `ENTRANCE_LOG_LEVEL` - Logging level (default: `INFO`)
-- `ENTRANCE_CONFIG_FILE` - Path to config file (default: `config.yaml`)
-- `ENTRANCE_ALLOW_LOCALHOST_ANY_PORT` - Allow any port on localhost (default: `true`)
-- `ENTRANCE_ALLOW_PRIVATE_NETWORK` - Allow private network ranges (default: `true`)
+### Environment Variables
 
-Create a `.env` file in the project root or set variables in your environment.
+All config values can be overwritten with environment variables starting with `ENTRANCE_`. The location of the config file can be set with `ENTRANCE_CONFIG_FILE`.

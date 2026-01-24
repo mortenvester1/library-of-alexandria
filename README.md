@@ -2,6 +2,31 @@
 
 This repo is my personal library of everything.
 
+## Repo structure
+
+Below is a list of the most important files and directories in the repo.
+
+```text
+library-of-alexandria/
+├── apps/              # Contains various apps
+│   └── entrance/      # A application gateway for accessing self-hosted services
+├── cron/              # Contains various cronjobs
+├── dotfiles/          # Configuration files of software
+│   ├── apt/           # List of packages to install with apt-get
+│   ├── asdf/          # default tools managed with asdf
+│   ├── git/           # git configuration
+│   ├── gnupg/         # gnupg configuration
+│   ├── homebrew/      # Brewfile with tools managed by Homebrew
+│   ├── k9s/           # k9s configuration
+│   ├── opencode/      # opencode configuration
+│   ├── sql-formatter/ # sql-formatter configuration
+│   ├── starship/      # starship / shell prompt configuration
+│   ├── vim/           # vim configuration
+│   ├── zed/           # zed configuration
+│   └── zsh/           # zsh startup files
+├── install.sh         # script to install / upgrade the repo contents on machine
+```
+
 ## Install
 
 The install requires bash, curl, git, sudo to be installed on your system. Run the [install.sh](./install.sh) script using curl

@@ -1,6 +1,7 @@
 var
 .zcompdump
 .zsh_sessions
+default.target.wants
 
 # zed related
 dotfiles/zed/.config/zed/conversations
