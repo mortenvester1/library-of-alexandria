@@ -89,6 +89,7 @@ just upgrade
 ## Jetson
 
 - [Jetson Lab](https://www.jetson-ai-lab.com/)
+- [Supported models](https://www.jetson-ai-lab.com/models/)
 
 ## Todo
 

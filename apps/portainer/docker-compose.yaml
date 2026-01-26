@@ -1,0 +1,17 @@
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:lts
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - 9000:9000
+    command: --http-enabled
+volumes:
+  portainer_data:
+    name: portainer_data
+networks:
+  default:
+    name: portainer_network

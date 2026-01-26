@@ -105,7 +105,7 @@ then
   sudo tar -xzf /tmp/asdf-v0.18.0-linux-arm64.tar.gz -C /usr/local/bin/
 
   # install ollama
-  curl -fsSL https://ollama.com/install.sh | sh
+  # curl -fsSL https://ollama.com/install.sh | sh
 fi
 
 # install brew + install packages
@@ -151,8 +151,6 @@ stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R asdf git gnupg starship v
 if [[ "${OS}" == "Darwin" ]]
 then
   stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R zed opencode
-else
-  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R systemd
 fi
 
 # setup asdf - merge .tool-version files if local exist
@@ -162,13 +160,5 @@ zsh -c "source ${REPO_DEST}/dotfiles/zsh/.config/zsh/aliases.zsh && asdf-merge"
 info "installing asdf dependencies..."
 cat ${HOME}/.tool-versions | grep -v '^#' | xargs -L1 zsh -c 'bootstrap_asdf() { asdf plugin add "$1"; }; bootstrap_asdf "$@"' _
 asdf install
-
-# Enable user services
-if [[ "${OS}" == "Linux" ]]
-then
-  systemctl --user daemon-reload
-  systemctl --user enable entrance.service
-  systemctl --user start entrance.service
-fi
 
 info "installation complete. You should reload your shell with 'exec \$SHELL'"

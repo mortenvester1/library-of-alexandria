@@ -90,12 +90,3 @@ down:
 [group('docker')]
 logs:
     docker compose logs -f entrance
-
-# interact with system service
-[group('systemctl')]
-service cmd:
-    systemctl --user {{ cmd }} entrance
-
-[group('systemctl')]
-service-reload:
-    systemctl --user daemon-reload

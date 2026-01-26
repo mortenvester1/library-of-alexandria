@@ -1,0 +1,31 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    network_mode: "host"
+    restart: unless-stopped
+    environment:
+      - OLLAMA_BASE_URL=http://0.0.0.0:11434
+    volumes:
+      - "${HOME}/open-webui:/app/backend/data"
+
+  ollama:
+    image: dustynv/ollama:r36.4.0
+    container_name: ollama
+    restart: unless-stopped
+    runtime: nvidia
+    network_mode: "host"
+    shm_size: "8g"
+    command:
+      - ollama
+      - serve
+    environment:
+      - OLLAMA_MODELS=/models
+      - OLLAMA_HOST=0.0.0.0
+    volumes:
+      - "${HOME}/.local/share/ollama/models:/models"
+      - "${HOME}/.local/share/ollama/data:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/run/jtop.sock:/run/jtop.sock"

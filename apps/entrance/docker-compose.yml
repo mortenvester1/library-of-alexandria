@@ -1,8 +1,10 @@
 services:
   entrance:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: entrance:latest
+    container_name: entrance
     network_mode: "host"
     volumes:
       - ${ENTRANCE_CONFIG_FILE:-./config.yaml}:/app/config.yaml:ro
