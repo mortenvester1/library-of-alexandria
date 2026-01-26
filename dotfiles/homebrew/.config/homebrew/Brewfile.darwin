@@ -25,16 +25,17 @@ brew 'zsh'
 
 # install brew cask applications
 cask 'bitwarden'
-cask 'google-chrome'
 cask 'divvy'
 cask 'docker-desktop' # gui
 cask 'drawio'
 cask 'dropbox'
 cask 'firefox'
+cask 'google-chrome'
 cask 'google-drive'
 cask 'iterm2'
 cask 'lm-studio'
 cask 'lunar'
+cask 'mactex'
 cask 'obsidian'
 cask 'ollama-app'
 cask 'zed'

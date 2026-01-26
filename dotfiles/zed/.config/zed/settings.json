@@ -27,44 +27,8 @@
     },
   ],
   "language_models": {
-    "openai_compatible": {
-      "ollama (orin-nano)": {
-        "api_url": "http://orin-nano.local:11434",
-        "available_models": [
-          {
-            "name": "gemma3:1b",
-            "max_tokens": 128000,
-            "capabilities": {
-              "tools": false,
-              "images": true,
-              "parallel_tool_calls": false,
-              "prompt_cache_key": false,
-            },
-          },
-          {
-            "name": "qwen3:1.7b",
-            "max_tokens": 32768,
-            "capabilities": {
-              "tools": true,
-              "images": false,
-              // "supports_thinking": true,
-              "parallel_tool_calls": false,
-              "prompt_cache_key": false,
-            },
-          },
-          {
-            "name": "deepseek-r1:1.5b",
-            "max_tokens": 32768,
-            "capabilities": {
-              "tools": true,
-              "images": false,
-              // "supports_thinking": true,
-              "parallel_tool_calls": false,
-              "prompt_cache_key": false,
-            },
-          },
-        ],
-      },
+    "ollama": {
+      "api_url": "http://orin-nano.local:11434",
     },
   },
   "edit_predictions": {
@@ -90,8 +54,8 @@
       "provider": "copilot_chat",
     },
     "inline_assistant_model": {
-      "model": "mistralai/ministral-3-3b",
-      "provider": "lmstudio",
+      "model": "claude-sonnet-4.5",
+      "provider": "copilot_chat",
     },
   },
   "tabs": {
@@ -119,6 +83,9 @@
     "JSON": ["*.json", "*.avro"],
   },
   "languages": {
+    "LaTeX": {
+      "tab_size": 2,
+    },
     "JSON": {
       "tab_size": 2,
     },
@@ -192,4 +159,16 @@
   "debugger": { "button": false },
   "collaboration_panel": { "button": false },
   "diagnostics": { "button": false },
+  "lsp": {
+    "basedpyright": {
+      "settings": {
+        "basedpyright.analysis": {
+          "diagnosticMode": "workspace",
+          "inlayHints": {
+            "callArgumentNames": false,
+          },
+        },
+      },
+    },
+  },
 }
