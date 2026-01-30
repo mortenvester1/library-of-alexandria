@@ -12,7 +12,7 @@ services:
   ollama:
     image: dustynv/ollama:r36.4.0
     container_name: ollama
-    restart: unless-stopped
+    restart: always
     runtime: nvidia
     network_mode: "host"
     shm_size: "8g"
