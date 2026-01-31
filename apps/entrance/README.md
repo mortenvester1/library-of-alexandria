@@ -33,9 +33,18 @@ Access the app at `http://localhost:8000`
 
 ## Configuration
 
+App configuration can be set using either environment variables or a configuration filel
+
+### Environment Variables
+
+All config values can be with environment variables starting using `ENTRANCE_` prefix. Environment variabels takes precedence over values in the configuration file and default. Additionally location of the config file can be set with `ENTRANCE_CONFIG_FILE`.
+
+### Config Yaml
+
 Edit `config.yaml` to define your localhost applications:
 
 ```yaml
+hostname: localhost
 log_level: INFO
 allowed_origins:
     - "*"
@@ -65,7 +74,3 @@ Each app requires:
 - `use_host_ip` (optional, default `false`): Use the host machine's IP address instead of hostname
 - `description` (optional): Brief description of the service
 - `route` (optional): Additional route path
-
-### Environment Variables
-
-All config values can be overwritten with environment variables starting with `ENTRANCE_`. The location of the config file can be set with `ENTRANCE_CONFIG_FILE`.

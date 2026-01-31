@@ -56,7 +56,6 @@ clean:
 [group('docker')]
 docker-build:
     docker build -t entrance:latest .
-    docker tag entrance:latest entrance-entrance:latest
 
 # Run app in docker container for development
 [group('docker')]
@@ -66,6 +65,7 @@ docker-dev:
       -v ./src/entrance:/app/src/entrance:ro \
       -v ./config.yaml:/app/config.yaml:ro \
       -e ENTRANCE_CONFIG_FILE=/app/config.yaml \
+      -e ENTRANCE_HOSTNAME=${ENTRANCE_HOSTNAME} \
       --network host \
       -t entrance:latest \
       uvicorn entrance.app:app \
@@ -79,7 +79,7 @@ docker-dev:
 # Run app with docker compose
 [group('docker')]
 up:
-    docker compose up -d
+    docker compose up -d --force-recreate
 
 # Stop app in docker compose
 [group('docker')]

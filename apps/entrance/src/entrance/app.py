@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     logger.info(f"Loaded {len(settings.apps)} application(s) from configuration")
     logger.debug("Debug logging enabled")
-    logger.debug(f"Host ip: {get_host_ip()}")
+    logger.debug(f"Hostname: {settings.hostname}")
     logger.debug(f"App settings: {settings}")
 
     yield
@@ -66,7 +66,7 @@ async def root(request: Request, settings: Annotated[Settings, Depends(get_setti
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context={"apps": settings.apps, "host_ip": get_host_ip()},
+        context={"apps": settings.apps, "host_ip": settings.hostname},
     )
 
 

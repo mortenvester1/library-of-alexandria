@@ -1,0 +1,25 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    ports:
+      - 8096:8096/tcp
+      - 7359:7359/udp
+    networks:
+      - monitoring
+    volumes:
+      - ${HOME}/.local/share/jellyfin:/data
+      - ${HOME}/.config/jellyfin:/config
+      - ${HOME}/.cache/jellyfin:/cache
+      - /mnt/storage/shows:/media/shows:ro
+      - /mnt/storage/movies:/media/movies:ro
+      - /mnt/storage/music:/media/music:ro
+    restart: "unless-stopped"
+    environment:
+      - JELLYFIN_DATA_DIR=/data
+      - JELLYFIN_CONFIG_DIR=/config
+      - JELLYFIN_CACHE_DIR=/cache
+
+networks:
+  monitoring:
+    external: true

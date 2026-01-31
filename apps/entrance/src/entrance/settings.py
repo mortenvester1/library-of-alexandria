@@ -101,6 +101,7 @@ class Settings(BaseSettings):
     )
 
     # Application settings
+    hostname: str = "localhost"
     log_level: str = "INFO"
     blocked_ports: Set[int] = {
         # Well-known system ports (0-1023) - require root/admin privileges
@@ -177,7 +178,10 @@ class Settings(BaseSettings):
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
-        return (YamlConfigSettingsSource(settings_cls),)
+        return (
+            env_settings,
+            YamlConfigSettingsSource(settings_cls),
+        )
 
     @field_validator("apps")
     @classmethod
