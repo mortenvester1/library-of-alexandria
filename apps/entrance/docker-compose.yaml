@@ -10,4 +10,4 @@ services:
       - ${ENTRANCE_CONFIG_FILE:-./config.yaml}:/app/config.yaml:ro
     environment:
       - ENTRANCE_CONFIG_FILE=/app/config.yaml
-    restart: unless-stopped
+    restart: always
