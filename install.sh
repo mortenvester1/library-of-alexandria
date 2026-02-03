@@ -147,10 +147,10 @@ fi
 
 # setup dotfiles
 info "installing dotfiles..."
-stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R asdf git gnupg starship vim zed zsh sql-formatter k9s homebrew
+stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zed zsh sql-formatter k9s homebrew
 if [[ "${OS}" == "Darwin" ]]
 then
-  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R zed opencode
+  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude
 fi
 
 # setup asdf - merge .tool-version files if local exist

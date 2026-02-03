@@ -1,2 +1,3 @@
 .DS_Store
 .gitlocal
+.claude/settings.local.json

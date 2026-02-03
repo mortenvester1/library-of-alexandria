@@ -5,5 +5,14 @@
       "shift shift": "file_finder::Toggle",
       "cmd-t": "workspace::NewTerminal"
     }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "shift-enter": [
+        "terminal::SendText",
+        "\u001b\r"
+      ]
+    }
   }
 ]

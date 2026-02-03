@@ -1,16 +1,5 @@
 var
-.zcompdump
-.zsh_sessions
 default.target.wants
-
-# zed related
-dotfiles/zed/.config/zed/conversations
-dotfiles/zed/.config/zed/prompts
-dotfiles/zed/.config/zed/themes
-
-# gnupg
-dotfiles/gnupg/.config/gnupg/*
-!dotfiles/gnupg/.config/gnupg/gpg-agent.conf
 
 # zsh
 dotfiles/zsh/.config/zsh/.zshrc.local
@@ -23,9 +12,6 @@ dotfiles/homebrew/.config/homebrew/Brewfile.local
 
 # asdf
 dotfiles/asdf/.config/asdf/.tool-versions.local
-
-# docker - doesn't play not with symlinks
-dotfiles/docker
 
 # Python - Abbreviated version of github
 # Source: https://github.com/github/gitignore/blob/main/Python.gitignore
