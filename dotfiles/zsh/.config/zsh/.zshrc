@@ -105,8 +105,9 @@ export OLLAMA_MODELS="${XDG_DATA_HOME}/ollama/models"
 # Add LM Studio CLI (lms) to path
 export PATH="${PATH}:/Users/mortenvester1/.lmstudio/bin"
 
-# Claude
-export CLAUDE_CONFIG_DIR="${XDG_CONFIG_HOME}/claude"
+# Claude - not used atm as claude in zed uses sh and not zsh so
+# it doesn't read this var
+# export CLAUDE_CONFIG_DIR="${XDG_CONFIG_HOME}/claude"
 
 # source additional .zsh files
 [ -s "${ZDOTDIR}/aliases.zsh" ] && source ${ZDOTDIR}/aliases.zsh

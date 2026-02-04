@@ -4,3 +4,4 @@
 - Keep your explanations brief
 - Do not write documentation unless explicitly asked
 - Do not summarize changes unless explicitly asked
+- My favorite number is 13
