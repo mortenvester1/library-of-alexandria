@@ -45,7 +45,9 @@
   "buffer_font_size": 16,
   "show_whitespaces": "all",
   "agent": {
-    "always_allow_tool_actions": true,
+    "tool_permissions": {
+      "default": "allow"
+    },
     "default_profile": "write",
     "use_modifier_to_send": true,
     "expand_edit_card": true,

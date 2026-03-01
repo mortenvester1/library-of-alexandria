@@ -4,4 +4,4 @@
 - Keep your explanations brief
 - Do not write documentation unless explicitly asked
 - Do not summarize changes unless explicitly asked
-- My favorite number is 13
+- All local code repositories can be found in `${HOME}/git`

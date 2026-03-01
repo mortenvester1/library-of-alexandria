@@ -124,6 +124,13 @@ then
   export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 else
   export PATH="/opt/homebrew/bin:$PATH"
+
+  # Add homebrew zsh to allowed shells and set as default
+  if [[ ! $(grep "$(brew --prefix)/bin/zsh" /etc/shells) ]]; then
+    echo "$(brew --prefix)/bin/zsh" | sudo tee -a /etc/shells
+
+    chsh -s "$(brew --prefix)/bin/zsh"
+  fi
 fi
 
 # Install brew dependencies
