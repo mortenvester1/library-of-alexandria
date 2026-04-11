@@ -13,15 +13,22 @@
       "Bash(ls *)",
       "Bash(ps *)",
       "Bash(pwd)",
+      "Bash(source *.venv/bin/activate && python *)",
       "Bash(which *)",
       "Edit(~/git/**)",
       "Read(~/.config/**)",
       "Read(~/git/**)",
       "Skill",
       "WebSearch",
-      "Write(~/git/**)"
+      "Write(~/git/**)",
+      "mcp__acp__Bash",
+      "mcp__acp__Edit",
+      "mcp__acp__Write"
     ],
     "deny": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)", "Write(~/git/**/.env*)"],
-    "ask": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)", "Write(~/git/**/.env*)"]
-  }
+    "ask": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)", "Write(~/git/**/.env*)", "Fetch"]
+  },
+  "effortLevel": "high",
+  "showClearContextOnPlanAccept": true,
+  "showThinkingSummaries": true
 }

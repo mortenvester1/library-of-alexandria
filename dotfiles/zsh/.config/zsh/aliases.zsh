@@ -18,6 +18,9 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 
+# To support migration to prek over pre-commit
+alias pre-commit="prek"
+
 # use gnu ls instad
 alias activate-venv="source .venv/bin/activate"
 

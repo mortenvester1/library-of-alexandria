@@ -8,12 +8,9 @@
 // from the command palette or from `Zed` application menu.
 // This doesn't work rigt now? Break files
 {
-  "context_servers": {
-    "taskmaster-ai": {
-      "enabled": true,
-      "command": "task-master-ai",
-      "args": [],
-      "env": {},
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry",
     },
   },
   "ssh_connections": [
@@ -46,24 +43,25 @@
   "show_whitespaces": "all",
   "agent": {
     "tool_permissions": {
-      "default": "allow"
+      "default": "allow",
     },
     "default_profile": "write",
     "use_modifier_to_send": true,
     "expand_edit_card": true,
     "default_model": {
-      "model": "claude-sonnet-4.5",
-      "provider": "copilot_chat",
+      "model": "claude-sonnet-4-6",
+      "provider": "claude-acp",
     },
     "inline_assistant_model": {
-      "model": "claude-sonnet-4.5",
-      "provider": "copilot_chat",
+      "model": "claude-haiku-4-5",
+      "provider": "claude-acp",
     },
   },
   "tabs": {
     "file_icons": true,
     "close_position": "right",
   },
+  "colorize_brackets": true,
   "preferred_line_length": 120,
   "format_on_save": "on",
   "soft_wrap": "editor_width",
@@ -87,6 +85,14 @@
   "languages": {
     "LaTeX": {
       "tab_size": 2,
+    },
+    "Java": {
+      "format_on_save": "off",
+      "formatter": {
+        "external": {
+          "command": "mvn formatter:fmt",
+        },
+      },
     },
     "JSON": {
       "tab_size": 2,
@@ -120,7 +126,7 @@
     },
   },
   "inlay_hints": {
-    "enabled": true,
+    "enabled": false,
     "show_type_hints": true,
     "show_parameter_hints": true,
     "show_other_hints": true,
@@ -141,7 +147,6 @@
     "just-js": true,
     "latex": true,
     "make": true,
-    "mcp-server-context7": true,
     "rego": true,
     "ruff": true,
     "scala": true,
@@ -165,7 +170,8 @@
     "basedpyright": {
       "settings": {
         "basedpyright.analysis": {
-          "diagnosticMode": "workspace",
+          "typeCheckingMode": "basic",
+          "diagnosticMode": "openFilesOnly",
           "inlayHints": {
             "callArgumentNames": false,
           },
