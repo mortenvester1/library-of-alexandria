@@ -9,13 +9,18 @@
 // This doesn't work rigt now? Break files
 {
   "agent_servers": {
+    "opencode": {
+      "type": "registry",
+    },
     "claude-acp": {
       "type": "registry",
     },
   },
+  "context_servers": {},
   "ssh_connections": [
     {
       "host": "jetson",
+      "args": [],
       "projects": [
         {
           "paths": ["/home/jetson/git/library-of-alexandria"],
@@ -27,14 +32,19 @@
     "ollama": {
       "api_url": "http://orin-nano.local:11434",
     },
+    "lmstudio": {
+      "api_url": "http://localhost:1234/api/v1",
+    },
   },
   "edit_predictions": {
+    "provider": "open_ai_compatible_api",
     "mode": "subtle",
-    "copilot": {
-      "proxy": null,
-      "proxy_no_verify": null,
+    "open_ai_compatible_api": {
+      "api_url": "http://localhost:1234/api/v1/completions",
+      "model": "gemma-4-26b-a4b",
+      "prompt_format": "infer",
+      "max_output_tokens": 64,
     },
-    "enabled_in_text_threads": false,
   },
   "theme": "Dracula",
   "base_keymap": "Atom",
@@ -130,6 +140,10 @@
     "show_type_hints": true,
     "show_parameter_hints": true,
     "show_other_hints": true,
+    "show_background": false,
+    "toggle_on_modifiers_press": {
+      "alt": true,
+    },
   },
   "indent_guides": {
     "coloring": "indent_aware",
@@ -144,7 +158,6 @@
     "java": true,
     "jq": true,
     "just": true,
-    "just-js": true,
     "latex": true,
     "make": true,
     "rego": true,

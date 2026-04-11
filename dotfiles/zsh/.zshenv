@@ -9,6 +9,8 @@ export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_CACHE_HOME="${HOME}/.cache"
 export XDG_STATE_HOME="${HOME}/.local/state"
+# The location is standard, but the env var name is not part of the convention
+export XDG_BIN_HOME="${HOME}/.local/bin"
 
 # asdf
 export ASDF_DIR="${XDG_CONFIG_HOME}/asdf"

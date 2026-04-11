@@ -14,6 +14,7 @@ library-of-alexandria/
 ├── dotfiles/          # Configuration files of software
 │   ├── apt/           # List of packages to install with apt-get
 │   ├── asdf/          # default tools managed with asdf
+│   ├── claude/        # default configuration of claude code
 │   ├── git/           # git configuration
 │   ├── gnupg/         # gnupg configuration
 │   ├── homebrew/      # Brewfile with tools managed by Homebrew
@@ -24,8 +25,34 @@ library-of-alexandria/
 │   ├── vim/           # vim configuration
 │   ├── zed/           # zed configuration
 │   └── zsh/           # zsh startup files
+├── library/           # Personal knowledge base wikis (see below)
 ├── install.sh         # script to install / upgrade the repo contents on machine
 ```
+
+## Library
+
+`library/` contains personal knowledge base wikis maintained by an LLM. The idea is based on [this pattern by Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): instead of RAG (re-deriving answers from raw documents on every query), the LLM incrementally builds and maintains a structured wiki that compounds knowledge over time.
+
+Each wiki lives at `library/<name>/` and follows this structure:
+
+```text
+<wiki-name>/
+├── CLAUDE.md   # Schema and workflow instructions for the LLM
+├── raw/        # Immutable source documents — never modified
+│   └── index.md
+└── wiki/       # LLM-maintained pages
+    ├── index.md
+    └── log.md
+```
+
+**Operations** (Claude Code slash commands):
+
+| Command                         | Description                                               |
+| ------------------------------- | --------------------------------------------------------- |
+| `/wiki-list`                    | List all available wikis                                  |
+| `/wiki-ingest <wiki> <source>`  | Ingest a new source into a wiki                           |
+| `/wiki-query <wiki> <question>` | Query a wiki and synthesize an answer                     |
+| `/wiki-lint <wiki>`             | Health-check a wiki for contradictions, orphans, and gaps |
 
 ## Install
 

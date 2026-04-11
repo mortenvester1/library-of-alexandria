@@ -13,6 +13,10 @@ then
   export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile.linux"
 fi
 
+# XDG bin home for local executables
+# Used by among other things by UV tools
+export PATH="${XDG_BIN_HOME}:$PATH"
+
 # asdf - add packages/shims to path (# takes precedence over brew install+system)
 export PATH="${ASDF_DATA_DIR}/shims:$PATH"
 

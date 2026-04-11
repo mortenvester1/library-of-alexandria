@@ -1,6 +1,11 @@
 var
 default.target.wants
 
+# library — ignore all content except the idea/schema files
+library/*
+!library/AGENTS.md
+!library/CLAUDE.md
+
 # zsh
 dotfiles/zsh/.config/zsh/.zshrc.local
 

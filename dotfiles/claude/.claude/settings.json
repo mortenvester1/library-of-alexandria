@@ -25,8 +25,17 @@
       "mcp__acp__Edit",
       "mcp__acp__Write"
     ],
-    "deny": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)", "Write(~/git/**/.env*)"],
-    "ask": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)", "Write(~/git/**/.env*)", "Fetch"]
+    "deny": [
+      "Edit(~/git/**/.env*)",
+      "Read(~/git/**/.env*)",
+      "Write(~/git/**/.env*)"
+    ],
+    "ask": [
+      "Edit(~/git/**/.env*)",
+      "Read(~/git/**/.env*)",
+      "Write(~/git/**/.env*)",
+      "Fetch"
+    ]
   },
   "effortLevel": "high",
   "showClearContextOnPlanAccept": true,
