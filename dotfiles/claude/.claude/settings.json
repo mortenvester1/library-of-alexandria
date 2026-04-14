@@ -39,5 +39,9 @@
   },
   "effortLevel": "high",
   "showClearContextOnPlanAccept": true,
-  "showThinkingSummaries": true
+  "showThinkingSummaries": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  }
 }
