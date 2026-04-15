@@ -35,4 +35,4 @@ fi
 [ "$FILLED" -gt 0 ] && printf -v FILL "%${FILLED}s" && BAR="${FILL// /▓}"
 [ "$EMPTY" -gt 0 ] && printf -v PAD "%${EMPTY}s" && BAR="${BAR}${PAD// /░}"
 
-echo -e "[$MODEL] $BAR ${DIR_COLORED} ${BRANCH_COLORED}${PROMPT}"
+echo -e "[$MODEL] $BAR ${PCT}% ${DIR_COLORED} ${BRANCH_COLORED}${PROMPT}"
