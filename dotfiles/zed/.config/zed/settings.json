@@ -8,6 +8,15 @@
 // from the command palette or from `Zed` application menu.
 // This doesn't work rigt now? Break files
 {
+  "project_panel": {
+    "dock": "left"
+  },
+  "git_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
   "agent_servers": {
     "opencode": {
       "type": "registry",
@@ -52,6 +61,8 @@
   "buffer_font_size": 16,
   "show_whitespaces": "all",
   "agent": {
+    "dock": "right",
+    "sidebar_side": "right",
     "tool_permissions": {
       "default": "allow",
     },

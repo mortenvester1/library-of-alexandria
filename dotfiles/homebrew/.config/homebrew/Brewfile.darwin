@@ -7,6 +7,7 @@ brew 'bash'
 brew 'bat'
 brew 'bitwarden-cli'
 brew 'coreutils'
+brew 'delta'
 brew 'docker' # cli
 brew 'fzf'
 brew 'git'
@@ -23,6 +24,7 @@ brew 'starship'
 brew 'stow'
 brew 'yq'
 brew 'zsh'
+brew 'uv'
 
 # install brew cask applications
 cask 'bitwarden'

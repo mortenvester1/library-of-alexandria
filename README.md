@@ -47,12 +47,13 @@ Each wiki lives at `library/<name>/` and follows this structure:
 
 **Operations** (Claude Code slash commands):
 
-| Command                         | Description                                               |
-| ------------------------------- | --------------------------------------------------------- |
-| `/wiki-list`                    | List all available wikis                                  |
-| `/wiki-ingest <wiki> <source>`  | Ingest a new source into a wiki                           |
-| `/wiki-query <wiki> <question>` | Query a wiki and synthesize an answer                     |
-| `/wiki-lint <wiki>`             | Health-check a wiki for contradictions, orphans, and gaps |
+| Command                         | Description                                                |
+| ------------------------------- | ---------------------------------------------------------- |
+| `/wiki-list`                    | List all available wikis                                   |
+| `/wiki-ingest <wiki> <source>`  | Ingest a new source into a wiki                            |
+| `/wiki-query <wiki> <question>` | Query a wiki and synthesize an answer                      |
+| `/wiki-lint <wiki>`             | Health-check a wiki for contradictions, orphans, and gaps  |
+| `/wiki-move <wiki>`             | Moves a wiki to the `$LLM_WIKIS_DIR` and creates a symlink |
 
 ## Install
 

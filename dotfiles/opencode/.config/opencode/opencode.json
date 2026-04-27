@@ -21,12 +21,12 @@
     }
   },
   "model": "lmstudio/google/gemma-4-26b-a4b",
-  "small_model": "lmstudio/google/gemma-4-e2b",
+  "small_model": "lmstudio/google/gemma-4-26b-a4b",
   "permission": {
     "bash": {
       "*": "ask",
       "pwd": "allow",
-      "ls": "allow",
+      "ls *": "allow",
       "git status": "allow",
       "git diff": "allow"
     },
