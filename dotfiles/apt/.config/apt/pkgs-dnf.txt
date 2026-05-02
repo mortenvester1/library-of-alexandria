@@ -1,5 +1,6 @@
 bat
 ghostty
+just
 cmake
 coreutils
 fzf

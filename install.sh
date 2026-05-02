@@ -106,6 +106,13 @@ then
     xargs sudo dnf -y install < ${REPO_DEST}/dotfiles/apt/.config/apt/pkgs-dnf.txt
     sudo dnf clean all
 
+    # install docker engine
+    sudo dnf install -y dnf-plugins-core
+    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+    sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker "$(whoami)"
+
     wget -P /tmp https://github.com/derailed/k9s/releases/latest/download/k9s_linux_${LINUX_ARCH}.rpm
     sudo dnf install -y /tmp/k9s_linux_${LINUX_ARCH}.rpm
     rm /tmp/k9s_linux_${LINUX_ARCH}.rpm
@@ -119,6 +126,10 @@ then
     wget -P /tmp https://github.com/derailed/k9s/releases/latest/download/k9s_linux_${LINUX_ARCH}.deb
     sudo apt install -y /tmp/k9s_linux_${LINUX_ARCH}.deb
     rm /tmp/k9s_linux_${LINUX_ARCH}.deb
+
+    # install just
+    JUST_VERSION=$(curl -s https://api.github.com/repos/casey/just/releases/latest | grep '"tag_name"' | sed 's/.*"\([^"]*\)".*/\1/')
+    curl -fsSL "https://github.com/casey/just/releases/latest/download/just-${JUST_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz" | tar -xz -C "${HOME}/.local/bin/" just
 
     # install ghostty
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"
