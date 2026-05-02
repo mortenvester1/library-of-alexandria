@@ -6,7 +6,6 @@
 if [[ "$(uname)" == "Darwin" ]]
 then
   eval "$(/opt/homebrew/bin/brew shellenv)"
-  export HOMEBREW_BUNDLE_FILE_GLOBAL="${XDG_CONFIG_HOME}/homebrew/Brewfile.darwin"
 fi
 
 # XDG bin home for local executables

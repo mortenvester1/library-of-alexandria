@@ -2,7 +2,6 @@ bat
 build-essential
 coreutils
 default-jdk
-fzf
 git
 git-lfs
 gnupg2

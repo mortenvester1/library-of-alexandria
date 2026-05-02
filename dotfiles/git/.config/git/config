@@ -2,7 +2,6 @@
     name = Morten Pedersen
 [core]
     excludesfile = ~/.config/git/.gitignore_global
-    pager = delta
 [alias]
     br = "!f() { git branch | fzf | xargs git checkout; }; f"
     camend = "!f() { git add . && git commit --amend --no-edit; }; f"
@@ -23,11 +22,3 @@
 	required = true
 [include]
     path = ~/.config/git/.gitlocal
-[interactive]
-    diffFilter = delta --color-only
-[delta]
-    navigate = true  # use n and N to move between diff sections
-    dark = true      # or light = true, or omit for auto-detection
-    line-numbers = true
-[merge]
-    conflictStyle = zdiff3

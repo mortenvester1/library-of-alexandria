@@ -61,12 +61,18 @@ do
   esac
 done
 
-# Check OS
-OS="$(uname)"
-LOWER_OS=$(echo "$OS" | tr '[:upper:]' '[:lower:]')
-if [[ "${OS}" != "Darwin" && "${OS}" != "Linux" ]]
+# Detect OS
+if [[ "$(uname)" == "Darwin" ]]
 then
-  error "install is only supported on macOS and Linux"
+  OS="MacOS"
+elif grep -qi "fedora\|nobara" /etc/os-release 2>/dev/null
+then
+  OS="Fedora"
+elif grep -qi "ubuntu\|debian" /etc/os-release 2>/dev/null
+then
+  OS="Ubuntu"
+else
+  error "install is only supported on macOS, Ubuntu, and Fedora/Nobara"
 fi
 
 # Set XDG_CONFIG_HOME if not already
@@ -88,23 +94,42 @@ else
  	git clone https://github.com/mortenvester1/library-of-alexandria.git $(dirname ${REPO_DEST})
 fi
 
-# Linux specific setup + install apt pkgs
-if [[ "${OS}" == "Linux" ]]
+# Linux specific setup + install pkgs
+if [[ "${OS}" == "Ubuntu" || "${OS}" == "Fedora" ]]
 then
-  # install aptitude packages
-  sudo add-apt-repository ppa:rmescandon/yq
-  sudo apt update
-  xargs sudo apt -y install < ${REPO_DEST}/dotfiles/apt/.config/apt/pkgs.txt
-  sudo apt clean
+  LINUX_ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+
+  if [[ "${OS}" == "Fedora" ]]
+  then
+    # Fedora / Nobara
+    sudo dnf check-update || true
+    xargs sudo dnf -y install < ${REPO_DEST}/dotfiles/apt/.config/apt/pkgs-dnf.txt
+    sudo dnf clean all
+
+    wget -P /tmp https://github.com/derailed/k9s/releases/latest/download/k9s_linux_${LINUX_ARCH}.rpm
+    sudo dnf install -y /tmp/k9s_linux_${LINUX_ARCH}.rpm
+    rm /tmp/k9s_linux_${LINUX_ARCH}.rpm
+  else
+    # Ubuntu / Debian
+    sudo add-apt-repository ppa:rmescandon/yq
+    sudo apt update
+    xargs sudo apt -y install < ${REPO_DEST}/dotfiles/apt/.config/apt/pkgs.txt
+    sudo apt clean
+
+    wget -P /tmp https://github.com/derailed/k9s/releases/latest/download/k9s_linux_${LINUX_ARCH}.deb
+    sudo apt install -y /tmp/k9s_linux_${LINUX_ARCH}.deb
+    rm /tmp/k9s_linux_${LINUX_ARCH}.deb
+
+    # install fzf
+    FZF_VERSION=$(curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+    mkdir -p "${HOME}/.local/bin"
+    curl -fsSL "https://github.com/junegunn/fzf/releases/latest/download/fzf-${FZF_VERSION}-linux_${LINUX_ARCH}.tar.gz" | tar -xz -C "${HOME}/.local/bin/"
+  fi
 
   # download asdf binary
-  curl -L -o /tmp/asdf-v0.18.0-linux-arm64.tar.gz https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-arm64.tar.gz
-  sudo tar -xzf /tmp/asdf-v0.18.0-linux-arm64.tar.gz -C /usr/local/bin/
-
-  # install k9s
-  wget -P /tmp https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb
-  sudo apt install -y /tmp/k9s_linux_amd64.deb
-  rm /tmp/k9s_linux_amd64.deb
+  curl -L -o /tmp/asdf-linux.tar.gz https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-${LINUX_ARCH}.tar.gz
+  sudo tar -xzf /tmp/asdf-linux.tar.gz -C /usr/local/bin/
+  rm /tmp/asdf-linux.tar.gz
 
   # install starship
   curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "${HOME}/.local/bin" --yes
@@ -117,7 +142,7 @@ then
 fi
 
 # install brew + install packages (macOS only)
-if [[ "${OS}" == "Darwin" ]]
+if [[ "${OS}" == "MacOS" ]]
 then
   if [[ -n $(command -v brew) ]]
   then
@@ -138,28 +163,21 @@ then
   fi
 
   # Install brew dependencies
-  export HOMEBREW_BUNDLE_FILE_GLOBAL=${HOMEBREW_BUNDLE_FILE_GLOBAL:-${XDG_CONFIG_HOME}/homebrew/Brewfile}.${LOWER_OS}
-  if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}" ]]
-  then
-    info "installing brew bundle from global. sudo access may be requested..."
-    NONINTERACTIVE=1 brew bundle install --global
-  else
-    info "installing brew bundle from repo as it has not been moved to XDG_CONFIG_HOME. sudo access may be requested..."
-    NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/dotfiles/homebrew/.config/homebrew/Brewfile.${LOWER_OS}"
-  fi
+  info "installing brew bundle. sudo access may be requested..."
+  NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/dotfiles/homebrew/.config/homebrew/Brewfile"
 
   # local additions
-  if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local" ]]
+  if [[ -s "${XDG_CONFIG_HOME}/homebrew/Brewfile.local" ]]
   then
     info "installing local brew bundle. sudo access may be requested..."
-    NONINTERACTIVE=1 brew bundle install --file "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local"
+    NONINTERACTIVE=1 brew bundle install --file "${XDG_CONFIG_HOME}/homebrew/Brewfile.local"
   fi
 fi
 
 # setup dotfiles
 info "installing dotfiles..."
 stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zsh k9s
-if [[ "${OS}" == "Darwin" ]]
+if [[ "${OS}" == "MacOS" ]]
 then
   stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude homebrew
 fi
