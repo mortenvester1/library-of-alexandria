@@ -27,6 +27,7 @@ brew 'zsh'
 brew 'uv'
 
 # install brew cask applications
+cask 'ghostty'
 cask 'bitwarden'
 cask 'divvy'
 cask 'docker-desktop' # gui

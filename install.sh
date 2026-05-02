@@ -120,11 +120,17 @@ then
     sudo apt install -y /tmp/k9s_linux_${LINUX_ARCH}.deb
     rm /tmp/k9s_linux_${LINUX_ARCH}.deb
 
+    # install ghostty
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"
+
     # install fzf
     FZF_VERSION=$(curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
     mkdir -p "${HOME}/.local/bin"
     curl -fsSL "https://github.com/junegunn/fzf/releases/latest/download/fzf-${FZF_VERSION}-linux_${LINUX_ARCH}.tar.gz" | tar -xz -C "${HOME}/.local/bin/"
   fi
+
+  # set zsh as default shell
+  chsh -s "$(which zsh)"
 
   # download asdf binary
   curl -L -o /tmp/asdf-linux.tar.gz https://github.com/asdf-vm/asdf/releases/download/v0.19.0/asdf-v0.19.0-linux-${LINUX_ARCH}.tar.gz
@@ -176,7 +182,7 @@ fi
 
 # setup dotfiles
 info "installing dotfiles..."
-stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zsh k9s
+stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zsh k9s ghostty
 if [[ "${OS}" == "MacOS" ]]
 then
   stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude homebrew
