@@ -1,9 +1,0 @@
-# install brew packages
-brew 'bitwarden-cli'
-brew 'fzf'
-brew 'gpg2'
-brew 'k9s'
-brew 'openjdk'
-brew 'sql-formatter'
-brew 'starship'
-brew 'uv'

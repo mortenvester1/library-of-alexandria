@@ -50,6 +50,4 @@ eval "$(starship init zsh)"
 # source additional .zsh files
 [ -s "${ZDOTDIR}/aliases.zsh" ] && source ${ZDOTDIR}/aliases.zsh
 [ -s "${ZDOTDIR}/completion.zsh" ] && source ${ZDOTDIR}/completion.zsh
-[ -s "${ZDOTDIR}/.zshenv.local" ] && source ${ZDOTDIR}/.zshenv.local
-[ -s "${ZDOTDIR}/.zprofile.local" ] && source ${ZDOTDIR}/.zprofile.local
 [ -s "${ZDOTDIR}/.zshrc.local" ] && source ${ZDOTDIR}/.zshrc.local

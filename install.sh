@@ -91,9 +91,6 @@ fi
 # Linux specific setup + install apt pkgs
 if [[ "${OS}" == "Linux" ]]
 then
-  sudo mkdir -p /home/linuxbrew/.linuxbrew
-  sudo chown -R $(whoami):$(whoami) /home/linuxbrew
-
   # install aptitude packages
   sudo add-apt-repository ppa:rmescandon/yq
   sudo apt update
@@ -104,25 +101,33 @@ then
   curl -L -o /tmp/asdf-v0.18.0-linux-arm64.tar.gz https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-arm64.tar.gz
   sudo tar -xzf /tmp/asdf-v0.18.0-linux-arm64.tar.gz -C /usr/local/bin/
 
+  # install k9s
+  wget -P /tmp https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb
+  sudo apt install -y /tmp/k9s_linux_amd64.deb
+  rm /tmp/k9s_linux_amd64.deb
+
+  # install starship
+  curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "${HOME}/.local/bin" --yes
+
+  # install uv
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+
   # install ollama
   # curl -fsSL https://ollama.com/install.sh | sh
 fi
 
-# install brew + install packages
-if [[ -n $(command -v brew) ]]
+# install brew + install packages (macOS only)
+if [[ "${OS}" == "Darwin" ]]
 then
-  info "homebrew is already installed. Will update"
-  brew update
-else
-  info "homebrew not installed. Will install"
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
+  if [[ -n $(command -v brew) ]]
+  then
+    info "homebrew is already installed. Will update"
+    brew update
+  else
+    info "homebrew not installed. Will install"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
 
-# Add brew to path
-if [[ "${OS}" == "Linux" ]]
-then
-  export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
-else
   export PATH="/opt/homebrew/bin:$PATH"
 
   # Add homebrew zsh to allowed shells and set as default
@@ -131,33 +136,32 @@ else
 
     chsh -s "$(brew --prefix)/bin/zsh"
   fi
-fi
 
-# Install brew dependencies
-export HOMEBREW_BUNDLE_FILE_GLOBAL=${HOMEBREW_BUNDLE_FILE_GLOBAL:-${XDG_CONFIG_HOME}/homebrew/Brewfile}.${LOWER_OS}
-if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}" ]]
-then
-  info "installing brew bundle from global. sudo access may be requested..."
-  # installing from global
-  NONINTERACTIVE=1 brew bundle install --global
-else
-  info "installing brew bundle from repo as it has not been moved to XDG_CONFIG_HOME. sudo access may be requested..."
-  NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/dotfiles/homebrew/.config/homebrew/Brewfile.${LOWER_OS}"
-fi
+  # Install brew dependencies
+  export HOMEBREW_BUNDLE_FILE_GLOBAL=${HOMEBREW_BUNDLE_FILE_GLOBAL:-${XDG_CONFIG_HOME}/homebrew/Brewfile}.${LOWER_OS}
+  if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}" ]]
+  then
+    info "installing brew bundle from global. sudo access may be requested..."
+    NONINTERACTIVE=1 brew bundle install --global
+  else
+    info "installing brew bundle from repo as it has not been moved to XDG_CONFIG_HOME. sudo access may be requested..."
+    NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/dotfiles/homebrew/.config/homebrew/Brewfile.${LOWER_OS}"
+  fi
 
-# local additions
-if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local" ]]
-then
-  info "installing local brew bundle. sudo access may be requested..."
-  NONINTERACTIVE=1 brew bundle install --file "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local"
+  # local additions
+  if [[ -s "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local" ]]
+  then
+    info "installing local brew bundle. sudo access may be requested..."
+    NONINTERACTIVE=1 brew bundle install --file "${HOMEBREW_BUNDLE_FILE_GLOBAL}.local"
+  fi
 fi
 
 # setup dotfiles
 info "installing dotfiles..."
-stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zed zsh sql-formatter k9s homebrew
+stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zsh k9s
 if [[ "${OS}" == "Darwin" ]]
 then
-  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude
+  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude homebrew
 fi
 
 # setup asdf - merge .tool-version files if local exist

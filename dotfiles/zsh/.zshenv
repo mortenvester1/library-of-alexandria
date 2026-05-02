@@ -68,3 +68,6 @@ export ZINIT_HOME="${XDG_DATA_HOME}/zinit/zinit.git"
 export HISTSIZE=10000
 export HISTFILE="${XDG_STATE_HOME}/zsh/history"
 export SAVEHIST="${HISTSIZE}"
+
+# Source local environment variables
+[ -s "${ZDOTDIR}/.zshenv.local" ] && source ${ZDOTDIR}/.zshenv.local

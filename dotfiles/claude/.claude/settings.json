@@ -37,11 +37,11 @@
       "Fetch"
     ]
   },
-  "effortLevel": "high",
-  "showClearContextOnPlanAccept": true,
-  "showThinkingSummaries": true,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
-  }
+  },
+  "effortLevel": "high",
+  "showClearContextOnPlanAccept": true,
+  "showThinkingSummaries": true
 }

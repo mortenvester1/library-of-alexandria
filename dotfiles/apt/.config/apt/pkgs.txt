@@ -1,8 +1,11 @@
 bat
 build-essential
 coreutils
+default-jdk
+fzf
 git
 git-lfs
+gnupg2
 jq
 libbz2-dev
 libncursesw5
