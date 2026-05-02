@@ -91,7 +91,7 @@ then
 else
   info "'${REPO_DEST}' does not exist. Will clone repo"
  	mkdir -p "${HOME}/git"
- 	git clone https://github.com/mortenvester1/library-of-alexandria.git $(dirname ${REPO_DEST})
+ 	git clone https://github.com/mortenvester1/library-of-alexandria.git ${REPO_DEST}
 fi
 
 # Linux specific setup + install pkgs
@@ -127,7 +127,7 @@ then
   fi
 
   # download asdf binary
-  curl -L -o /tmp/asdf-linux.tar.gz https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-${LINUX_ARCH}.tar.gz
+  curl -L -o /tmp/asdf-linux.tar.gz https://github.com/asdf-vm/asdf/releases/download/v0.19.0/asdf-v0.19.0-linux-${LINUX_ARCH}.tar.gz
   sudo tar -xzf /tmp/asdf-linux.tar.gz -C /usr/local/bin/
   rm /tmp/asdf-linux.tar.gz
 
