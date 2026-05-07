@@ -11,13 +11,11 @@ library-of-alexandria/
 ├── apps/              # Contains various apps
 │   └── entrance/      # A application gateway for accessing self-hosted services
 ├── cron/              # Contains various cronjobs
-├── dotfiles/          # Configuration files of software
-│   ├── apt/           # List of packages to install with apt-get
+├── dotfiles/          # Configuration files of software (managed via stow)
 │   ├── asdf/          # default tools managed with asdf
 │   ├── claude/        # default configuration of claude code
 │   ├── git/           # git configuration
 │   ├── gnupg/         # gnupg configuration
-│   ├── homebrew/      # Brewfile with tools managed by Homebrew
 │   ├── k9s/           # k9s configuration
 │   ├── opencode/      # opencode configuration
 │   ├── sql-formatter/ # sql-formatter configuration
@@ -25,6 +23,11 @@ library-of-alexandria/
 │   ├── vim/           # vim configuration
 │   ├── zed/           # zed configuration
 │   └── zsh/           # zsh startup files
+├── pkgs/              # Package manifests consumed by install.sh
+│   ├── apt/           # Ubuntu packages
+│   ├── dnf/           # Fedora packages and repo setup
+│   ├── flatpak/       # Flatpak packages
+│   └── homebrew/      # Brewfiles for macOS
 ├── library/           # Personal knowledge base wikis (see below)
 ├── install.sh         # script to install / upgrade the repo contents on machine
 ```
@@ -60,7 +63,7 @@ Each wiki lives at `library/<name>/` and follows this structure:
 The install requires bash, curl, git, sudo to be installed on your system. Run the [install.sh](./install.sh) script using curl
 
 ```sh
-/bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/refs/heads/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mortenvester1/library-of-alexandria/refs/heads/main/install.sh)"
 ```
 
 After initial install, overrides and additional tool installations can be configurd in the following files. Simply rerun the install script for the overrides to take effect.
@@ -68,8 +71,12 @@ After initial install, overrides and additional tool installations can be config
 ```sh
 ${XDG_CONFIG_HOME}/asdf/.tool-versions.local
 ${XDG_CONFIG_HOME}/git/.gitlocal
-${XDG_CONFIG_HOME}/homebrew/Brewfile.local
+
 ${XDG_CONFIG_HOME}/zsh/.zshrc.local
+${XDG_CONFIG_HOME}/zsh/.zshenv.local
+${XDG_CONFIG_HOME}/zsh/.zshprofile.local
+${XDG_CONFIG_HOME}/zsh/.zshrc.local
+
 ```
 
 ## Development
@@ -77,7 +84,7 @@ ${XDG_CONFIG_HOME}/zsh/.zshrc.local
 You can run the
 
 ```sh
-/bin/zsh -c "$(curl -fsSL file:///$(pwd)/install.sh)"
+/bin/bash -c "$(curl -fsSL file:///$(pwd)/install.sh)"
 ```
 
 or
@@ -118,14 +125,3 @@ just upgrade
 
 - [Jetson Lab](https://www.jetson-ai-lab.com/)
 - [Supported models](https://www.jetson-ai-lab.com/models/)
-
-## Todo
-
-- [x] Create bootstrap scripts for Raspberry OS
-- [x] Adopt `stow` for managing dotfiles
-- [x] Create dotfiles for Raspberry OS
-- [x] Look into nixos
-- [x] remove nix
-- [x] migrate bootstrap pi to install
-- [x] update docs
-- [ ] add cronjobs

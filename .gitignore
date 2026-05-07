@@ -13,7 +13,7 @@ dotfiles/zsh/.config/zsh/.zshrc.local
 dotfiles/git/.config/git/.gitlocal
 
 # homebrew
-dotfiles/homebrew/.config/homebrew/Brewfile.local
+pkgs/homebrew/Brewfile.local
 
 # asdf
 dotfiles/asdf/.config/asdf/.tool-versions.local

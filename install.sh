@@ -103,13 +103,9 @@ then
   then
     # Fedora / Nobara
     sudo dnf check-update || true
-    xargs sudo dnf -y install < ${REPO_DEST}/dotfiles/apt/.config/apt/pkgs-dnf.txt
+    bash ${REPO_DEST}/pkgs/dnf/repos.sh
+    xargs sudo dnf -y install < ${REPO_DEST}/pkgs/dnf/pkgs.txt
     sudo dnf clean all
-
-    # install docker engine
-    sudo dnf install -y dnf-plugins-core
-    sudo dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
-    sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     sudo systemctl enable --now docker
     sudo usermod -aG docker "$(whoami)"
 
@@ -120,7 +116,7 @@ then
     # Ubuntu / Debian
     sudo add-apt-repository ppa:rmescandon/yq
     sudo apt update
-    xargs sudo apt -y install < ${REPO_DEST}/dotfiles/apt/.config/apt/pkgs.txt
+    xargs sudo apt -y install < ${REPO_DEST}/pkgs/apt/pkgs.txt
     sudo apt clean
 
     wget -P /tmp https://github.com/derailed/k9s/releases/latest/download/k9s_linux_${LINUX_ARCH}.deb
@@ -181,13 +177,13 @@ then
 
   # Install brew dependencies
   info "installing brew bundle. sudo access may be requested..."
-  NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/dotfiles/homebrew/.config/homebrew/Brewfile"
+  NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/pkgs/homebrew/Brewfile"
 
   # local additions
-  if [[ -s "${XDG_CONFIG_HOME}/homebrew/Brewfile.local" ]]
+  if [[ -s "${REPO_DEST}/pkgs/homebrew/Brewfile.local" ]]
   then
     info "installing local brew bundle. sudo access may be requested..."
-    NONINTERACTIVE=1 brew bundle install --file "${XDG_CONFIG_HOME}/homebrew/Brewfile.local"
+    NONINTERACTIVE=1 brew bundle install --file "${REPO_DEST}/pkgs/homebrew/Brewfile.local"
   fi
 fi
 
@@ -196,7 +192,7 @@ info "installing dotfiles..."
 stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zsh k9s ghostty
 if [[ "${OS}" == "MacOS" ]]
 then
-  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude homebrew
+  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude
 fi
 
 # setup asdf - merge .tool-version files if local exist
