@@ -1,16 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cat *)",
       "Bash(echo *)",
       "Bash(env)",
-      "Bash(find *)",
       "Bash(git diff *)",
       "Bash(git log *)",
       "Bash(git show *)",
       "Bash(git status)",
-      "Bash(grep *)",
-      "Bash(ls *)",
       "Bash(ps *)",
       "Bash(pwd)",
       "Bash(source *.venv/bin/activate && python *)",
@@ -25,23 +21,21 @@
       "mcp__acp__Edit",
       "mcp__acp__Write"
     ],
-    "deny": [
-      "Edit(~/git/**/.env*)",
-      "Read(~/git/**/.env*)",
-      "Write(~/git/**/.env*)"
-    ],
-    "ask": [
-      "Edit(~/git/**/.env*)",
-      "Read(~/git/**/.env*)",
-      "Write(~/git/**/.env*)",
-      "Fetch"
-    ]
+    "deny": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)", "Write(~/git/**/.env*)"],
+    "ask": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)", "Write(~/git/**/.env*)", "Fetch"],
+    "defaultMode": "default"
   },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
   "effortLevel": "high",
+  "advisorModel": "opus",
   "showClearContextOnPlanAccept": true,
-  "showThinkingSummaries": true
+  "showThinkingSummaries": true,
+  "voiceEnabled": true,
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  }
 }
