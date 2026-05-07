@@ -1,18 +1,22 @@
 [
   {
-    "context": "Workspace",
+    // "context": "Workspace",
     "bindings": {
       "shift shift": "file_finder::Toggle",
-      "cmd-t": "workspace::NewTerminal"
-    }
+      "cmd-t": "workspace::NewTerminal",
+      "cmd-[": "workspace::ToggleLeftDock",
+      "cmd-]": "workspace::ToggleRightDock",
+      "cmd-'": "workspace::ToggleBottomDock",
+      "cmd-shift-g": "git_panel::Toggle",
+      "cmd-shift-o": "outline_panel::Toggle",
+      "cmd-{": "project_panel::Toggle",
+      "cmd-}": "multi_workspace::ToggleWorkspaceSidebar",
+    },
   },
   {
-    "context": "Terminal",
+    "context": "Editor",
     "bindings": {
-      "shift-enter": [
-        "terminal::SendText",
-        "\u001b\r"
-      ]
-    }
-  }
+      "ctrl-a": "language_selector::Toggle",
+    },
+  },
 ]
