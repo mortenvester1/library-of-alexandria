@@ -68,11 +68,14 @@ then
 elif grep -qi "fedora\|nobara" /etc/os-release 2>/dev/null
 then
   OS="Fedora"
+elif grep -qi "cachyos" /etc/os-release 2>/dev/null
+then
+  OS="CachyOS"
 elif grep -qi "ubuntu\|debian" /etc/os-release 2>/dev/null
 then
   OS="Ubuntu"
 else
-  error "install is only supported on macOS, Ubuntu, and Fedora/Nobara"
+  error "install is only supported on macOS, Ubuntu, Fedora/Nobara, and CachyOS"
 fi
 
 # Set XDG_CONFIG_HOME if not already
@@ -152,6 +155,13 @@ then
 
   # install ollama
   # curl -fsSL https://ollama.com/install.sh | sh
+elif [[ "${OS}" == "CachyOS" ]]
+then
+  sudo pacman -Syu --noconfirm
+  xargs sudo pacman -S --needed --noconfirm < ${REPO_DEST}/pkgs/pacman/pkgs.txt
+  sudo systemctl enable --now docker
+  sudo usermod -aG docker "$(whoami)"
+  chsh -s "$(which zsh)"
 fi
 
 # install brew + install packages (macOS only)
