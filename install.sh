@@ -80,6 +80,7 @@ fi
 
 # Set XDG_CONFIG_HOME if not already
 XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
+XDG_DATA_HOME=${XDG_DATA_DIR:-${HOME}/.local/share}
 
 REPO_DEST="${HOME}/git/library-of-alexandria"
 if [[ -n "${SKIP_GIT-}" && -d ${REPO_DEST} ]]
@@ -128,7 +129,7 @@ then
 
     # install just
     JUST_VERSION=$(curl -s https://api.github.com/repos/casey/just/releases/latest | grep '"tag_name"' | sed 's/.*"\([^"]*\)".*/\1/')
-    curl -fsSL "https://github.com/casey/just/releases/latest/download/just-${JUST_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz" | tar -xz -C "${HOME}/.local/bin/" just
+   curl -fsSL "https://github.com/casey/just/releases/latest/download/just-${JUST_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz" | tar -xz -C "${HOME}/.local/bin/" just
 
     # install ghostty
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"
@@ -159,6 +160,7 @@ elif [[ "${OS}" == "CachyOS" ]]
 then
   sudo pacman -Syu --noconfirm
   xargs sudo pacman -S --needed --noconfirm < ${REPO_DEST}/pkgs/pacman/pkgs.txt
+  xargs paru -S --needed --noconfirm < ${REPO_DEST}/pkgs/aur/pkgs.txt 
   sudo systemctl enable --now docker
   sudo usermod -aG docker "$(whoami)"
   chsh -s "$(which zsh)"
@@ -210,11 +212,12 @@ zsh -c "source ${REPO_DEST}/dotfiles/zsh/.config/zsh/aliases.zsh && asdf-merge"
 
 # add packages to be controlled by asdf
 info "installing asdf dependencies..."
-cat ${HOME}/.tool-versions | grep -v '^#' | xargs -L1 zsh -c 'bootstrap_asdf() { asdf plugin add "$1"; }; bootstrap_asdf "$@"' _
-asdf install
+cat ${HOME}/.tool-versions | grep -v '^#' | xargs -L1 env GIT_CONFIG_GLOBAL=/dev/null zsh -c 'bootstrap_asdf() { asdf plugin add "$1"; }; bootstrap_asdf "$@"' _
+ASDF_DIR="${XDG_CONFIG_HOME}/asdf" ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf" asdf install
+ASDF_DIR="${XDG_CONFIG_HOME}/asdf" ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf" asdf reshim
 
 # bootstrap zinit + plugins; bypass stowed git insteadOf rewrite (no SSH keys yet on fresh installs)
 info "bootstrapping zinit..."
-GIT_CONFIG_GLOBAL=/dev/null zsh -i -c "true" || warn "zinit bootstrap had errors; check first shell startup"
+GIT_CONFIG_GLOBAL=/dev/null zsh -i -l -c "true" || warn "zinit bootstrap had errors; check first shell startup"
 
 info "installation complete. You should reload your shell with 'exec \$SHELL'"

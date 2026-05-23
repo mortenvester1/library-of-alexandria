@@ -1,6 +1,6 @@
-asdf-vm
 base-devel
 bat
+bitwarden
 bzip2
 docker
 docker-buildx
@@ -27,5 +27,4 @@ stow
 transmission-cli
 uv
 yq
-zlib
 zsh
