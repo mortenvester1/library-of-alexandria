@@ -213,4 +213,8 @@ info "installing asdf dependencies..."
 cat ${HOME}/.tool-versions | grep -v '^#' | xargs -L1 zsh -c 'bootstrap_asdf() { asdf plugin add "$1"; }; bootstrap_asdf "$@"' _
 asdf install
 
+# bootstrap zinit + plugins; bypass stowed git insteadOf rewrite (no SSH keys yet on fresh installs)
+info "bootstrapping zinit..."
+GIT_CONFIG_GLOBAL=/dev/null zsh -i -c "true" || warn "zinit bootstrap had errors; check first shell startup"
+
 info "installation complete. You should reload your shell with 'exec \$SHELL'"
