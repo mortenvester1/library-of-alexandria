@@ -202,6 +202,7 @@ fi
 # setup dotfiles
 info "installing dotfiles..."
 stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zsh k9s ghostty
+chmod 700 "${HOME}/.config/gnupg"
 if [[ "${OS}" == "MacOS" ]]
 then
   stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude
