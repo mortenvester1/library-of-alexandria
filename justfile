@@ -24,7 +24,7 @@ create-ssh-key user key_postfix password="":
 # Generate a gpg-key for email with password
 create-gpg-key email password:
     #!/bin/bash
-    gpg --quick-gen-key --batch --passphrase {{ password }} {{ email }}
+    gpg --quick-gen-key --batch --passphrase {{ password }} "<{{ email }}">
     KEY_ID=$(gpg --list-secret-keys --keyid-format=long | grep -C 2 {{ email }} | grep ed25519 | tr -s ' ' | cut -d ' ' -f 2 | cut -d '/' -f 2)
     gpg --armor --export $KEY_ID | pbcopy
     echo "gpg key '${KEY_ID}' has been created. Now add it where needed"
