@@ -1,7 +1,7 @@
 [user]
     name = Morten Pedersen
 [core]
-    excludesfile = ~/.config/git/.gitignore_global
+    excludesfile = ~/.config/git/ignore
 [alias]
     br = "!f() { git branch | fzf | xargs git checkout; }; f"
     camend = "!f() { git add . && git commit --amend --no-edit; }; f"
