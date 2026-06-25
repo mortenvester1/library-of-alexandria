@@ -12,6 +12,8 @@ create-gitlocal email gpg_key:
       gpgsign = true
     EOL
 
+    just stow git
+
 # Generate a ssh-key for user with key_postfix and optional password
 create-ssh-key user key_postfix password="":
     #!/bin/bash
@@ -39,6 +41,10 @@ create-gpg-key name email password:
     gpg --armor --export $KEY_ID
     echo "gpg key '${KEY_ID}' has been created."
     echo "copy to pasteboard and add where it is needed"
+
+# restow a package
+stow pkg:
+    stow --target ${HOME} --dir "dotfiles" -R --no-folding {{ pkg }}
 
 # Upgrade install based on local repo
 upgrade:

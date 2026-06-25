@@ -19,4 +19,9 @@
       "ctrl-a": "language_selector::Toggle",
     },
   },
+  {
+    "unbind": {
+      "cmd-shift-c": "collab_panel::ToggleFocus"
+    }
+  }
 ]
