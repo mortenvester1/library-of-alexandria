@@ -8,14 +8,17 @@
 // from the command palette or from `Zed` application menu.
 // This doesn't work rigt now? Break files
 {
+  "title_bar": {
+    "show_sign_in": false,
+  },
   "project_panel": {
-    "dock": "left"
+    "dock": "left",
   },
   "git_panel": {
-    "dock": "left"
+    "dock": "left",
   },
   "outline_panel": {
-    "dock": "left"
+    "dock": "left",
   },
   "agent_servers": {
     "opencode": {
@@ -28,19 +31,16 @@
   "context_servers": {},
   "ssh_connections": [
     {
-      "host": "jetson",
+      "host": "bee",
       "args": [],
       "projects": [
         {
-          "paths": ["/home/jetson/git/library-of-alexandria"],
+          "paths": ["/home/mortenvester1/git/library-of-alexandria"],
         },
       ],
     },
   ],
   "language_models": {
-    "ollama": {
-      "api_url": "http://orin-nano.local:11434",
-    },
     "lmstudio": {
       "api_url": "http://localhost:1234/api/v1",
     },
@@ -186,7 +186,6 @@
     "thumb_border": "left_open",
     "current_line_highlight": "all",
   },
-  "notification_panel": { "button": false },
   "debugger": { "button": false },
   "collaboration_panel": { "button": false },
   "diagnostics": { "button": false },

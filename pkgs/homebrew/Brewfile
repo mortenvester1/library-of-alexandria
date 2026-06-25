@@ -30,6 +30,7 @@ brew 'uv'
 # install brew cask applications
 cask 'ghostty'
 cask 'bitwarden'
+cask 'claude-code@latest'
 cask 'divvy'
 cask 'docker-desktop' # gui
 cask 'drawio'
