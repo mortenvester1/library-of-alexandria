@@ -1,41 +1,69 @@
 {
   "permissions": {
     "allow": [
+      "Bash(awk *)",
+      "Bash(command *)",
       "Bash(echo *)",
-      "Bash(env)",
+      "Bash(env *)",
+      "Bash(find *)",
+      "Bash(gh api *)",
+      "Bash(gh pr *)",
+      "Bash(gh search *)",
       "Bash(git diff *)",
       "Bash(git log *)",
       "Bash(git show *)",
       "Bash(git status)",
+      "Bash(git checkout main && git pull *)",
+      "Bash(git fetch *)",
       "Bash(ps *)",
       "Bash(pwd)",
-      "Bash(source *.venv/bin/activate && python *)",
+      "Bash(source .venv/bin/activate *)",
       "Bash(which *)",
-      "Edit(~/git/**)",
       "Read(~/.config/**)",
       "Read(~/git/**)",
       "Skill",
       "WebSearch",
-      "Write(~/git/**)",
       "mcp__acp__Bash",
       "mcp__acp__Edit",
-      "mcp__acp__Write"
+      "mcp__acp__Write",
+      "mcp__claude_ai_Linear__create_issue_label",
+      "mcp__claude_ai_Linear__get_issue",
+      "mcp__claude_ai_Linear__list_comments",
+      "mcp__claude_ai_Linear__list_issue_labels",
+      "mcp__claude_ai_Linear__list_issue_statuses",
+      "mcp__claude_ai_Linear__list_projects",
+      "mcp__claude_ai_Linear__list_teams",
+      "mcp__claude_ai_Linear__save_issue",
+      "mcp__claude_ai_Notion__notion-fetch"
     ],
-    "deny": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)", "Write(~/git/**/.env*)"],
-    "ask": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)", "Write(~/git/**/.env*)", "Fetch"],
-    "defaultMode": "default"
+    "deny": [
+      "Edit(~/git/**/.env*)",
+      "Read(~/git/**/.env*)",
+      "Write(~/git/**/.env*)"
+    ],
+    "ask": [
+      "Edit(~/git/**/.env*)",
+      "Read(~/git/**/.env*)",
+      "Write(~/git/**/.env*)"
+    ],
+    "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
-  "effortLevel": "high",
+  "enabledPlugins": {
+    "pyright-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "xhigh",
   "advisorModel": "opus",
   "showClearContextOnPlanAccept": true,
-  "showThinkingSummaries": true,
-  "voiceEnabled": true,
   "voice": {
     "enabled": true,
     "mode": "hold"
-  }
+  },
+  "showThinkingSummaries": true,
+  "remoteControlAtStartup": true,
+  "voiceEnabled": true
 }

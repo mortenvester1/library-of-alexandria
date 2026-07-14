@@ -141,3 +141,7 @@ Be concise and specific by default. No filler, intros, or restated requirements.
 Answer direct questions directly when possible. Example: `pytest -vvvs`, not `The command to run tests is pytest -vvvs.`
 
 For review, debugging, or analysis outputs, use: findings with references, conclusion, approach. Mention caveats and unverified risks.
+
+## Local overrides
+
+@~/.claude/AGENTS.local.md
