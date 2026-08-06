@@ -18,6 +18,10 @@ if [ ! -f "${ZSH_COMPLETIONS_DIR}/_docker" ] || [ "${ZSH_COMPLETIONS_DIR}/_docke
   docker completion zsh > "${ZSH_COMPLETIONS_DIR}/_docker"
 fi
 
+if [ ! -f "${ZSH_COMPLETIONS_DIR}/_opencode" ] || [ "${ZSH_COMPLETIONS_DIR}/_opencode" -ot "$(which opencode)" ]; then
+  opencode completion zsh > "${ZSH_COMPLETIONS_DIR}/_opencode"
+fi
+
 # Add dir to fpath so compinit will scan
 fpath=(${ZSH_COMPLETIONS_DIR} $fpath)
 

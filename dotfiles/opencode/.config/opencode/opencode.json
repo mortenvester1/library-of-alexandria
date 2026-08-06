@@ -28,17 +28,43 @@
       "pwd": "allow",
       "ls *": "allow",
       "git status": "allow",
-      "git diff": "allow"
+      "git status *": "allow",
+      "git diff": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git show *": "allow",
+      "git fetch *": "allow",
+      "git checkout main && git pull *": "allow",
+      "awk *": "allow",
+      "command *": "allow",
+      "echo *": "allow",
+      "env *": "allow",
+      "find *": "allow",
+      "gh api *": "allow",
+      "gh pr *": "allow",
+      "gh search *": "allow",
+      "ps *": "allow",
+      "which *": "allow",
+      "source .venv/bin/activate": "allow",
+      "source .venv/bin/activate *": "allow"
     },
-    "edit": "allow",
+    "read": { "*": "allow", "**/.env*": "deny" },
+    "edit": { "*": "allow", "**/.env*": "deny" },
+    "write": { "*": "allow", "**/.env*": "deny" },
     "glob": "allow",
     "grep": "allow",
     "list": "allow",
     "question": "allow",
-    "read": "allow",
     "skill": "allow",
     "todowrite": "allow",
-    "webfetch": "ask",
-    "write": "allow"
+    "webfetch": "allow",
+    "websearch": "allow",
+    "external_directory": {
+      "*": "ask",
+      "~/git/**": "allow",
+      "~/.config/**": "allow",
+      "~/git/**/.env*": "deny",
+      "~/.config/**/.env*": "deny"
+    }
   }
 }

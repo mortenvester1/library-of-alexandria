@@ -1,4 +1,11 @@
 {
+  "env": {
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1"
+  },
+  "attribution": {
+    "pr": "",
+    "sessionUrl": false
+  },
   "permissions": {
     "allow": [
       "Bash(awk *)",
@@ -36,16 +43,8 @@
       "mcp__claude_ai_Linear__save_issue",
       "mcp__claude_ai_Notion__notion-fetch"
     ],
-    "deny": [
-      "Edit(~/git/**/.env*)",
-      "Read(~/git/**/.env*)",
-      "Write(~/git/**/.env*)"
-    ],
-    "ask": [
-      "Edit(~/git/**/.env*)",
-      "Read(~/git/**/.env*)",
-      "Write(~/git/**/.env*)"
-    ],
+    "deny": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)"],
+    "ask": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)"],
     "defaultMode": "auto"
   },
   "model": "opus[1m]",
@@ -56,7 +55,7 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
   },
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
   "advisorModel": "opus",
   "showClearContextOnPlanAccept": true,
   "voice": {
@@ -65,5 +64,6 @@
   },
   "showThinkingSummaries": true,
   "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
   "voiceEnabled": true
 }
