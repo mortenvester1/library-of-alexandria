@@ -40,6 +40,10 @@ export OLLAMA_MODELS="${XDG_DATA_HOME}/ollama/models"
 # k9s - config location
 export K9SCONFIG="${XDG_CONFIG_HOME}/k9s"
 
+# oh my pi
+export PI_CONFIG_DIR="${XDG_CONFIG_HOME}/omp"
+export PI_CODING_AGENT_DIR="${PI_CONFIG_DIR}/agent"
+
 # python - set history, cache location
 export PYTHON_HISTORY=${XDG_STATE_HOME}/python/python_history
 export PYTHONPYCACHEPREFIX=${XDG_CACHE_HOME}/python

@@ -6,7 +6,7 @@
     br = "!f() { git branch | fzf | xargs git checkout; }; f"
     camend = "!f() { git add . && git commit --amend --no-edit; }; f"
     co = checkout
-    comp = "!f() { git checkout main || git checkout master && git pull --prune; }; f"
+    comp = "!f() { git checkout $(git rev-parse --abbrev-ref origin/HEAD | sed 's/origin\\///') && git pull --prune; }; f"
     empty = "!f() { git commit -m 'retrigger checks' --allow-empty; }; f"
     fco = "!f() { git fetch && git checkout $1; }; f"
     ftags = "!f() { git fetch --tags ; }; f";
@@ -17,7 +17,7 @@
         --sort=authordate \
         --sort=upstream:track \
         --format '%(refname:short) %(color:bold blue)%(if)%(upstream)%(then)%(if)%(upstream:track)%(then)%(upstream:track)%(else)%(color:bold green)[synced]%(end)%(else)%(color:bold yellow)[local]%(end)%(color:reset) %(authordate:relative)'"
-	clean-br = !git comp && git status-br | awk '$2 == \"[gone]\" { print $1 }' | xargs -r git branch -D
+	clean-br = !git comp && git worktree prune && git status-br | awk '$2 == \"[gone]\" { print $1 }' | xargs -r git branch -D
 [url "ssh://git@github.com"]
 	insteadOf = https://github.com
 [filter "lfs"]

@@ -63,6 +63,7 @@
     "mode": "hold"
   },
   "showThinkingSummaries": true,
+  "autoCompactEnabled": true,
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
   "voiceEnabled": true

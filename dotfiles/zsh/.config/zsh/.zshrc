@@ -5,13 +5,18 @@
 [ -d ${ZINIT_HOME}/.git ] || git clone https://github.com/zdharma-continuum/zinit.git "${ZINIT_HOME}"
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Add plugins
-zinit ice blockf
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-history-substring-search
-zinit light zdharma/fast-syntax-highlighting
-zinit light ArielTM/zsh-claude-code-shell
+# Add plugins — autosuggestions/syntax-highlighting/history-search need an
+# interactive line editor (zle) and a capable terminal. Dumb terminals
+# (Oh My Pi, Emacs shell-mode, CI, M-x compile) set TERM=dumb and have no
+# usable zle, so skip these there to avoid startup errors.
+if [[ "$TERM" != dumb ]]; then
+  zinit ice blockf
+  zinit light zsh-users/zsh-autosuggestions
+  zinit light zsh-users/zsh-completions
+  zinit light zsh-users/zsh-history-substring-search
+  zinit light zdharma/fast-syntax-highlighting
+  zinit light ArielTM/zsh-claude-code-shell
+fi
 autoload -U zmv
 
 # Configure zsh
@@ -38,14 +43,14 @@ fi
 # hook direnv into zsh
 eval "$(direnv hook zsh)"
 
-# set up fzf keybindings and completions
-source <(fzf --zsh)
+# set up fzf keybindings and completions (zle-based; skip on dumb terminals)
+[[ "$TERM" == dumb ]] || source <(fzf --zsh)
 
 # set GPG_TTY so pinentry knows which terminal to use
 export GPG_TTY=$(tty)
 
-# initialize starship prompt
-eval "$(starship init zsh)"
+# initialize starship prompt (no prompt/zle on dumb terminals)
+[[ "$TERM" == dumb ]] || eval "$(starship init zsh)"
 
 # source additional .zsh files
 [ -s "${ZDOTDIR}/aliases.zsh" ] && source ${ZDOTDIR}/aliases.zsh

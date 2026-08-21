@@ -1,10 +1,14 @@
 # specify a directory to install
 cask_args appdir: '/Applications'
 
+# trust taps
+tap 'can1357/tap'
+
 # install brew packages
 brew 'asdf'
 brew 'bash'
 brew 'bat'
+brew 'bun'
 brew 'bitwarden-cli'
 brew 'coreutils'
 brew 'delta'
@@ -26,6 +30,7 @@ brew 'stow'
 brew 'yq'
 brew 'zsh'
 brew 'uv'
+brew 'can1357/tap/omp'
 
 # install brew cask applications
 cask 'ghostty'

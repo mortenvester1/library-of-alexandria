@@ -160,7 +160,7 @@ elif [[ "${OS}" == "CachyOS" ]]
 then
   sudo pacman -Syu --noconfirm
   xargs sudo pacman -S --needed --noconfirm < ${REPO_DEST}/pkgs/pacman/pkgs.txt
-  xargs paru -S --needed --noconfirm < ${REPO_DEST}/pkgs/aur/pkgs.txt 
+  xargs paru -S --needed --noconfirm < ${REPO_DEST}/pkgs/aur/pkgs.txt
   sudo systemctl enable --now docker
   sudo usermod -aG docker "$(whoami)"
   chsh -s "$(which zsh)"
@@ -205,7 +205,7 @@ stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnu
 chmod 700 "${HOME}/.config/gnupg"
 if [[ "${OS}" == "MacOS" ]]
 then
-  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude
+  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude omp
 fi
 
 # setup asdf - merge .tool-version files if local exist

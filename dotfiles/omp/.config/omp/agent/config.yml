@@ -1,0 +1,131 @@
+providers: 
+  webSearchOrder: 
+    []
+setupVersion: 1
+memory: 
+  backend: mnemopi
+mnemopi: 
+  scoping: per-project
+autolearn: 
+  enabled: true
+statusLine: 
+  preset: custom
+  separator: none
+  leftSegments: 
+    - hostname
+    - model
+    - mode
+    - path
+    - git
+  rightSegments: 
+    - context_pct
+    - token_total
+    - cost
+  segmentOptions: 
+    git: 
+      showBranch: true
+      showStaged: true
+      showUnstaged: true
+      showUntracked: true
+    context_pct: 
+      bar: true
+  sessionAccent: true
+  transparent: true
+  compactThinkingLevel: false
+  showHookStatus: false
+dev: 
+  autoqaConsent: granted
+theme: 
+  dark: dark-dracula
+terminal: 
+  showProgress: true
+tui: 
+  textSizing: false
+  renderMermaid: true
+  titleState: true
+  tight: true
+display: 
+  shimmer: classic
+  showTokenUsage: true
+  cacheMissMarker: false
+  collapseCompacted: true
+hideThinkingBlock: true
+advisor: 
+  enabled: true
+doubleEscapeAction: tree
+disabledProviders: 
+  - openai
+  - google
+  - google-vertex
+  - groq
+  - openrouter
+  - mistral
+  - xai
+  - xai-oauth
+  - github-copilot
+  - cursor
+  - azure
+  - amazon-bedrock
+  - aiand
+  - cerebras
+  - alibaba-token-plan
+  - alibaba-coding-plan
+  - baseten
+  - bedrock-mantle
+  - deepseek
+  - siliconflow
+  - siliconflow-cn
+  - fireworks
+  - together
+  - coreweave
+  - nvidia
+  - devin
+  - gmi-cloud
+  - huggingface
+  - moonshot
+  - meta
+  - minimax-cn
+  - nanogpt
+  - novita
+  - venice
+  - vercel-ai-gateway
+  - cloudflare-ai-gateway
+  - litellm
+  - kilo
+  - zai
+  - zenmux
+  - zhipu-coding-plan
+  - umans
+  - qianfan
+  - qwen-portal
+  - synthetic
+  - minimax
+  - minimax-code
+  - minimax-code-cn
+  - sakana
+  - aimlapi
+  - gitlab-duo
+  - gitlab-duo-agent
+  - opencode-zen
+  - opencode-go
+  - opencode
+  - firepass
+  - wafer-serverless
+  - xiaomi
+  - xiaomi-token-plan-ams
+  - xiaomi-token-plan-cn
+  - xiaomi-token-plan-sgp
+  - kimi-code
+  - google-gemini-cli
+  - google-antigravity
+  - ollama-cloud
+  - ollama
+  - llama.cpp
+  - vllm
+  - claude
+  - codex
+modelRoles: 
+  slow: anthropic/claude-fable-5
+  advisor: openai-codex/gpt-5.6-sol
+  default: luma/glm-5.2:high
+  smol: luma/glm-5.2
