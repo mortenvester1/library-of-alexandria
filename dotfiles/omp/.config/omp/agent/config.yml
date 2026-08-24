@@ -1,7 +1,3 @@
-providers: 
-  webSearchOrder: 
-    []
-setupVersion: 1
 memory: 
   backend: mnemopi
 mnemopi: 
@@ -33,8 +29,6 @@ statusLine:
   transparent: true
   compactThinkingLevel: false
   showHookStatus: false
-dev: 
-  autoqaConsent: granted
 theme: 
   dark: dark-dracula
 terminal: 
@@ -53,79 +47,5 @@ hideThinkingBlock: true
 advisor: 
   enabled: true
 doubleEscapeAction: tree
-disabledProviders: 
-  - openai
-  - google
-  - google-vertex
-  - groq
-  - openrouter
-  - mistral
-  - xai
-  - xai-oauth
-  - github-copilot
-  - cursor
-  - azure
-  - amazon-bedrock
-  - aiand
-  - cerebras
-  - alibaba-token-plan
-  - alibaba-coding-plan
-  - baseten
-  - bedrock-mantle
-  - deepseek
-  - siliconflow
-  - siliconflow-cn
-  - fireworks
-  - together
-  - coreweave
-  - nvidia
-  - devin
-  - gmi-cloud
-  - huggingface
-  - moonshot
-  - meta
-  - minimax-cn
-  - nanogpt
-  - novita
-  - venice
-  - vercel-ai-gateway
-  - cloudflare-ai-gateway
-  - litellm
-  - kilo
-  - zai
-  - zenmux
-  - zhipu-coding-plan
-  - umans
-  - qianfan
-  - qwen-portal
-  - synthetic
-  - minimax
-  - minimax-code
-  - minimax-code-cn
-  - sakana
-  - aimlapi
-  - gitlab-duo
-  - gitlab-duo-agent
-  - opencode-zen
-  - opencode-go
-  - opencode
-  - firepass
-  - wafer-serverless
-  - xiaomi
-  - xiaomi-token-plan-ams
-  - xiaomi-token-plan-cn
-  - xiaomi-token-plan-sgp
-  - kimi-code
-  - google-gemini-cli
-  - google-antigravity
-  - ollama-cloud
-  - ollama
-  - llama.cpp
-  - vllm
-  - claude
-  - codex
-modelRoles: 
-  slow: anthropic/claude-fable-5
-  advisor: openai-codex/gpt-5.6-sol
-  default: luma/glm-5.2:high
-  smol: luma/glm-5.2
+composer: 
+  shape: pi

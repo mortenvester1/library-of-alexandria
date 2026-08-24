@@ -201,11 +201,13 @@ fi
 
 # setup dotfiles
 info "installing dotfiles..."
+# Ensure gitignored AGENTS.local.md exists so tracked symlinks aren't dangling after fresh clone
+touch "${REPO_DEST}/dotfiles/common/AGENTS.local.md"
 stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zsh k9s ghostty
 chmod 700 "${HOME}/.config/gnupg"
 if [[ "${OS}" == "MacOS" ]]
 then
-  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude omp
+  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude omp codex
 fi
 
 # setup asdf - merge .tool-version files if local exist

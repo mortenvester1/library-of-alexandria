@@ -21,6 +21,37 @@ alias ....="cd ../../.."
 # To support migration to prek over pre-commit
 alias pre-commit="prek"
 
+
+# Claude Code - auto-load machine-local settings unless --settings is already passed
+claude() {
+  local has_settings=0
+  for arg in "$@"; do
+    case "$arg" in
+      --settings|--settings=*) has_settings=1 ;;
+    esac
+  done
+  if (( has_settings )); then
+    command claude "$@"
+  else
+    command claude --settings "$HOME/.claude/settings.local.json" "$@"
+  fi
+}
+
+# codex - auto-load local profile unless --profile is already passed
+codex() {
+  local has_profile=0
+  for arg in "$@"; do
+    case "$arg" in
+      --profile|--profile=*|-p) has_profile=1 ;;
+    esac
+  done
+  if (( has_profile )); then
+    command codex "$@"
+  else
+    command codex --profile local "$@"
+  fi
+}
+
 # use gnu ls instad
 alias activate-venv="source .venv/bin/activate"
 

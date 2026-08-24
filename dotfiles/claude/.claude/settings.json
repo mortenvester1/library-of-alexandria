@@ -11,7 +11,6 @@
       "Bash(awk *)",
       "Bash(command *)",
       "Bash(echo *)",
-      "Bash(env *)",
       "Bash(find *)",
       "Bash(gh api *)",
       "Bash(gh pr *)",
@@ -43,11 +42,16 @@
       "mcp__claude_ai_Linear__save_issue",
       "mcp__claude_ai_Notion__notion-fetch"
     ],
-    "deny": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)"],
-    "ask": ["Edit(~/git/**/.env*)", "Read(~/git/**/.env*)"],
+    "deny": [
+      "Edit(~/git/**/.env*)",
+      "Read(~/git/**/.env*)"
+    ],
+    "ask": [
+      "Edit(~/git/**/.env*)",
+      "Read(~/git/**/.env*)"
+    ],
     "defaultMode": "auto"
   },
-  "model": "opus[1m]",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -55,7 +59,8 @@
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true
   },
-  "effortLevel": "high",
+  "outputStyle": "Concise",
+  "effortLevel": "xhigh",
   "advisorModel": "opus",
   "showClearContextOnPlanAccept": true,
   "voice": {
@@ -63,6 +68,7 @@
     "mode": "hold"
   },
   "showThinkingSummaries": true,
+  "skipDangerousModePermissionPrompt": true,
   "autoCompactEnabled": true,
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,

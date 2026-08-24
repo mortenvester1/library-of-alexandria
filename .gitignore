@@ -6,17 +6,17 @@ library/*
 !library/AGENTS.md
 !library/CLAUDE.md
 
-# zsh
-dotfiles/zsh/.config/zsh/*.local
-
-# git
-dotfiles/git/.config/git/.gitlocal
-
-# homebrew
-pkgs/homebrew/Brewfile.local
-
-# asdf
+# dotfiles + pkgs local
 dotfiles/asdf/.config/asdf/.tool-versions.local
+dotfiles/common/AGENTS.local.md
+dotfiles/claude/.claude/settings.local.json
+dotfiles/git/.config/git/.gitlocal
+dotfiles/omp/.config/omp/agent/config.yml.lock
+dotfiles/omp/.config/omp/agent/config.local.yml
+dotfiles/opencode/.config/opencode/opencode.local.json
+dotfiles/codex/.codex/local.config.toml
+dotfiles/zsh/.config/zsh/*.local
+pkgs/homebrew/Brewfile.local
 
 # Python - Abbreviated version of github
 # Source: https://github.com/github/gitignore/blob/main/Python.gitignore

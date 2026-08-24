@@ -43,6 +43,11 @@ export K9SCONFIG="${XDG_CONFIG_HOME}/k9s"
 # oh my pi
 export PI_CONFIG_DIR="${XDG_CONFIG_HOME}/omp"
 export PI_CODING_AGENT_DIR="${PI_CONFIG_DIR}/agent"
+# OMP - local config overlay (machine-local settings merged on top of global config.yml)
+export PI_CONFIG_FILES="${PI_CODING_AGENT_DIR}/config.local.yml"
+
+# opencode - local config overlay (machine-local settings merged on top of global opencode.json)
+export OPENCODE_CONFIG="${XDG_CONFIG_HOME}/opencode/opencode.local.json"
 
 # python - set history, cache location
 export PYTHON_HISTORY=${XDG_STATE_HOME}/python/python_history
