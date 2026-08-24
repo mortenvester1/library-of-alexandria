@@ -107,6 +107,36 @@ A subagent call blocks the main agent, so main agent + 1 subagent is sequential 
 - Validate config before reload or restart; prefer reload when safe.
 - Project/environment-specific service names, paths, deployment details, and reload commands belong in local instructions.
 
+## Response Format
+
+Be concise and specific by default. No filler, intros, or restated requirements.
+
+Answer direct questions directly when possible. Example: `pytest -vvvs`, not `The command to run tests is pytest -vvvs.`
+
+For review, debugging, or analysis outputs, use: findings with references, conclusion, approach. Mention caveats and unverified risks.
+
+## Outward-facing content
+
+- Never publish `https://claude.ai/code/session_...` links — not in commit trailers, not in PR
+  bodies, not in PR/issue comments. Published **artifact** links (`claude.ai/code/artifact/...`,
+  e.g. an ADR write-up) are fine to reference and must not be stripped. Plain attribution trailers
+  are unaffected.
+
+## Comments
+
+- Default to a single terse line stating the non-obvious "why". At 3+ lines, cut it down; reserve
+  length for a genuine gotcha. Docstrings follow the same spirit but may run a little longer.
+- Infra/config edits (YAML manifests, env vars, kustomize overlays): add NO comment unless asked.
+  Put the why in the PR or the ticket.
+
+## Python
+
+- Python virtual environments and managed using `uv`. Before running commands, run: `source $(pwd).venv/bin/activate` if it exists to activate.
+- Module top by default. Inline (in-function) imports only when the module is genuinely expensive to
+  load (torch, transformers, decord, aioboto3, large native deps) or to break a real circular
+  import. Cheap singletons like `loguru.logger`, stdlib, and small first-party utilities go at the
+  top — inline is an optimization, not a style.
+
 ## Git & PRs
 
 - Commit only when explicitly requested.
@@ -114,6 +144,11 @@ A subagent call blocks the main agent, so main agent + 1 subagent is sequential 
 - Keep PRs small and scoped to one concern.
 - Do not force-push to main/master.
 - Do not use `--no-verify` or `--no-gpg-sign`.
+- Never `git commit --amend`, never rebase a published branch, and never `git push --force` /
+  `--force-with-lease` unless asked in that same message. Add a new commit and plain `git push`.
+- `--force-with-lease` does not protect a branch when the local tracking ref is stale — it has
+  already clobbered an upstream branch that had been rebased onto main. If a history rewrite looks
+  necessary, surface that and ask first.
 
 ## Completion
 
@@ -128,20 +163,9 @@ Before declaring completion, confirm the change solves the stated problem, relev
 
 When creating plans or implementation strategies:
 
-- Always save them to `$(pwd)/.claude/plans/` directory
+- Always save them to `$(pwd)/.agents/plans/` directory
 - Use the naming format: `YYYYMMDD_<counter>_<descriptive-slug>.md`
 - Example: `20250115_001_auth_refactor_plan.md`, `20250115_002_signin_refactor_plan.md`
 - Include a YAML frontmatter block with creation timestamp and summary
 - Continue to discuss the plan in chat as normal
 
-## Response Format
-
-Be concise and specific by default. No filler, intros, or restated requirements.
-
-Answer direct questions directly when possible. Example: `pytest -vvvs`, not `The command to run tests is pytest -vvvs.`
-
-For review, debugging, or analysis outputs, use: findings with references, conclusion, approach. Mention caveats and unverified risks.
-
-## Local overrides
-
-@~/.claude/AGENTS.local.md
