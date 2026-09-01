@@ -1,6 +1,10 @@
 # This file is read in interactive shell sessions
 # Use to configure various programs, aliases, secrets, etc.
 
+# Homebrew zsh 5.9.1 compiles in a broken fpath (points to Cellar/zsh/5.9/ which doesn't exist).
+# Prepend the keg-linked path so built-in functions (is-at-least, add-zsh-hook, compinit, etc.) are found.
+[[ -d /opt/homebrew/share/zsh/functions ]] && fpath=(/opt/homebrew/share/zsh/functions $fpath)
+
 # zinit setup
 [ -d ${ZINIT_HOME}/.git ] || git clone https://github.com/zdharma-continuum/zinit.git "${ZINIT_HOME}"
 source "${ZINIT_HOME}/zinit.zsh"

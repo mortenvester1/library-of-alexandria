@@ -21,6 +21,9 @@
     "dock": "left",
   },
   "agent_servers": {
+    "pi-acp": {
+      "type": "registry"
+    },
     "opencode": {
       "type": "registry",
     },

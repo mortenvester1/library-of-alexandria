@@ -30,7 +30,8 @@ claude() {
       --settings|--settings=*) has_settings=1 ;;
     esac
   done
-  if (( has_settings )); then
+  # claude errors out if --settings points at a file that doesn't exist
+  if (( has_settings )) || [[ ! -f "$HOME/.claude/settings.local.json" ]]; then
     command claude "$@"
   else
     command claude --settings "$HOME/.claude/settings.local.json" "$@"

@@ -30,7 +30,8 @@ statusLine:
   compactThinkingLevel: false
   showHookStatus: false
 theme: 
-  dark: dark-dracula
+  dark: titanium
+  light: light
 terminal: 
   showProgress: true
 tui: 
@@ -49,3 +50,7 @@ advisor:
 doubleEscapeAction: tree
 composer: 
   shape: pi
+modelRoles: 
+  default: lm-studio/qwen/qwen3.8-27b
+symbolPreset: unicode
+setupVersion: 1

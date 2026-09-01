@@ -31,16 +31,7 @@
       "WebSearch",
       "mcp__acp__Bash",
       "mcp__acp__Edit",
-      "mcp__acp__Write",
-      "mcp__claude_ai_Linear__create_issue_label",
-      "mcp__claude_ai_Linear__get_issue",
-      "mcp__claude_ai_Linear__list_comments",
-      "mcp__claude_ai_Linear__list_issue_labels",
-      "mcp__claude_ai_Linear__list_issue_statuses",
-      "mcp__claude_ai_Linear__list_projects",
-      "mcp__claude_ai_Linear__list_teams",
-      "mcp__claude_ai_Linear__save_issue",
-      "mcp__claude_ai_Notion__notion-fetch"
+      "mcp__acp__Write"
     ],
     "deny": [
       "Edit(~/git/**/.env*)",
@@ -57,12 +48,14 @@
     "command": "~/.claude/statusline.sh"
   },
   "enabledPlugins": {
-    "pyright-lsp@claude-plugins-official": true
+    "pyright-lsp@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true
   },
   "outputStyle": "Concise",
   "effortLevel": "xhigh",
   "advisorModel": "opus",
   "showClearContextOnPlanAccept": true,
+  "tui": "fullscreen",
   "voice": {
     "enabled": true,
     "mode": "hold"

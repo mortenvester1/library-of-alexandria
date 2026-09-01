@@ -22,6 +22,10 @@ create-ssh-key user key_postfix password="":
     ssh-add ~/.ssh/id_ed25519_{{ key_postfix }}
     echo "copy '~/.ssh/id_ed25519_{{ key_postfix }}.pub' to pasteboard and add where it is needed"
 
+# Copy local ssh key to remote machine for passwordless login
+copy-ssh-key user host pub-key:
+    ssh-copy-id -i {{ pub-key }} {{ user }}@{{ host }}
+
 # Create ~/.ssh/config with GitHub host entry
 create-ssh-config key_postfix:
     #!/bin/bash

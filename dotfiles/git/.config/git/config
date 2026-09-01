@@ -27,3 +27,5 @@
 	required = true
 [include]
     path = ~/.config/git/.gitlocal
+[init]
+	defaultBranch = main
