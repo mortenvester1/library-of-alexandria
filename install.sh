@@ -205,7 +205,7 @@ info "installing dotfiles..."
 touch "${REPO_DEST}/dotfiles/common/AGENTS.local.md"
 stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zsh k9s ghostty
 chmod 700 "${HOME}/.config/gnupg"
-if [[ "${OS}" == "MacOS" ]]
+if [[ "${OS}" == "MacOS" || "${OS}" == "CachyOS" ]]
 then
   stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude omp codex
 fi

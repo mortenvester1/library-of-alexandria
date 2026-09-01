@@ -2,6 +2,7 @@ base-devel
 bat
 bitwarden
 bzip2
+claude-code
 docker
 docker-buildx
 docker-compose
@@ -16,6 +17,8 @@ just
 k9s
 minidlna
 ncurses
+obsidian
+openai-codex
 openssl
 perl-rename
 python
@@ -27,4 +30,5 @@ stow
 transmission-cli
 uv
 yq
+zed
 zsh
