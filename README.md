@@ -75,8 +75,6 @@ ${XDG_CONFIG_HOME}/git/.gitlocal
 ${XDG_CONFIG_HOME}/zsh/.zshrc.local
 ${XDG_CONFIG_HOME}/zsh/.zshenv.local
 ${XDG_CONFIG_HOME}/zsh/.zshprofile.local
-${XDG_CONFIG_HOME}/zsh/.zshrc.local
-
 ```
 
 ## Development

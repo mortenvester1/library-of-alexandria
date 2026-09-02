@@ -5,8 +5,12 @@ services:
     ports:
       - 8096:8096/tcp
       - 7359:7359/udp
-    networks:
-      - monitoring
+      - 1900:1900/udp
+    # requires host mode for dlna
+    # and cannot connect to monitoring network at the same time
+    network_mode: "host"
+    # networks:
+    #   - monitoring
     volumes:
       - ${HOME}/.local/share/jellyfin:/data
       - ${HOME}/.config/jellyfin:/config
@@ -20,6 +24,6 @@ services:
       - JELLYFIN_CONFIG_DIR=/config
       - JELLYFIN_CACHE_DIR=/cache
 
-networks:
-  monitoring:
-    external: true
+# networks:
+#   monitoring:
+#     external: true
