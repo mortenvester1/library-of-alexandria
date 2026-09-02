@@ -61,7 +61,13 @@ services:
       start_period: 30s
     restart: unless-stopped
     networks:
-      - buzz-net
+      buzz-net: {}
+      # Reachable as `buzz-relay:9102` from the monitoring stack's Alloy for
+      # /metrics scraping. Logs + cAdvisor container metrics come via the Docker
+      # socket and need no network attachment.
+      monitoring:
+        aliases:
+          - buzz-relay
 
   postgres:
     image: postgres:17-alpine
@@ -149,3 +155,7 @@ volumes:
 networks:
   buzz-net:
     driver: bridge
+  # Created outside this stack (docker network create monitoring); shared with
+  # apps/monitoring so Alloy can scrape the relay.
+  monitoring:
+    external: true

@@ -68,6 +68,14 @@ prometheus.scrape "jellyfin" {
   metrics_path    = "/metrics"
 }
 
+// Scrape Buzz relay metrics (relay joins the monitoring network as buzz-relay)
+prometheus.scrape "buzz" {
+  targets         = [{__address__ = "buzz-relay:9102"}]
+  forward_to      = [ prometheus.remote_write.local.receiver ]
+  scrape_interval = "10s"
+  metrics_path    = "/metrics"
+}
+
 
 // ###############################
 // #### Logging Configuration ####
