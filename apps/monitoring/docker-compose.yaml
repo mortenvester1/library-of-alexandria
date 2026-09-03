@@ -77,6 +77,22 @@ services:
       - monitoring
     restart: unless-stopped
 
+  grafana-mcp:
+    image: grafana/mcp-grafana:latest
+    container_name: grafana-mcp
+    command: ["-t", "streamable-http"]
+    ports:
+      - "8001:8000"
+    networks:
+      - monitoring
+    environment:
+      GRAFANA_URL: http://grafana:3000
+      GRAFANA_SERVICE_ACCOUNT_TOKEN: ${GRAFANA_MCP_SVC_ACC_TOKEN}
+      MCP_GRAFANA_SERVER_TOKEN: ${MCP_GRAFANA_SERVER_TOKEN}
+    depends_on:
+      - grafana
+    restart: unless-stopped
+
 volumes:
   prometheus-data:
   grafana-data:
