@@ -1,6 +1,12 @@
+// Portable between macOS and this Linux box: Toshy routes the physical Cmd key
+// to Super for the "cmd-" bindings below (see keymap("Zed editor") in
+// ~/.config/toshy/toshy_config.py).
+//
+// Platform-specific bindings are scoped with "os == linux" / "os == macos"
+// rather than being spelled differently per machine.
 [
   {
-    // "context": "Workspace",
+    "context": "Workspace",
     "bindings": {
       "shift shift": "file_finder::Toggle",
       "cmd-t": "workspace::NewTerminal",
@@ -14,14 +20,27 @@
     },
   },
   {
-    "context": "Editor",
+    // macOS only: there, ctrl-a is the physical Ctrl key. On Linux physical Cmd
+    // arrives as "ctrl-", and ctrl-a is the only route to editor::SelectAll, so
+    // this must not apply. Linux gets the picker on physical Ctrl+A via Toshy.
+    "context": "Editor && os == macos",
     "bindings": {
       "ctrl-a": "language_selector::Toggle",
     },
   },
   {
     "unbind": {
-      "cmd-shift-c": "collab_panel::ToggleFocus"
-    }
+      "cmd-shift-c": "collab_panel::ToggleFocus",
+    },
+  },
+  {
+    // Linux only: Zed overrides ctrl-w in Terminal to send ^W to the shell, and
+    // physical Cmd arrives as "ctrl-" there. On macOS cmd-w already closes the
+    // item via [Pane], and ctrl-w must stay as the shell's kill-word.
+    "context": "Terminal && os == linux",
+    "bindings": {
+      "ctrl-w": "pane::CloseActiveItem",
+      "cmd-t": "workspace::NewTerminal",
+    },
   }
 ]
