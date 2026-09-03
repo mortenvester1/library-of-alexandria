@@ -80,7 +80,7 @@ services:
   grafana-mcp:
     image: grafana/mcp-grafana:latest
     container_name: grafana-mcp
-    command: ["-t", "streamable-http"]
+    command: ["-t", "streamable-http", "--allowed-hosts", "gurpgork-bee.local:8001,localhost:8000,127.0.0.1:8000"]
     ports:
       - "8001:8000"
     networks:
