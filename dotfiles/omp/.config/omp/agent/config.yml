@@ -1,56 +1,52 @@
-memory: 
+memory:
   backend: mnemopi
-mnemopi: 
+mnemopi:
   scoping: per-project
-autolearn: 
+autolearn:
   enabled: true
-statusLine: 
+statusLine:
   preset: custom
   separator: none
-  leftSegments: 
+  leftSegments:
     - hostname
     - model
     - mode
     - path
     - git
-  rightSegments: 
+  rightSegments:
     - context_pct
     - token_total
     - cost
-  segmentOptions: 
-    git: 
+  segmentOptions:
+    git:
       showBranch: true
       showStaged: true
       showUnstaged: true
       showUntracked: true
-    context_pct: 
+    context_pct:
       bar: true
   sessionAccent: true
   transparent: true
   compactThinkingLevel: false
   showHookStatus: false
-theme: 
+theme:
   dark: titanium
   light: light
-terminal: 
+terminal:
   showProgress: true
-tui: 
+tui:
   textSizing: false
   renderMermaid: true
   titleState: true
   tight: true
-display: 
+display:
   shimmer: classic
   showTokenUsage: true
   cacheMissMarker: false
   collapseCompacted: true
 hideThinkingBlock: true
-advisor: 
+advisor:
   enabled: true
 doubleEscapeAction: tree
-composer: 
+composer:
   shape: pi
-modelRoles: 
-  default: lm-studio/qwen/qwen3.8-27b
-symbolPreset: unicode
-setupVersion: 1

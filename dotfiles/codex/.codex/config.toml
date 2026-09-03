@@ -1,3 +1,13 @@
 personality = "pragmatic"
 model_reasoning_effort = "high"
 approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+default_permissions = "development"
+
+[permissions.development]
+extends = ":workspace"
+
+[permissions.development.filesystem]
+"~/.config/**" = "read"
+"~/git/**" = "read"
+"~/git/**/.env*" = "deny"

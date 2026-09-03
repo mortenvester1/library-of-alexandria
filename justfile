@@ -47,8 +47,8 @@ create-gpg-key name email password:
     echo "copy to pasteboard and add where it is needed"
 
 # restow a package
-stow pkg:
-    stow --target ${HOME} --dir "dotfiles" -R --no-folding {{ pkg }}
+stow *pkgs:
+    stow --target ${HOME} --dir "dotfiles" -R --no-folding {{ pkgs }}
 
 # Upgrade install based on local repo
 upgrade:
