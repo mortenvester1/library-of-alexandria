@@ -161,6 +161,18 @@ then
   sudo pacman -Syu --noconfirm
   xargs sudo pacman -S --needed --noconfirm < ${REPO_DEST}/pkgs/pacman/pkgs.txt
   xargs paru -S --needed --noconfirm < ${REPO_DEST}/pkgs/aur/pkgs.txt
+
+  # local additions
+  if [[ -s "${REPO_DEST}/pkgs/pacman/pkgs.local.txt" ]]
+  then
+    xargs sudo pacman -S --needed --noconfirm < ${REPO_DEST}/pkgs/pacman/pkgs.local.txt
+  fi
+
+  if [[ -s "${REPO_DEST}/pkgs/aur/pkgs.local.txt" ]]
+  then
+    xargs paru -S --needed --noconfirm < ${REPO_DEST}/pkgs/aur/pkgs.local.txt
+  fi
+
   sudo systemctl enable --now docker
   sudo usermod -aG docker "$(whoami)"
   chsh -s "$(which zsh)"
