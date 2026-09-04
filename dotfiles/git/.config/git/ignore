@@ -3,5 +3,7 @@
 .claude/settings.local.json
 .claude/plans
 .claude/research
+.agents/plans
+.agents/research
 .envrc
 AGENTS.local.md

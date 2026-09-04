@@ -1,0 +1,82 @@
+# Upscaler - Justfile
+# Run `just --list` to see all available recipes
+
+# Default recipe (shown when just is run without arguments)
+default:
+    @just --list
+
+# Format
+[group('uv')]
+fmt:
+    uvx ruff format src/
+
+# Lint
+[group('uv')]
+lint:
+    uvx ruff check src/
+
+# Update dependencies
+[group('uv')]
+sync:
+    uv sync --extra dev
+
+# Run unit tests
+[group('uv')]
+test args="":
+    uv run pytest {{ args }}
+
+# Build the image
+[group('docker')]
+build:
+    docker compose build
+
+# Start the stack
+[group('docker')]
+up:
+    docker compose up -d --wait
+
+# Stop the stack, freeing VRAM for ComfyUI
+[group('docker')]
+down:
+    docker compose down
+
+# Tail logs
+[group('docker')]
+logs:
+    docker compose logs -f upscaler
+
+# Print the GPU arch torch actually sees, to settle HSA_OVERRIDE_GFX_VERSION
+[group('docker')]
+gfx:
+    docker compose run --rm --entrypoint python upscaler -c \
+      "import torch; print(torch.version.hip, torch.cuda.get_device_properties(0).gcnArchName)"
+
+# Service health, including the torch/HIP build in use
+[group('api')]
+health host="localhost":
+    curl -fsS http://{{ host }}:8700/healthz | python3 -m json.tool
+
+# Discovered models with detected architecture and native scale
+[group('api')]
+models host="localhost":
+    curl -fsS http://{{ host }}:8700/models | python3 -m json.tool
+
+# Upscale one image: `just upscale in.png out.png 4x-SGI.pth 2`
+[group('api')]
+upscale src dst model scale="2" host="localhost":
+    curl -fsS -X POST http://{{ host }}:8700/upscale \
+      -F "image=@{{ src }}" \
+      -F "model={{ model }}" \
+      -F "scale={{ scale }}" \
+      -o {{ dst }}
+
+# Upscale every PNG in a directory. One GPU means concurrency 1 by design.
+[group('api')]
+batch src_dir dst_dir model scale="2" host="localhost":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p "{{ dst_dir }}"
+    for f in "{{ src_dir }}"/*.png; do
+      just upscale "$f" "{{ dst_dir }}/$(basename "$f")" "{{ model }}" "{{ scale }}" "{{ host }}"
+      echo "$(basename "$f")"
+    done

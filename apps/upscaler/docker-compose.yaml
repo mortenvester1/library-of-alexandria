@@ -1,0 +1,40 @@
+name: upscaler
+
+services:
+  upscaler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: upscaler:latest
+    container_name: upscaler
+    ports:
+      - "${UPSCALER_PORT:-8700}:8700"
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - "${VIDEO_GID:?set VIDEO_GID}"
+      - "${RENDER_GID:?set RENDER_GID}"
+    security_opt:
+      - seccomp:unconfined
+      - label=disable
+    cap_add:
+      - SYS_PTRACE
+    ipc: host
+    shm_size: "8g"
+    environment:
+      HSA_OVERRIDE_GFX_VERSION: "${HSA_OVERRIDE_GFX_VERSION:-}"
+      PYTORCH_ROCM_ARCH: "${PYTORCH_ROCM_ARCH:-gfx1201}"
+      UPSCALER_MODELS_DIR: /models
+      UPSCALER_TILE: "${UPSCALER_TILE:-512}"
+      UPSCALER_TILE_OVERLAP: "${UPSCALER_TILE_OVERLAP:-32}"
+      UPSCALER_BLEED_PASSES: "${UPSCALER_BLEED_PASSES:-16}"
+      UPSCALER_ALPHA_SCALE: "${UPSCALER_ALPHA_SCALE:-box}"
+      UPSCALER_LOG_LEVEL: "${UPSCALER_LOG_LEVEL:-INFO}"
+    volumes:
+      - "${MODELS_DIR:?set MODELS_DIR}/upscale_models:/models:ro"
+      - miopen-cache:/home/appuser/.cache
+    restart: unless-stopped
+
+volumes:
+  miopen-cache:

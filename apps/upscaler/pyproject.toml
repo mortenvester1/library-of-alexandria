@@ -1,0 +1,65 @@
+[project]
+name = "upscaler"
+version = "0.1.0"
+description = "Deterministic exact-scale image upscaling over HTTP, backed by spandrel on ROCm"
+authors = [
+    { name = "Morten Pedersen", email = "mortenvester1@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "colorlog>=6.10.1",
+    "einops>=0.8.0",
+    "fastapi>=0.117.1",
+    "numpy>=2.1.0",
+    "pillow>=11.0.0",
+    "pydantic>=2.11.9",
+    "pydantic-settings>=2.10.1",
+    "python-multipart>=0.0.9",
+    "safetensors>=0.4.5",
+    "spandrel>=0.4.2",
+    "torch>=2.12.0,<2.14.0",
+    "triton-rocm>=3.7.0 ; sys_platform == 'linux'",
+    "torchvision>=0.27.0,<0.29.0",
+    "uvicorn[standard]>=0.36.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx>=0.27.0",
+    "pytest-cov>=6.0.0",
+    "pytest>=8.2.0",
+    "pytest-cov>=6.0.0"
+]
+
+# ROCm builds are Linux-only; macOS/Windows fall back to the PyPI CPU wheels.
+[[tool.uv.index]]
+name = "pytorch-rocm"
+url = "https://download.pytorch.org/whl/rocm7.2"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-rocm", marker = "sys_platform == 'linux'" }]
+torchvision = [{ index = "pytorch-rocm", marker = "sys_platform == 'linux'" }]
+pytorch-triton-rocm = [{ index = "pytorch-rocm", marker = "sys_platform == 'linux'" }]
+triton-rocm = [{ index = "pytorch-rocm", marker = "sys_platform == 'linux'" }]
+
+[tool.ruff]
+exclude = [".venv"]
+line-length = 120
+
+[tool.ruff.lint]
+# Enable pycodestyle (E, W), pyflakes (F), and isort (I)
+select = ["E", "F", "W", "I"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # Allow unused imports in __init__.py files
+
+[tool.pytest.ini_options]
+addopts = "-v --tb=short"
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

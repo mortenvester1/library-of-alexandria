@@ -1,0 +1,32 @@
+name: comfyui
+
+services:
+  comfyui:
+    image: yanwk/comfyui-boot:rocm7
+    container_name: comfyui
+    ports:
+      - "${COMFYUI_PORT:-8188}:8188"
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - "${VIDEO_GID:?set VIDEO_GID}"
+      - "${RENDER_GID:?set RENDER_GID}"
+    security_opt:
+      - seccomp:unconfined
+      - label=disable
+    cap_add:
+      - SYS_PTRACE
+    ipc: host
+    shm_size: "8g"
+    environment:
+      HSA_OVERRIDE_GFX_VERSION: "${HSA_OVERRIDE_GFX_VERSION:-}"
+      CLI_ARGS: "${COMFYUI_CLI_ARGS:-}"
+    volumes:
+      - "${MODELS_DIR:?set MODELS_DIR}:/root/ComfyUI/models"
+      - "${COMFYUI_STORAGE:?set COMFYUI_STORAGE}/input:/root/ComfyUI/input"
+      - "${COMFYUI_STORAGE:?set COMFYUI_STORAGE}/output:/root/ComfyUI/output"
+      - "${COMFYUI_STORAGE:?set COMFYUI_STORAGE}/workflows:/root/ComfyUI/user/default/workflows"
+      - "${COMFYUI_STORAGE:?set COMFYUI_STORAGE}/hf-hub:/root/.cache/huggingface/hub"
+      - "${COMFYUI_STORAGE:?set COMFYUI_STORAGE}/torch-hub:/root/.cache/torch/hub"
+    restart: unless-stopped
