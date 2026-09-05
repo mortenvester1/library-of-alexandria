@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -8,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 
 import entrance
-from entrance.settings import Settings, get_host_ip, get_settings
+from entrance.settings import Settings, check_app_reachable, get_host_ip, get_settings
 
 # Initialize with default settings for logging setup
 settings = get_settings()
@@ -78,6 +79,33 @@ async def get_apps(settings: Annotated[Settings, Depends(get_settings)]):
     """
     logger.debug(f"Apps endpoint accessed, returning {len(settings.apps)} app(s)")
     return settings.apps
+
+
+@app.get("/app-status")
+async def get_app_status(settings: Annotated[Settings, Depends(get_settings)]):
+    """Check reachability of all configured applications.
+
+    Returns a dict mapping app names to their reachability status.
+    """
+    status = {}
+    tasks = []
+    app_names = []
+
+    for app in settings.apps:
+        host = app.host or settings.hostname
+        app_names.append(app.name)
+        tasks.append(check_app_reachable(host, app.port, app.route))
+
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    for app_name, result in zip(app_names, results):
+        if isinstance(result, Exception):
+            status[app_name] = False
+        else:
+            status[app_name] = result
+
+    logger.debug(f"App status check: {status}")
+    return status
 
 
 @app.get("/health")

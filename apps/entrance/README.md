@@ -58,6 +58,12 @@ apps:
       port: 8080
       description: "React development server"
 
+    # Use a different host (IP or hostname like blabla.local)
+    - name: "App on Another Machine"
+      host: "192.168.1.20"
+      port: 8080
+      description: "Service on different host"
+
     # Use host IP instead of hostname (for services requiring IP-based access)
     - name: "MiniDLNA"
       port: 8200
@@ -71,6 +77,7 @@ Each app requires:
 
 - `name` (required): Display name for the application
 - `port` (required): Port number where the service is running (e.g., `8080`)
-- `use_host_ip` (optional, default `false`): Use the host machine's IP address instead of hostname
+- `host` (optional): Hostname or IP address for the service (e.g., `192.168.1.20` or `blabla.local`). Overrides the global `hostname` if set
+- `use_host_ip` (optional, default `false`): Use the host machine's IP address instead of hostname (deprecated in favor of `host` field)
 - `description` (optional): Brief description of the service
 - `route` (optional): Additional route path

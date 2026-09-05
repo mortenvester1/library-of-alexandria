@@ -49,6 +49,26 @@
         height: 200px;
         display: flex;
         flex-direction: column;
+        position: relative;
+      }
+
+      .status-indicator {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ddd;
+        transition: background 0.3s ease;
+      }
+
+      .status-indicator.reachable {
+        background: #4ade80;
+      }
+
+      .status-indicator.unreachable {
+        background: #f87171;
       }
 
       .app-card:hover {
@@ -117,17 +137,13 @@
 
       {% if apps %}
       <div class="app-grid">
-        {% for app in apps %} {% if app.use_host_ip %}
+        {% for app in apps %}
           <div
             class="app-card"
-            onclick="window.location.href = 'http://{{ host_ip }}:{{ app.port }}{{ app.route }}'"
+            onclick="window.location.href = 'http://' + ('{{ app.host or "" }}' || window.location.hostname) + ':{{ app.port }}{{ app.route }}'"
+            data-app-name="{{ app.name }}"
           >
-          {% else %}
-          <div
-            class="app-card"
-            onclick="window.location.port = '{{ app.port }}'"
-          >
-          {% endif %}
+            <div class="status-indicator" data-app="{{ app.name }}"></div>
             <div class="app-name">{{ app.name }}</div>
             <div class="app-port">Port: {{ app.port }}</div>
             {% if app.route %}
@@ -144,5 +160,27 @@
       </div>
       {% endif %}
     </div>
+    <script>
+      async function updateAppStatus() {
+        try {
+          const response = await fetch("/app-status");
+          const status = await response.json();
+
+          for (const [appName, isReachable] of Object.entries(status)) {
+            const indicator = document.querySelector(`[data-app="${appName}"]`);
+            if (indicator) {
+              indicator.classList.remove("reachable", "unreachable");
+              indicator.classList.add(isReachable ? "reachable" : "unreachable");
+            }
+          }
+        } catch (error) {
+          console.error("Failed to update app status:", error);
+        }
+      }
+
+      // Update status immediately on load, then every 15 seconds
+      updateAppStatus();
+      setInterval(updateAppStatus, 15000);
+    </script>
   </body>
 </html>

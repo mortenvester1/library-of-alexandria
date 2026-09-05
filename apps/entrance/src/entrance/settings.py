@@ -1,9 +1,11 @@
+import asyncio
 import logging
 import os
 import socket
 from functools import lru_cache
 from typing import Set
 
+import httpx
 from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import (
     BaseSettings,
@@ -41,6 +43,7 @@ class LocalhostApp(BaseModel):
         name: Display name of the application
         port: Port number where the application is running
         description: Optional description of the application
+        host: Hostname or IP address for the application (overrides global hostname)
 
     Security:
         - Port must be in valid range (1-65535)
@@ -50,6 +53,7 @@ class LocalhostApp(BaseModel):
     name: str = Field(..., min_length=1, description="Application name")
     port: int = Field(..., ge=1, le=65535, description="Port number (1-65535)")
     route: str = Field(default="", description="Optional route")
+    host: str | None = Field(default=None, description="Hostname or IP address (e.g., 192.168.1.10 or blabla.local)")
     use_host_ip: bool = Field(default=False, description="Use host IP address instead of hostname")
     description: str | None = Field(default=None, description="Optional application description")
 
@@ -101,7 +105,9 @@ class Settings(BaseSettings):
     )
 
     # Application settings
-    hostname: str = "localhost"
+    hostname: str = Field(
+        default_factory=get_host_ip, description="Default hostname/IP for apps without their own host"
+    )
     log_level: str = "INFO"
     blocked_ports: Set[int] = {
         # Well-known system ports (0-1023) - require root/admin privileges
@@ -215,3 +221,28 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings():
     return Settings()
+
+
+async def check_app_reachable(host: str, port: int, route: str = "", timeout: float = 2.0) -> bool:
+    """Check if an app is reachable via HTTP.
+
+    Args:
+        host: Hostname or IP address
+        port: Port number
+        route: Optional route to probe instead of the root path
+        timeout: Request timeout in seconds
+
+    Returns:
+        True if reachable, False otherwise
+    """
+    try:
+        url = f"http://{host}:{port}{route or '/'}"
+        # local_address forces IPv4: some hosts advertise an unreachable IPv6/mDNS
+        # address alongside a working IPv4 one, and httpx doesn't race the two.
+        transport = httpx.AsyncHTTPTransport(local_address="0.0.0.0")
+        async with httpx.AsyncClient(verify=False, timeout=timeout, transport=transport) as client:
+            # GET, not HEAD: some apps return 501 for HEAD.
+            response = await client.get(url, follow_redirects=True)
+            return response.status_code < 500
+    except Exception:
+        return False

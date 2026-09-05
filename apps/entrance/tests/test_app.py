@@ -49,10 +49,12 @@ def test_apps_endpoint_structure(client):
         assert "port" in app_data
         assert "use_host_ip" in app_data
         assert "description" in app_data
+        assert "host" in app_data
         assert isinstance(app_data["name"], str)
         assert isinstance(app_data["port"], int)
         assert 1 <= app_data["port"] <= 65535
         assert isinstance(app_data["use_host_ip"], bool)
+        assert app_data["host"] is None or isinstance(app_data["host"], str)
 
 
 def test_health_check(client):
@@ -64,6 +66,19 @@ def test_health_check(client):
     assert "apps_configured" in data
     assert isinstance(data["apps_configured"], int)
     assert data["apps_configured"] >= 0
+
+
+def test_app_status_endpoint(client):
+    """Test the app status endpoint."""
+    response = client.get("/app-status")
+    assert response.status_code == 200
+    status = response.json()
+    assert isinstance(status, dict)
+    # Status should have entries for each configured app
+    # Values should be boolean (True/False for reachability)
+    for app_name, is_reachable in status.items():
+        assert isinstance(app_name, str)
+        assert isinstance(is_reachable, bool)
 
 
 def test_favicon_endpoint(client):
@@ -106,3 +121,21 @@ def test_host_ip_flag():
     assert len(host_ip) > 0
     # Basic IP format check (has dots)
     assert "." in host_ip
+
+
+def test_host_field():
+    """Test that custom host field works correctly."""
+    from entrance.settings import LocalhostApp
+
+    # Test app with custom host (IP address)
+    app_with_ip = LocalhostApp(name="Remote App", port=8080, host="192.168.1.20", description="Test")
+    assert app_with_ip.host == "192.168.1.20"
+    assert app_with_ip.port == 8080
+
+    # Test app with custom host (mDNS hostname)
+    app_with_hostname = LocalhostApp(name="Remote App", port=8080, host="blabla.local", description="Test")
+    assert app_with_hostname.host == "blabla.local"
+
+    # Test app without host field (default None)
+    app_without_host = LocalhostApp(name="Local App", port=8080, description="Test")
+    assert app_without_host.host is None
