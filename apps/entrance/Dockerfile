@@ -28,6 +28,13 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Final stage - minimal runtime image
 FROM python:3.13-slim-bookworm
 
+# mDNS resolution for .local hostnames (host is on network_mode: host, but NSS
+# config/modules live in the image, not the shared network namespace)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libnss-mdns \
+    && rm -rf /var/lib/apt/lists/* \
+    && sed -i 's/^hosts:.*/hosts: files mdns4_minimal [NOTFOUND=return] dns/' /etc/nsswitch.conf
+
 # Create a non-root user for security
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 

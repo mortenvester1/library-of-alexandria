@@ -54,8 +54,8 @@ clean:
 
 # Build docker image
 [group('docker')]
-docker-build:
-    docker build -t entrance:latest .
+docker-build *args:
+    docker build {{ args }} -t entrance:latest .
 
 # Run app in docker container for development
 [group('docker')]
@@ -78,8 +78,8 @@ docker-dev:
 
 # Run app with docker compose
 [group('docker')]
-up:
-    docker compose up -d --force-recreate
+up *args:
+    docker compose up -d --force-recreate {{ args }}
 
 # Stop app in docker compose
 [group('docker')]
