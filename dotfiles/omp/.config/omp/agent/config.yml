@@ -50,3 +50,140 @@ advisor:
 doubleEscapeAction: tree
 composer:
   shape: pi
+bash:
+  allowCompoundCommands: true
+  # Mirrors ~/.claude/settings.json. First match wins, so prompts precede the allows they narrow.
+  patterns:
+    - { match: "kubectl delete *", approval: prompt }
+    - { match: "flux suspend *", approval: prompt }
+    - { match: "git push --force*", approval: prompt }
+    - { match: "git push -f *", approval: prompt }
+    - { match: "git push * --force*", approval: prompt }
+    - { match: "git push * -f *", approval: prompt }
+    - { match: "git push --delete *", approval: prompt }
+    - { match: "git commit --amend*", approval: prompt }
+    - { match: "git commit * --amend*", approval: prompt }
+    - { match: "git checkout -- *", approval: prompt }
+    - { match: "git checkout .", approval: prompt }
+    - { match: "git config --global *", approval: prompt }
+    - { match: "gh pr merge *", approval: prompt }
+    - { match: "gh pr close *", approval: prompt }
+    - { match: "gh api -X *", approval: prompt }
+    - { match: "gh api --method *", approval: prompt }
+    - { match: "gh api * -f *", approval: prompt }
+    - { match: "gh api * -F *", approval: prompt }
+    - { match: "gh api * --field *", approval: prompt }
+    - { match: "gh api * --raw-field *", approval: prompt }
+    - { match: "gh api * --input *", approval: prompt }
+    - { match: "kubectl get secret*", approval: prompt }
+    - { match: "kubectl get * secret*", approval: prompt }
+    - { match: "kubectl * get secret*", approval: prompt }
+    - { match: "kubectl * get * secret*", approval: prompt }
+    - { match: "awk *", approval: allow }
+    - { match: "basename *", approval: allow }
+    - { match: "cat *", approval: allow }
+    - { match: "command -v *", approval: allow }
+    - { match: "cut *", approval: allow }
+    - { match: "date", approval: allow }
+    - { match: "date *", approval: allow }
+    - { match: "diff *", approval: allow }
+    - { match: "dirname *", approval: allow }
+    - { match: "echo *", approval: allow }
+    - { match: "file *", approval: allow }
+    - { match: "find *", approval: allow }
+    - { match: "grep *", approval: allow }
+    - { match: "head *", approval: allow }
+    - { match: "jq *", approval: allow }
+    - { match: "ls", approval: allow }
+    - { match: "ls *", approval: allow }
+    - { match: "printf *", approval: allow }
+    - { match: "ps", approval: allow }
+    - { match: "ps *", approval: allow }
+    - { match: "pwd", approval: allow }
+    - { match: "readlink *", approval: allow }
+    - { match: "realpath *", approval: allow }
+    - { match: "rg *", approval: allow }
+    - { match: "sed -n *", approval: allow }
+    - { match: "sort *", approval: allow }
+    - { match: "stat *", approval: allow }
+    - { match: "tail *", approval: allow }
+    - { match: "tr *", approval: allow }
+    - { match: "tree", approval: allow }
+    - { match: "tree *", approval: allow }
+    - { match: "uniq *", approval: allow }
+    - { match: "wc *", approval: allow }
+    - { match: "which *", approval: allow }
+    - { match: "source .venv/bin/activate", approval: allow }
+    - { match: "source .venv/bin/activate *", approval: allow }
+    - { match: "git add *", approval: allow }
+    - { match: "git blame *", approval: allow }
+    - { match: "git branch --show-current", approval: allow }
+    - { match: "git branch -a", approval: allow }
+    - { match: "git branch -a *", approval: allow }
+    - { match: "git check-ignore *", approval: allow }
+    - { match: "git checkout *", approval: allow }
+    - { match: "git commit *", approval: allow }
+    - { match: "git config *", approval: allow }
+    - { match: "git diff", approval: allow }
+    - { match: "git diff *", approval: allow }
+    - { match: "git fetch", approval: allow }
+    - { match: "git fetch *", approval: allow }
+    - { match: "git log", approval: allow }
+    - { match: "git log *", approval: allow }
+    - { match: "git ls-files", approval: allow }
+    - { match: "git ls-files *", approval: allow }
+    - { match: "git pull", approval: allow }
+    - { match: "git pull *", approval: allow }
+    - { match: "git push", approval: allow }
+    - { match: "git push *", approval: allow }
+    - { match: "git remote -v", approval: allow }
+    - { match: "git rev-parse *", approval: allow }
+    - { match: "git show *", approval: allow }
+    - { match: "git stash list", approval: allow }
+    - { match: "git status", approval: allow }
+    - { match: "git status *", approval: allow }
+    - { match: "git worktree list", approval: allow }
+    - { match: "git worktree list *", approval: allow }
+    - { match: "gh api *", approval: allow }
+    - { match: "gh pr *", approval: allow }
+    - { match: "gh run list", approval: allow }
+    - { match: "gh run list *", approval: allow }
+    - { match: "gh run view *", approval: allow }
+    - { match: "gh search *", approval: allow }
+    - { match: ".venv/bin/python -m pytest", approval: allow }
+    - { match: ".venv/bin/python -m pytest *", approval: allow }
+    - { match: ".venv/bin/pytest", approval: allow }
+    - { match: ".venv/bin/pytest *", approval: allow }
+    - { match: "pre-commit run", approval: allow }
+    - { match: "pre-commit run *", approval: allow }
+    - { match: "prek run", approval: allow }
+    - { match: "prek run *", approval: allow }
+    - { match: "pytest", approval: allow }
+    - { match: "pytest *", approval: allow }
+    - { match: "ruff check", approval: allow }
+    - { match: "ruff check *", approval: allow }
+    - { match: "ruff format --check", approval: allow }
+    - { match: "ruff format --check *", approval: allow }
+    - { match: "uv run pytest", approval: allow }
+    - { match: "uv run pytest *", approval: allow }
+    - { match: "uv run ruff *", approval: allow }
+    - { match: "uv sync", approval: allow }
+    - { match: "uv sync *", approval: allow }
+    - { match: "cargo build", approval: allow }
+    - { match: "cargo build *", approval: allow }
+    - { match: "cargo check", approval: allow }
+    - { match: "cargo check *", approval: allow }
+    - { match: "cargo clippy", approval: allow }
+    - { match: "cargo clippy *", approval: allow }
+    - { match: "cargo fmt", approval: allow }
+    - { match: "cargo fmt *", approval: allow }
+    - { match: "cargo test", approval: allow }
+    - { match: "cargo test *", approval: allow }
+    - { match: "kubectl get *", approval: allow }
+    - { match: "kubectl describe *", approval: allow }
+    - { match: "kubectl logs *", approval: allow }
+    - { match: "kubectl config current-context", approval: allow }
+    - { match: "kubectl config get-contexts", approval: allow }
+    - { match: "kubectl config get-contexts *", approval: allow }
+    - { match: "flux get *", approval: allow }
+    - { match: "*", approval: prompt }

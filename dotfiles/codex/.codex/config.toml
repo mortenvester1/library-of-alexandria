@@ -10,4 +10,39 @@ extends = ":workspace"
 [permissions.development.filesystem]
 "~/.config/**" = "read"
 "~/git/**" = "read"
+"~/orca/workspaces/**" = "read"
 "~/git/**/.env*" = "deny"
+"~/orca/workspaces/**/.env*" = "deny"
+"~/.aws/**" = "deny"
+"~/.config/aws/**" = "deny"
+"~/.config/gh/hosts.yml" = "deny"
+"~/.config/rclone/rclone.conf" = "deny"
+"~/.kube/config" = "deny"
+"~/.orca/linear-tokens" = "deny"
+"~/.ssh/**" = "deny"
+
+[hooks.state]
+
+[hooks.state."/Users/mortenpedersen/.codex/hooks.json:pre_tool_use:0:0"]
+trusted_hash = "sha256:f6f2a892deb6d67147435007792b11aeac0da4e8986d64d8505eb83f6375366b"
+
+[hooks.state."/Users/mortenpedersen/.codex/hooks.json:permission_request:0:0"]
+trusted_hash = "sha256:ce93ec5e0f83540b17c58353478011a9b648cc5c2a3ade1fb79ffdbdd1444d1e"
+
+[hooks.state."/Users/mortenpedersen/.codex/hooks.json:post_tool_use:0:0"]
+trusted_hash = "sha256:c90ce3d98549b746fab6769db4fdfeb685739fe14dbd909c816cc0f48973f705"
+
+[hooks.state."/Users/mortenpedersen/.codex/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:94d84e3909f900e674d70bb7e4040764cca9fa5ac7456bea56f89f5bcc522dda"
+
+[hooks.state."/Users/mortenpedersen/.codex/hooks.json:user_prompt_submit:0:0"]
+trusted_hash = "sha256:7cef6e664d2c0843d5c434bb2dc675a3894f835637f47a78755ed49073bbcd2e"
+
+[hooks.state."/Users/mortenpedersen/.codex/hooks.json:subagent_start:0:0"]
+trusted_hash = "sha256:9e3fb3868f0d1d25f24166fd74581b540ab79ab27b13bfe638a027d9da63604f"
+
+[hooks.state."/Users/mortenpedersen/.codex/hooks.json:subagent_stop:0:0"]
+trusted_hash = "sha256:5f83dc24b00af4f8c46fee7477b49bfdd6f03111f276647095966a7d6704c9eb"
+
+[hooks.state."/Users/mortenpedersen/.codex/hooks.json:stop:0:0"]
+trusted_hash = "sha256:2b956b82f3f3ded598b8d9283fb53330af53a34e0aed98d39b8e997755633561"
