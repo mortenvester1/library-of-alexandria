@@ -19,9 +19,11 @@ services:
       - SYS_PTRACE
     ipc: host
     shm_size: "8g"
+    ulimits:
+      memlock: -1
     environment:
-      HSA_OVERRIDE_GFX_VERSION: "${HSA_OVERRIDE_GFX_VERSION:-}"
-      CLI_ARGS: "${COMFYUI_CLI_ARGS:-}"
+      - HSA_OVERRIDE_GFX_VERSION
+      - CLI_ARGS=${COMFYUI_CLI_ARGS:-}
     volumes:
       - "${MODELS_DIR:?set MODELS_DIR}:/root/ComfyUI/models"
       - "${COMFYUI_STORAGE:?set COMFYUI_STORAGE}/input:/root/ComfyUI/input"

@@ -28,9 +28,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Final stage - minimal runtime image
 FROM python:3.13-slim-bookworm
 
-# torch's ROCm wheels link against OpenMP and libnuma at import time
+# torch's ROCm wheels link against OpenMP, libnuma and libatomic at import time
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libgomp1 libnuma1 \
+    && apt-get install -y --no-install-recommends libgomp1 libnuma1 libatomic1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user for security. GPU access comes from the supplementary

@@ -1,0 +1,53 @@
+name: monitoring-agent
+
+services:
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    hostname: gurpgork-shoebox
+    privileged: true
+    ports:
+      - "127.0.0.1:12345:12345"
+    environment:
+      ALLOY_DEPLOY_MODE: docker
+    volumes:
+      - ./config.alloy:/etc/alloy/config.alloy
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /run/containerd/containerd.sock:/run/containerd/containerd.sock
+      - /proc:/rootproc:ro
+      - /sys:/sys:ro
+      - /dev/disk/:/dev/disk:ro
+      - /:/rootfs:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - alloy-data:/var/lib/alloy/data
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    devices:
+      - /dev/kmsg
+    extra_hosts:
+      - "gurpgork-bee.local:${MONITORING_HOST_IP:?set MONITORING_HOST_IP}"
+    restart: unless-stopped
+
+  gpu-exporter:
+    image: rocm/device-metrics-exporter:v1.5.1
+    container_name: gpu-exporter
+    hostname: gurpgork-shoebox
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - "${VIDEO_GID:?set VIDEO_GID}"
+      - "${RENDER_GID:?set RENDER_GID}"
+    security_opt:
+      - seccomp:unconfined
+    ulimits:
+      memlock: -1
+    ports:
+      - "127.0.0.1:5000:5000"
+    restart: unless-stopped
+
+volumes:
+  alloy-data:

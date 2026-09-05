@@ -1,0 +1,95 @@
+logging {
+  level  = "info"
+  format = "json"
+}
+
+// ###############################
+// #### Metrics Configuration ####
+// ###############################
+
+prometheus.remote_write "bee" {
+  endpoint {
+    url = "http://gurpgork-bee.local:9090/api/v1/write"
+  }
+}
+
+prometheus.exporter.cadvisor "cadvisor" {
+  docker_only = true
+}
+
+discovery.relabel "cadvisor" {
+  targets = prometheus.exporter.cadvisor.cadvisor.targets
+
+  rule {
+    target_label = "job"
+    replacement  = "integrations/docker"
+  }
+
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+}
+
+prometheus.scrape "cadvisor" {
+  targets         = discovery.relabel.cadvisor.output
+  forward_to      = [prometheus.remote_write.bee.receiver]
+  scrape_interval = "10s"
+}
+
+discovery.relabel "gpu" {
+  targets = [{__address__ = "gpu-exporter:5000"}]
+
+  rule {
+    target_label = "job"
+    replacement  = "integrations/amd-gpu"
+  }
+
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+}
+
+prometheus.scrape "gpu" {
+  targets         = discovery.relabel.gpu.output
+  forward_to      = [prometheus.remote_write.bee.receiver]
+  scrape_interval = "10s"
+  metrics_path    = "/metrics"
+}
+
+// ###############################
+// #### Logging Configuration ####
+// ###############################
+
+discovery.docker "linux" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "logs_integrations_docker" {
+  targets = []
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container_name"
+  }
+
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+}
+
+loki.source.docker "default" {
+  host          = "unix:///var/run/docker.sock"
+  targets       = discovery.docker.linux.targets
+  relabel_rules = discovery.relabel.logs_integrations_docker.rules
+  forward_to    = [loki.write.bee.receiver]
+}
+
+loki.write "bee" {
+  endpoint {
+    url = "http://gurpgork-bee.local:3100/loki/api/v1/push"
+  }
+}
