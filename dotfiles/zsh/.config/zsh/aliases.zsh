@@ -221,3 +221,29 @@ jetson-toggle-desktop-gui() {
 skillshare-init-project() {
   skillshare init -p --targets claude,universal && skillshare sync -p
 }
+
+# skillshare - expose a repo's tracked .claude/skills to codex/omp via untracked symlinks in .agents/skills
+# (local-only: links are git-excluded, existing .agents/skills entries are left alone)
+skillshare-bridge() {
+  local repo="${1:-$(git rev-parse --show-toplevel 2>/dev/null)}"
+  [[ -d "${repo}/.claude/skills" ]] || { echo "no .claude/skills in ${repo:-<cwd>}" >&2; return 1; }
+  local gitdir; gitdir="$(git -C "${repo}" rev-parse --git-common-dir)" || return 1
+  [[ "${gitdir}" = /* ]] || gitdir="${repo}/${gitdir}"
+  grep -qxF '.agents/skills/*' "${gitdir}/info/exclude" 2>/dev/null || echo '.agents/skills/*' >> "${gitdir}/info/exclude"
+  # an empty SKILLSHARE_CONFIG silently falls back to the global config, so bail if mktemp fails
+  local tmp; tmp="$(mktemp -d)" || return 1
+  cat > "${tmp}/config.yaml" <<CFG
+sources:
+  skills: ${repo}/.claude/skills
+mode: merge
+target_naming: standard
+targets:
+  universal:
+    skills:
+      path: ${repo}/.agents/skills
+CFG
+  SKILLSHARE_CONFIG="${tmp}/config.yaml" skillshare sync
+  local rc=$?
+  rm -rf "${tmp}"
+  return ${rc}
+}
