@@ -22,6 +22,10 @@ if [ ! -f "${ZSH_COMPLETIONS_DIR}/_opencode" ] || [ "${ZSH_COMPLETIONS_DIR}/_ope
   opencode completion zsh > "${ZSH_COMPLETIONS_DIR}/_opencode"
 fi
 
+if [ ! -f "${ZSH_COMPLETIONS_DIR}/_skillshare" ] || [ "${ZSH_COMPLETIONS_DIR}/_skillshare" -ot "$(which skillshare)" ]; then
+  skillshare completion zsh > "${ZSH_COMPLETIONS_DIR}/_skillshare"
+fi
+
 # Add dir to fpath so compinit will scan
 fpath=(${ZSH_COMPLETIONS_DIR} $fpath)
 

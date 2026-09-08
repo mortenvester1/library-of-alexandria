@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/runkids/skillshare/main/schemas/config.schema.json
+sources:
+  # skills/local/ is gitignored: machine-local skills that are still synced to every agent
+  skills: ~/git/library-of-alexandria/dotfiles/common/skills
+mode: merge
+target_naming: standard
+preserve_tilde_on_save: true
+targets:
+  claude:
+    skills:
+      path: ~/.claude/skills
+  # ~/.agents/skills is read by codex, opencode and omp
+  universal:
+    skills:
+      path: ~/.agents/skills
+ignore:
+  - .DS_Store
+  - .git/
+  - __pycache__/
+audit:
+  block_threshold: CRITICAL

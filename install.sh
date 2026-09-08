@@ -219,7 +219,14 @@ stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnu
 chmod 700 "${HOME}/.config/gnupg"
 if [[ "${OS}" == "MacOS" || "${OS}" == "CachyOS" ]]
 then
-  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude omp codex
+  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude omp codex skillshare
+fi
+
+# link personal skills into every agent skill dir
+if [[ -n $(command -v skillshare) ]]
+then
+  info "syncing skills..."
+  skillshare sync
 fi
 
 # setup asdf - merge .tool-version files if local exist

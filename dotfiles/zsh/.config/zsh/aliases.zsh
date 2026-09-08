@@ -216,3 +216,8 @@ jetson-toggle-desktop-gui() {
   sudo systemctl set-default multi-user.target
   sudo reboot
 };
+
+# skillshare - init project-level skills (.skillshare/skills -> .claude/skills + .agents/skills) and sync
+skillshare-init-project() {
+  skillshare init -p --targets claude,universal && skillshare sync -p
+}

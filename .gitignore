@@ -10,6 +10,7 @@ library/*
 # dotfiles + pkgs local
 dotfiles/asdf/.config/asdf/.tool-versions.local
 dotfiles/common/AGENTS.local.md
+dotfiles/common/skills/local/
 dotfiles/claude/.claude/settings.local.json
 dotfiles/git/.config/git/.gitlocal
 dotfiles/omp/.config/omp/agent/mcp.json
