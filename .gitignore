@@ -1,6 +1,7 @@
 var
 graphify-out
 default.target.wants
+*.bak
 
 # library — ignore all content except the idea/schema files
 library/*

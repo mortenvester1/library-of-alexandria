@@ -64,6 +64,27 @@ Proceed once the execution path, constraints, and regression surface are clear e
 5. Implement the smallest correct change.
 6. Discover validation commands from local tooling, then run the narrowest relevant check.
 
+## Skills
+
+ Skills are managed via [skillshare](https://github.com/runkids/skillshare). The canonical source lives at `~/git/library-of-alexandria/dotfiles/common/skills/`.
+
+- Tracked skills: `skills/<name>/SKILL.md` — version-controlled, shared across all agents and machines.
+- Machine-local skills: `skills/local/<name>/SKILL.md` — gitignored, still synced to every agent.
+
+ Skillshare syncs the source to two targets:
+ - `~/.claude/skills` — Claude Code
+ - `~/.agents/skills` — Codex, OpenCode, OMP (the "universal" target)
+
+ **Never edit synced targets directly.** Edit the source under `dotfiles/common/skills/` and run `skillshare sync`.
+
+ Global config: `~/git/library-of-alexandria/dotfiles/skillshare/.config/skillshare/config.yaml`
+
+ ### Project-level skills
+
+ Two zsh aliases (defined in `dotfiles/zsh/.config/zsh/aliases.zsh`) handle repo-scoped skills:
+ - `skillshare-init-project` — inits `.skillshare/skills` in the current repo, syncing to `.claude/skills` + `.agents/skills`, then runs `skillshare sync -p`.
+ - `skillshare-bridge` — exposes a repo's tracked `.claude/skills` to codex/omp via untracked symlinks in `.agents/skills`. Git-excludes the symlinks; existing entries are left alone.
+
 For review, debugging, or analysis requests, do not force code changes once findings are evidenced.
 
 ## Subagents

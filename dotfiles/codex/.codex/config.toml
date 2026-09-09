@@ -7,19 +7,24 @@ default_permissions = "development"
 [permissions.development]
 extends = ":workspace"
 
+[permissions.development.network]
+enabled = true
+
 [permissions.development.filesystem]
-"~/.config/**" = "read"
-"~/git/**" = "read"
-"~/orca/workspaces/**" = "read"
-"~/git/**/.env*" = "deny"
-"~/orca/workspaces/**/.env*" = "deny"
 "~/.aws/**" = "deny"
+"~/.config/**" = "read"
 "~/.config/aws/**" = "deny"
-"~/.config/gh/hosts.yml" = "deny"
+"~/.config/gh/hosts.yml" = "read"
 "~/.config/rclone/rclone.conf" = "deny"
-"~/.kube/config" = "deny"
+"~/.kube/config" = "read"
 "~/.orca/linear-tokens" = "deny"
 "~/.ssh/**" = "deny"
+"~/.ssh/config" = "read"
+"~/.ssh/known_hosts" = "read"
+"~/git/**" = "read"
+"~/git/**/.env*" = "deny"
+"~/orca/workspaces/**" = "read"
+"~/orca/workspaces/**/.env*" = "deny"
 
 [hooks.state]
 
@@ -46,3 +51,8 @@ trusted_hash = "sha256:5f83dc24b00af4f8c46fee7477b49bfdd6f03111f276647095966a7d6
 
 [hooks.state."/Users/mortenpedersen/.codex/hooks.json:stop:0:0"]
 trusted_hash = "sha256:2b956b82f3f3ded598b8d9283fb53330af53a34e0aed98d39b8e997755633561"
+
+[tui]
+theme = "dracula"
+status_line = ["hostname", "current-dir", "git-branch", "model-with-reasoning", "contex-used", "five-hour-limit", "weekly-limit"]
+status_line_use_colors = true
