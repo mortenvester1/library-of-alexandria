@@ -1,2 +1,3 @@
+caffeine-ng
 opencode
 skillshare-bin

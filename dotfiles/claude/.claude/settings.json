@@ -140,7 +140,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5-1[1m]",
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -154,6 +154,9 @@
   "modelSettings": {
     "claude-sonnet-5": {
       "effortLevel": "high"
+    },
+    "claude-opus-5": {
+      "effortLevel": "medium"
     }
   },
   "advisorModel": "opus",
@@ -166,6 +169,7 @@
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
   "autoCompactEnabled": true,
+  "autoContinueAtUsageLimit": true,
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": false,
   "agentPushNotifEnabled": true,

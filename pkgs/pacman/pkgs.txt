@@ -1,3 +1,4 @@
+avahi
 base-devel
 bat
 bitwarden
@@ -10,6 +11,7 @@ fzf
 ghostty
 git
 git-lfs
+github-cli
 gnupg
 jdk-openjdk
 jq
@@ -17,8 +19,10 @@ just
 k9s
 minidlna
 ncurses
+nss-mdns
 obsidian
 openai-codex
+openssh
 openssl
 perl-rename
 python
