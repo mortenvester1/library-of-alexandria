@@ -76,6 +76,23 @@ prometheus.scrape "buzz" {
   metrics_path    = "/metrics"
 }
 
+// Scrape Plane's broker and object store (both join the monitoring network by
+// alias). The Plane app containers expose no /metrics — their logs and
+// container metrics already arrive over the Docker socket.
+prometheus.scrape "plane_mq" {
+  targets         = [{__address__ = "plane-mq:15692"}]
+  forward_to      = [ prometheus.remote_write.local.receiver ]
+  scrape_interval = "10s"
+  metrics_path    = "/metrics"
+}
+
+prometheus.scrape "plane_minio" {
+  targets         = [{__address__ = "plane-minio:9000"}]
+  forward_to      = [ prometheus.remote_write.local.receiver ]
+  scrape_interval = "10s"
+  metrics_path    = "/minio/v2/metrics/cluster"
+}
+
 
 // ###############################
 // #### Logging Configuration ####

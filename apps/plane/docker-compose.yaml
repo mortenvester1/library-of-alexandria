@@ -219,6 +219,15 @@ services:
       <<: *mq-env
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      # `default` must stay listed — naming any network drops the implicit one,
+      # and the backend resolves this host as `plane-mq` on the project network.
+      default: {}
+      # rabbitmq_prometheus is enabled in the base image, so :15692/metrics is
+      # already live; the alias is what Alloy scrapes by.
+      monitoring:
+        aliases:
+          - plane-mq
 
   # Comment this if you using any external s3 compatible storage
   plane-minio:
@@ -230,8 +239,16 @@ services:
         condition: any
     environment:
       <<: *minio-env
+      # Unauthenticated /minio/v2/metrics/cluster. Set here rather than in the
+      # x-minio-env anchor, which four backend containers also consume.
+      MINIO_PROMETHEUS_AUTH_TYPE: public
     volumes:
       - uploads:/export
+    networks:
+      default: {}
+      monitoring:
+        aliases:
+          - plane-minio
 
   # Comment this if you already have a reverse proxy running
   proxy:
@@ -315,6 +332,14 @@ services:
       timeout: 3s
       retries: 6
     restart: unless-stopped
+
+networks:
+  # Created outside this stack (docker network create monitoring); shared with
+  # apps/monitoring so Alloy can scrape the broker and object store. Logs and
+  # cAdvisor container metrics already arrive via the Docker socket and need no
+  # network attachment — no other Plane service exposes a /metrics endpoint.
+  monitoring:
+    external: true
 
 volumes:
   pgdata:
