@@ -46,6 +46,11 @@ create-gpg-key name email password:
     echo "gpg key '${KEY_ID}' has been created."
     echo "copy to pasteboard and add where it is needed"
 
+# Render dotfiles/common/mcp/servers.json into the claude, omp, opencode and codex configs
+# (dotfiles/common/mcp/servers.local.json overlays it, machine-local)
+sync-mcp:
+    @./dotfiles/common/mcp/sync.sh
+
 # restow a package
 stow *pkgs:
     stow --target ${HOME} --dir "dotfiles" -R --no-folding {{ pkgs }}

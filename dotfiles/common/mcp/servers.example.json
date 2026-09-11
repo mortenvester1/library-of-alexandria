@@ -1,0 +1,35 @@
+{
+  "_readme": [
+    "Template for servers.json (committed) and servers.local.json (gitignored).",
+    "sync.sh reads both, merging base * local so local wins per field — an override",
+    "can restate one key without repeating the whole server. Either file may be absent.",
+    "",
+    "url and headers are expanded from the environment at render time, because only",
+    "claude and opencode interpolate env vars in those fields. Keep ${VAR} references",
+    "here rather than literals so the file stays host-agnostic; an unset var aborts",
+    "the sync by name. Vars live in dotfiles/zsh/.config/zsh/.zshenv.local.",
+    "",
+    "bearer_token_env is an env var NAME, never the token. sync.sh never reads it — it",
+    "renders the name in each framework's own syntax (${VAR}, {env:VAR},",
+    "bearer_token_env_var). Both url and bearer_token_env are required per server.",
+    "",
+    "headers is optional, for non-secret per-server headers. Its values are expanded",
+    "and written as literals, so put nothing secret here. Anything secret belongs in",
+    "bearer_token_env.",
+    "",
+    "Keys under _ are ignored. Run `just sync-mcp` after editing."
+  ],
+  "servers": {
+    "example-minimal": {
+      "url": "${MCP_EXAMPLE_URL}",
+      "bearer_token_env": "MCP_EXAMPLE_SERVER_TOKEN"
+    },
+    "example-with-headers": {
+      "url": "${MCP_OTHER_URL}",
+      "bearer_token_env": "MCP_OTHER_SERVER_TOKEN",
+      "headers": {
+        "x-workspace-slug": "${MCP_OTHER_WORKSPACE_SLUG}"
+      }
+    }
+  }
+}
