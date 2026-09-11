@@ -1,0 +1,330 @@
+name: plane
+
+# Plane (community edition) + the official Plane MCP server, for the home LAN.
+#
+# The Plane half is vendored verbatim from the upstream release asset
+#   https://github.com/makeplane/plane/releases/download/v1.4.2/docker-compose.yml
+# with only these deliberate changes, so a version bump is a clean re-diff:
+#   - top-level `name:`; `host_ip: 0.0.0.0` on the proxy ports
+#   - `:?` guards on SECRET_KEY / LIVE_SERVER_SECRET_KEY (upstream ships placeholders)
+#   - the `mcp` + `mcp-redis` services appended at the bottom
+#
+#   cp .env.example .env   # then fill in the guarded values
+#   docker compose up -d
+#   docker compose logs -f api
+#
+# First run: create the instance admin at http://${APP_DOMAIN}:${LISTEN_HTTP_PORT}/god-mode/
+
+x-db-env: &db-env
+  PGHOST: ${PGHOST:-plane-db}
+  PGDATABASE: ${PGDATABASE:-plane}
+  POSTGRES_USER: ${POSTGRES_USER:-plane}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+  POSTGRES_DB: ${POSTGRES_DB:-plane}
+  POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+  PGDATA: ${PGDATA:-/var/lib/postgresql/data}
+
+x-redis-env: &redis-env
+  REDIS_HOST: ${REDIS_HOST:-plane-redis}
+  REDIS_PORT: ${REDIS_PORT:-6379}
+  REDIS_URL: ${REDIS_URL:-redis://plane-redis:6379/}
+
+x-minio-env: &minio-env
+  MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID:?set AWS_ACCESS_KEY_ID}
+  MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY:?set AWS_SECRET_ACCESS_KEY}
+
+x-aws-s3-env: &aws-s3-env
+  AWS_REGION: ${AWS_REGION:-}
+  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?set AWS_ACCESS_KEY_ID}
+  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?set AWS_SECRET_ACCESS_KEY}
+  AWS_S3_ENDPOINT_URL: ${AWS_S3_ENDPOINT_URL:-http://plane-minio:9000}
+  AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME:-uploads}
+
+x-proxy-env: &proxy-env
+  APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN}
+  FILE_SIZE_LIMIT: ${FILE_SIZE_LIMIT:-5242880}
+  CERT_EMAIL: ${CERT_EMAIL}
+  CERT_ACME_CA: ${CERT_ACME_CA}
+  CERT_ACME_DNS: ${CERT_ACME_DNS}
+  LISTEN_HTTP_PORT: ${LISTEN_HTTP_PORT:-80}
+  LISTEN_HTTPS_PORT: ${LISTEN_HTTPS_PORT:-443}
+  BUCKET_NAME: ${AWS_S3_BUCKET_NAME:-uploads}
+  SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+
+x-mq-env: &mq-env # RabbitMQ Settings
+  RABBITMQ_HOST: ${RABBITMQ_HOST:-plane-mq}
+  RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+  RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-plane}
+  RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?set RABBITMQ_PASSWORD}
+  RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-plane}
+  RABBITMQ_VHOST: ${RABBITMQ_VHOST:-plane}
+
+x-live-env: &live-env
+  API_BASE_URL: ${API_BASE_URL:-http://api:8000}
+  LIVE_SERVER_SECRET_KEY: ${LIVE_SERVER_SECRET_KEY:?set LIVE_SERVER_SECRET_KEY}
+
+x-app-env: &app-env
+  WEB_URL: ${WEB_URL:?set WEB_URL}
+  DEBUG: ${DEBUG:-0}
+  CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?set CORS_ALLOWED_ORIGINS}
+  GUNICORN_WORKERS: 1
+  USE_MINIO: ${USE_MINIO:-1}
+  DATABASE_URL: ${DATABASE_URL:-postgresql://plane:plane@plane-db/plane}
+  SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY}
+  AMQP_URL: ${AMQP_URL:-amqp://plane:plane@plane-mq:5672/plane}
+  API_KEY_RATE_LIMIT: ${API_KEY_RATE_LIMIT:-60/minute}
+  MINIO_ENDPOINT_SSL: ${MINIO_ENDPOINT_SSL:-0}
+  LIVE_SERVER_SECRET_KEY: ${LIVE_SERVER_SECRET_KEY:?set LIVE_SERVER_SECRET_KEY}
+  WEBHOOK_ALLOWED_IPS: ${WEBHOOK_ALLOWED_IPS:-}
+  WEBHOOK_ALLOWED_HOSTS: ${WEBHOOK_ALLOWED_HOSTS:-}
+
+services:
+  web:
+    image: makeplane/plane-frontend:${APP_RELEASE:-v1.4.2}
+    deploy:
+      replicas: ${WEB_REPLICAS:-1}
+      restart_policy:
+        condition: any
+    depends_on:
+      - api
+      - worker
+
+  space:
+    image: makeplane/plane-space:${APP_RELEASE:-v1.4.2}
+    deploy:
+      replicas: ${SPACE_REPLICAS:-1}
+      restart_policy:
+        condition: any
+    depends_on:
+      - api
+      - worker
+      - web
+
+  admin:
+    image: makeplane/plane-admin:${APP_RELEASE:-v1.4.2}
+    deploy:
+      replicas: ${ADMIN_REPLICAS:-1}
+      restart_policy:
+        condition: any
+    depends_on:
+      - api
+      - web
+
+  live:
+    image: makeplane/plane-live:${APP_RELEASE:-v1.4.2}
+    environment:
+      <<: [*live-env, *redis-env]
+    deploy:
+      replicas: ${LIVE_REPLICAS:-1}
+      restart_policy:
+        condition: any
+    depends_on:
+      - api
+      - web
+
+  api:
+    image: makeplane/plane-backend:${APP_RELEASE:-v1.4.2}
+    command: ./bin/docker-entrypoint-api.sh
+    deploy:
+      replicas: ${API_REPLICAS:-1}
+      restart_policy:
+        condition: any
+    volumes:
+      - logs_api:/code/plane/logs
+    environment:
+      <<: [*app-env, *db-env, *redis-env, *minio-env, *aws-s3-env, *proxy-env]
+    depends_on:
+      - plane-db
+      - plane-redis
+      - plane-mq
+
+  worker:
+    image: makeplane/plane-backend:${APP_RELEASE:-v1.4.2}
+    command: ./bin/docker-entrypoint-worker.sh
+    deploy:
+      replicas: ${WORKER_REPLICAS:-1}
+      restart_policy:
+        condition: any
+    volumes:
+      - logs_worker:/code/plane/logs
+    environment:
+      <<: [*app-env, *db-env, *redis-env, *minio-env, *aws-s3-env, *proxy-env]
+    depends_on:
+      - api
+      - plane-db
+      - plane-redis
+      - plane-mq
+
+  beat-worker:
+    image: makeplane/plane-backend:${APP_RELEASE:-v1.4.2}
+    command: ./bin/docker-entrypoint-beat.sh
+    deploy:
+      replicas: ${BEAT_WORKER_REPLICAS:-1}
+      restart_policy:
+        condition: any
+    volumes:
+      - logs_beat-worker:/code/plane/logs
+    environment:
+      <<: [*app-env, *db-env, *redis-env, *minio-env, *aws-s3-env, *proxy-env]
+    depends_on:
+      - api
+      - plane-db
+      - plane-redis
+      - plane-mq
+
+  migrator:
+    image: makeplane/plane-backend:${APP_RELEASE:-v1.4.2}
+    command: ./bin/docker-entrypoint-migrator.sh
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - logs_migrator:/code/plane/logs
+    environment:
+      <<: [*app-env, *db-env, *redis-env, *minio-env, *aws-s3-env, *proxy-env]
+    depends_on:
+      - plane-db
+      - plane-redis
+
+  # Comment this if you already have a database running
+  plane-db:
+    image: postgres:15.7-alpine
+    command: postgres -c 'max_connections=1000'
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    environment:
+      <<: *db-env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  plane-redis:
+    image: valkey/valkey:7.2.11-alpine
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    volumes:
+      - redisdata:/data
+
+  plane-mq:
+    image: rabbitmq:3.13.6-management-alpine
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    environment:
+      <<: *mq-env
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  # Comment this if you using any external s3 compatible storage
+  plane-minio:
+    image: minio/minio:latest
+    command: server /export --console-address ":9090"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    environment:
+      <<: *minio-env
+    volumes:
+      - uploads:/export
+
+  # Comment this if you already have a reverse proxy running
+  proxy:
+    image: makeplane/plane-proxy:${APP_RELEASE:-v1.4.2}
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    environment:
+      <<: *proxy-env
+    ports:
+      # IPv4 only. Docker publishes [::] without working ip6tables forwarding, so IPv6 clients blackhole.
+      - target: 80
+        published: ${LISTEN_HTTP_PORT:-80}
+        host_ip: 0.0.0.0
+        protocol: tcp
+        mode: host
+      # Only reachable once SITE_ADDRESS/CERT_EMAIL are set for TLS; harmless otherwise.
+      - target: 443
+        published: ${LISTEN_HTTPS_PORT:-443}
+        host_ip: 0.0.0.0
+        protocol: tcp
+        mode: host
+    volumes:
+      - proxy_config:/config
+      - proxy_data:/data
+    depends_on:
+      - web
+      - api
+      - space
+      - admin
+      - live
+
+  # --- Plane MCP server (github.com/makeplane/plane-mcp-server) -------------
+  #
+  # Reaches the Plane API over the compose network, so no mDNS/LAN round trip.
+  # Two HTTP endpoints are mounted:
+  #   /http/api-key/mcp  — PAT auth, the one to use on a LAN (see .env.example)
+  #   /http/mcp          — OAuth; needs a public HTTPS origin, so it is inert here
+  # The OAuth provider is constructed unconditionally at import time, so it must
+  # be satisfiable even though only the PAT endpoint is usable here: non-empty
+  # client_id/secret, and an issuer URL that is HTTPS or loopback — the MCP SDK
+  # raises "Issuer URL must be HTTPS" on anything else and the container exits.
+  mcp:
+    image: makeplane/plane-mcp-server:${MCP_RELEASE:-v0.3.2}
+    container_name: plane-mcp
+    environment:
+      PLANE_INTERNAL_BASE_URL: ${PLANE_INTERNAL_BASE_URL:-http://api:8000}
+      PLANE_BASE_URL: ${WEB_URL}
+      PLANE_OAUTH_PROVIDER_BASE_URL: ${MCP_OAUTH_BASE_URL:?set MCP_OAUTH_BASE_URL}
+      PLANE_OAUTH_PROVIDER_CLIENT_ID: ${PLANE_OAUTH_PROVIDER_CLIENT_ID:-unused-on-lan}
+      PLANE_OAUTH_PROVIDER_CLIENT_SECRET: ${PLANE_OAUTH_PROVIDER_CLIENT_SECRET:-unused-on-lan}
+      # Own Valkey: the image takes no db index, so sharing plane-redis would put
+      # OAuth tokens on db 0 next to Plane's cache.
+      REDIS_HOST: mcp-redis
+      REDIS_PORT: "6379"
+    ports:
+      - "0.0.0.0:${MCP_HTTP_PORT:-8211}:8211"
+    # Unauthenticated requests get 401, not a connection error — exit 0 means alive.
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -o /dev/null http://127.0.0.1:8211/http/api-key/mcp"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+    depends_on:
+      mcp-redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+
+  mcp-redis:
+    image: valkey/valkey:8-alpine
+    container_name: plane-mcp-redis
+    volumes:
+      - mcp_redisdata:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
+  uploads:
+  logs_api:
+  logs_worker:
+  logs_beat-worker:
+  logs_migrator:
+  rabbitmq_data:
+  proxy_config:
+  proxy_data:
+  mcp_redisdata:
