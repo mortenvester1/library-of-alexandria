@@ -1,0 +1,53 @@
+name: couchdb
+
+# CouchDB 3.5 as the sync remote for Obsidian Self-hosted LiveSync.
+#   https://github.com/vrtmrz/obsidian-livesync/blob/main/docs/setup_own_server.md
+#
+# Deliberate deltas from the upstream compose snippet in that doc:
+#   - top-level `name:`; exact image tag instead of `couchdb:latest`
+#   - `:?` guards on the credentials and the data path (upstream inlines them)
+#   - 00-livesync.ini mounted read-only, which replaces the `couchdb-init.sh`
+#     Deno provisioning step — every setting that script pushes over the config
+#     API is declared there instead
+#   - authenticated healthcheck (upstream has none)
+#
+#   cp .env.example .env   # then fill in the guarded values
+#   mkdir -p <COUCHDB_DATA> && sudo chown -R 5984:5984 <COUCHDB_DATA>
+#   docker compose up -d
+#   docker compose logs -f couchdb
+#
+# This stack only provisions the *server*. The vault database and its LiveSync
+# version document are created by the Obsidian plugin at "Create or connect to
+# database and continue" during first-device onboarding.
+#
+# Nothing attaches to the `monitoring` network: CouchDB's Prometheus endpoint is
+# off by default ([prometheus] additional_port), and logs plus cAdvisor container
+# metrics already arrive via the Docker socket that apps/monitoring holds.
+
+services:
+  couchdb:
+    image: ${COUCHDB_IMAGE:-couchdb:3.5.2.1}
+    container_name: couchdb
+    restart: unless-stopped
+    # Upstream's fix for the image writing as root into a bind mount. The host
+    # directory must already be owned by 5984:5984 or the container exits.
+    user: "5984:5984"
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER:?set COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD:?set COUCHDB_PASSWORD}
+    volumes:
+      - ${COUCHDB_DATA:?set COUCHDB_DATA}:/opt/couchdb/data
+      # Read-only: the entrypoint's docker.ini sorts after this one and stays the
+      # writable target for config-API changes. See the header in the ini itself.
+      - ./00-livesync.ini:/opt/couchdb/etc/local.d/00-livesync.ini:ro
+    ports:
+      - "0.0.0.0:${COUCHDB_PORT:-5984}:5984"
+    # `$$` is compose escaping for a literal `$` — the container's shell expands
+    # these, not compose. /_up is anonymous via require_valid_user_except_for_up,
+    # but authenticating keeps this green even if that setting is ever dropped.
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs -u \"$$COUCHDB_USER:$$COUCHDB_PASSWORD\" http://localhost:5984/_up || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
