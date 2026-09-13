@@ -247,3 +247,17 @@ CFG
   rm -rf "${tmp}"
   return ${rc}
 }
+
+# zmv - lowercase every name in the cwd. Extra args (e.g. -n) are passed to zmv
+lowercase() {
+  zmv "$@" '(*)' '${(L)f}'
+}
+
+# zmv - strip a literal substring from every name in the cwd. Usage: replace <substring> [zmv-opts]
+replace() {
+  local pat="$1"
+  [[ -n "${pat}" ]] || { print -u2 'usage: replace <substring> [zmv-options]'; return 1 }
+  shift
+  # (b) quotes glob metacharacters so the input is matched literally
+  zmv "$@" "(*)${(b)pat}(*)" '$1$2'
+}
