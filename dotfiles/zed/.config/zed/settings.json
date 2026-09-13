@@ -22,7 +22,7 @@
   },
   "agent_servers": {
     "pi-acp": {
-      "type": "registry"
+      "type": "registry",
     },
     "opencode": {
       "type": "registry",
@@ -35,6 +35,15 @@
   "ssh_connections": [
     {
       "host": "bee",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/mortenvester1/git/library-of-alexandria"],
+        },
+      ],
+    },
+    {
+      "host": "shoebox",
       "args": [],
       "projects": [
         {

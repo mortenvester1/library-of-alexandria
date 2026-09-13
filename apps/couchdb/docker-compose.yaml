@@ -20,9 +20,9 @@ name: couchdb
 # version document are created by the Obsidian plugin at "Create or connect to
 # database and continue" during first-device onboarding.
 #
-# Nothing attaches to the `monitoring` network: CouchDB's Prometheus endpoint is
-# off by default ([prometheus] additional_port), and logs plus cAdvisor container
-# metrics already arrive via the Docker socket that apps/monitoring holds.
+# Logs and cAdvisor container metrics arrive via the Docker socket that
+# apps/monitoring holds and need no network attachment. The `monitoring` network
+# is joined only for CouchDB's own /_prometheus metrics — see 10-metrics.ini.
 
 services:
   couchdb:
@@ -40,6 +40,15 @@ services:
       # Read-only: the entrypoint's docker.ini sorts after this one and stays the
       # writable target for config-API changes. See the header in the ini itself.
       - ./00-livesync.ini:/opt/couchdb/etc/local.d/00-livesync.ini:ro
+      - ./10-metrics.ini:/opt/couchdb/etc/local.d/10-metrics.ini:ro
+    networks:
+      # `default` must stay listed — naming any network drops the implicit one.
+      default: {}
+      # 17986 is deliberately not in `ports` below: unauthenticated metrics stay
+      # reachable from Alloy and nowhere else.
+      monitoring:
+        aliases:
+          - couchdb
     ports:
       - "0.0.0.0:${COUCHDB_PORT:-5984}:5984"
     # `$$` is compose escaping for a literal `$` — the container's shell expands
@@ -51,3 +60,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+networks:
+  # Created outside this stack (docker network create monitoring); shared with
+  # apps/monitoring so Alloy can scrape :17986/_node/_local/_prometheus.
+  monitoring:
+    external: true

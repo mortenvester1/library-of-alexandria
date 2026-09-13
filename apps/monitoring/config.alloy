@@ -93,6 +93,31 @@ prometheus.scrape "plane_minio" {
   metrics_path    = "/minio/v2/metrics/cluster"
 }
 
+// Scrape CouchDB. 17986 is the unauthenticated metrics-only listener enabled by
+// apps/couchdb/10-metrics.ini; it exists on the Docker network only. The same
+// data is on 5984 behind admin basic auth, which we deliberately avoid needing.
+prometheus.scrape "couchdb" {
+  targets         = [{__address__ = "couchdb:17986"}]
+  forward_to      = [ prometheus.remote_write.local.receiver ]
+  scrape_interval = "10s"
+  metrics_path    = "/_node/_local/_prometheus"
+}
+
+// Scrape Seahub. Dark until ENABLE_METRIC / METRIC_AUTH_USER / METRIC_AUTH_PWD
+// are set in seahub_settings.py inside the Seafile data volume — that file does
+// not exist until after Seafile's first start, so it cannot be set from compose.
+// Unset credentials degrade to up=0 on this job alone.
+prometheus.scrape "seafile" {
+  targets         = [{__address__ = "seafile:80"}]
+  forward_to      = [ prometheus.remote_write.local.receiver ]
+  scrape_interval = "10s"
+  metrics_path    = "/metrics"
+
+  basic_auth {
+    username = sys.env("SEAFILE_METRIC_USER")
+    password = sys.env("SEAFILE_METRIC_PWD")
+  }
+}
 
 // ###############################
 // #### Logging Configuration ####

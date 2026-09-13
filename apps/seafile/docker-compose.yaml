@@ -25,9 +25,12 @@ name: seafile
 #   docker compose up -d
 #   docker compose logs -f seafile
 #
-# No service here exposes /metrics, so nothing attaches to the `monitoring`
-# network — logs and cAdvisor container metrics already arrive via the Docker
-# socket that apps/monitoring holds.
+# Logs and cAdvisor container metrics arrive via the Docker socket that
+# apps/monitoring holds and need no network attachment. The seafile service also
+# joins `monitoring` for Seahub's own /metrics, which stays dark until
+# ENABLE_METRIC is set in seahub_settings.py — see the notes in .env.example.
+# MariaDB and Redis expose no metrics of their own; that would need exporter
+# sidecars this stack deliberately does not run.
 
 services:
   db:
@@ -118,8 +121,21 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
+    networks:
+      # `default` must stay listed — naming any network drops the implicit one,
+      # and Seahub resolves `db` and `redis` on the project network.
+      default: {}
+      monitoring:
+        aliases:
+          - seafile
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+networks:
+  # Created outside this stack (docker network create monitoring); shared with
+  # apps/monitoring so Alloy can scrape Seahub's /metrics.
+  monitoring:
+    external: true

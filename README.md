@@ -77,6 +77,57 @@ Each wiki lives at `library/<name>/` and follows this structure:
 | `/wiki-lint <wiki>`             | Health-check a wiki for contradictions, orphans, and gaps  |
 | `/wiki-move <wiki>`             | Moves a wiki to the `$LLM_WIKIS_DIR` and creates a symlink |
 
+## Remote access via Tailscale
+
+Tailscale fronts the services with HTTPS using an automatically issued,
+publicly trusted certificate for the machine's `*.ts.net` hostname. Nothing is
+exposed to the public internet.
+
+This works identically at home and on cellular, so each service has a single
+URL. Requires Tailscale on the client device.
+
+Note that most stacks in `apps/` still publish their container port on
+`0.0.0.0`, so they remain reachable over plain HTTP on the LAN as well —
+`apps/monitoring-agent` is currently the only one bound to `127.0.0.1`. Binding
+a service to `127.0.0.1` makes the Tailscale URL its only entry point; `serve`
+reaches it over loopback either way.
+
+### Prerequisite
+
+Enable HTTPS for the tailnet in the Tailscale admin console
+(DNS → HTTPS Certificates). It is off by default.
+
+### Serving a service
+
+    tailscale serve --bg --https=5984 http://127.0.0.1:5984   # CouchDB
+    tailscale serve --bg --https=8443 http://127.0.0.1:2283   # Immich
+
+Each service needs its own port; the certificate covers the hostname, not the
+port. Check the current mapping with:
+
+    tailscale serve status
+
+`serve` intercepts inside tailscaled, ahead of the host's own sockets, so a
+`--https` port that a container already publishes will shadow it for tailnet
+traffic. Avoid `--https=443` in particular — `apps/plane` binds 443 on the host.
+
+Use `serve`, not `funnel` — `funnel` publishes to the public internet.
+
+### Certificates
+
+`serve` obtains and renews certificates automatically; the live pair is kept in
+`/var/lib/tailscale/certs`. Running `tailscale cert` manually is only needed to
+export a copy for another service to read, and that copy is a static snapshot
+that will expire in ~90 days:
+
+    tailscale cert --cert-file /path/tls.crt --key-file /path/tls.key <host>.<tailnet>.ts.net
+
+Issuing a certificate logs the hostname to the public Certificate Transparency
+logs. Only names a certificate is actually issued for appear — the rest of the
+tailnet stays unlisted.
+
+Do not commit exported `.key` files.
+
 ## Install
 
 The install requires bash, curl, git, sudo to be installed on your system. Run the [install.sh](./install.sh) script using curl

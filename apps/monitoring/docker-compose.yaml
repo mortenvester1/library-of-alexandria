@@ -55,6 +55,11 @@ services:
       - 4318:4318
     environment:
       ALLOY_DEPLOY_MODE: docker
+      # Read by config.alloy's seafile scrape job via sys.env. Unguarded on
+      # purpose: an empty value costs one dead scrape target, a `:?` guard would
+      # stop this whole stack from starting.
+      SEAFILE_METRIC_USER: ${SEAFILE_METRIC_USER:-}
+      SEAFILE_METRIC_PWD: ${SEAFILE_METRIC_PWD:-}
     volumes:
       - ./config.alloy:/etc/alloy/config.alloy
       - /proc:/rootproc:ro

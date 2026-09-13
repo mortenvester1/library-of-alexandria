@@ -207,3 +207,4 @@ bash:
     - { match: "wc *", approval: allow }
     - { match: "which *", approval: allow }
     - { match: "whoami", approval: allow }
+    - { match: "*", approval: prompt }
