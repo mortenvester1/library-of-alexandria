@@ -1,3 +1,4 @@
 caffeine-ng
 opencode
+seafile-client
 skillshare-bin

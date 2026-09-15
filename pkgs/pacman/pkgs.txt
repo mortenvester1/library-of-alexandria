@@ -31,6 +31,7 @@ readline
 sqlite
 starship
 stow
+tailscale
 transmission-cli
 uv
 yq

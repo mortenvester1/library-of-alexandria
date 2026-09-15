@@ -55,6 +55,9 @@ sync-mcp:
 stow *pkgs:
     stow --target ${HOME} --dir "dotfiles" -R --no-folding {{ pkgs }}
 
+stow-adopt *pkgs:
+    stow --target ${HOME} --dir "dotfiles" -R --no-folding --adopt {{ pkgs }}
+
 # Upgrade install based on local repo
 upgrade:
     @SKIP_GIT=1 ./install.sh
