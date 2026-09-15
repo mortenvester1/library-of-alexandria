@@ -29,11 +29,10 @@ library-of-alexandria/
 │   ├── zed/           # zed configuration
 │   └── zsh/           # zsh startup files
 ├── pkgs/              # Package manifests consumed by install.sh
-│   ├── apt/           # Ubuntu packages
-│   ├── dnf/           # Fedora packages and repo setup
+│   ├── aur/           # Arch User Repository packages
 │   ├── flatpak/       # Flatpak packages
-│   └── homebrew/      # Brewfiles for macOS
-├── library/           # Personal knowledge base wikis (see below)
+│   ├── homebrew/      # Brewfiles for macOS
+│   └── pacman/        # CachyOS packages
 ├── install.sh         # script to install / upgrade the repo contents on machine
 └── justfile           # install and maintenance targets (just --list)
 ```
@@ -50,11 +49,11 @@ dotfiles/common/skills/
 
 `skillshare sync` reads `${XDG_CONFIG_HOME}/skillshare/config.yaml`, which is stowed from `dotfiles/skillshare/`. Two `justfile`-adjacent shell functions handle repo-scoped skills: `skillshare-init-project` and `skillshare-bridge` (see `dotfiles/zsh/.config/zsh/aliases.zsh`).
 
-## Library
+## Wikis
 
-`library/` contains personal knowledge base wikis maintained by an LLM. The idea is based on [this pattern by Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): instead of RAG (re-deriving answers from raw documents on every query), the LLM incrementally builds and maintains a structured wiki that compounds knowledge over time.
+LLM-maintained wikis can live anywhere. The pattern is based on [this idea by Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): instead of RAG (re-deriving answers from raw documents on every query), the LLM incrementally builds and maintains a structured wiki that compounds knowledge over time.
 
-Each wiki lives at `library/<name>/` and follows this structure:
+Each wiki follows this structure:
 
 ```text
 <wiki-name>/
@@ -67,15 +66,16 @@ Each wiki lives at `library/<name>/` and follows this structure:
     └── log.md
 ```
 
-**Operations** (agent skills, invoked as slash commands in Claude Code):
+**Operations** (shared agent skills):
 
-| Command                         | Description                                                |
-| ------------------------------- | ---------------------------------------------------------- |
-| `/wiki-list`                    | List all available wikis                                   |
-| `/wiki-ingest <wiki> <source>`  | Ingest a new source into a wiki                            |
-| `/wiki-query <wiki> <question>` | Query a wiki and synthesize an answer                      |
-| `/wiki-lint <wiki>`             | Health-check a wiki for contradictions, orphans, and gaps  |
-| `/wiki-move <wiki>`             | Moves a wiki to the `$LLM_WIKIS_DIR` and creates a symlink |
+| Invocation                               | Description                                                                    |
+| ---------------------------------------- | ------------------------------------------------------------------------------ |
+| `$wiki init <path> [topic]`              | Initialize a wiki at a path relative to the current directory or absolute path |
+| `$wiki ingest <source> [--wiki <path>]`  | Ingest a source and update a wiki                                              |
+| `$wiki query <question> [--wiki <path>]` | Query a wiki and synthesize an answer                                          |
+| `$wiki lint [--wiki <path>]`             | Health-check a wiki for contradictions, orphans, and gaps                      |
+
+When `--wiki` is omitted, `ingest`, `query`, and `lint` use the nearest wiki root above the current directory. A wiki root contains `AGENTS.md`, `raw/`, and `wiki/`.
 
 ## Remote access via Tailscale
 
@@ -188,8 +188,3 @@ just upgrade
 - [zsh startup files](https://zsh.sourceforge.io/Doc/Release/Files.html)
 - [zsh completion guide](https://thevaluable.dev/zsh-completion-guide-examples/)
 - [zinit gallery](https://zdharma-continuum.github.io/zinit/wiki/GALLERY/#plugins)
-
-## Jetson
-
-- [Jetson Lab](https://www.jetson-ai-lab.com/)
-- [Supported models](https://www.jetson-ai-lab.com/models/)

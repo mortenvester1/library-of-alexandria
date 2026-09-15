@@ -61,15 +61,3 @@ stow-adopt *pkgs:
 # Upgrade install based on local repo
 upgrade:
     @SKIP_GIT=1 ./install.sh
-
-dev-ubuntu-build:
-    docker build -t ubuntu-w-zsh:local .
-
-dev-ubuntu-install: dev-ubuntu-build
-    # Set working directory and run script
-    docker run --rm -it \
-      --user ubuntu \
-      -v /Users/mortenvester1/git/library-of-alexandria:/home/ubuntu/git/library-of-alexandria \
-      -w /home/ubuntu/git/library-of-alexandria \
-      ubuntu-w-zsh:local \
-      /bin/bash -c "SKIP_GIT=1 ./install.sh"

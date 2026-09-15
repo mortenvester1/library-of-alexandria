@@ -31,7 +31,7 @@ Create this layout:
     └── log.md
 ```
 
-Write a concise `AGENTS.md` that establishes `raw/` as immutable source material and `wiki/` as LLM-maintained derived material. Require every ingest to update the source manifest, relevant pages, wiki index, and log; queries to cite wiki pages; and lint to be read-only unless repairs are requested. Use the optional topic to tailor the title and initial index organization. Do not add example sources or generated content.
+Copy [the canonical template](assets/AGENTS.md) to the new wiki as `AGENTS.md`. Replace every `{{...}}` placeholder: derive `{{WIKI_TITLE}}` from the directory name when no topic is supplied, and use `General knowledge` for `{{TOPIC}}` in that case. Do not otherwise rewrite the template. Then create `CLAUDE.md` as a symbolic link whose target is the sibling `AGENTS.md` (equivalent to `ln -s AGENTS.md CLAUDE.md` from the wiki root), and verify that the link resolves. Create the three index/log files with a title and short explanation of their role. Do not add example sources or generated content.
 
 Report the resolved wiki root and the files created.
 

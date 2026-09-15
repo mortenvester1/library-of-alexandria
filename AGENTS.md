@@ -8,10 +8,9 @@ Refer to the user as the Chief Librarian.
 
 - `dotfiles/` - one stow package per directory; `dotfiles/<pkg>/.config/...` mirrors `$HOME`
 - `dotfiles/common/skills/` - the skillshare skill collection shared by every agent
-- `pkgs/` - package manifests consumed by `install.sh` (apt, dnf, flatpak, homebrew)
+- `pkgs/` - package manifests consumed by `install.sh` (aur, flatpak, homebrew, pacman)
 - `apps/` - self-hosted services, one directory each
 - `cron/` - scheduled scripts
-- `library/` - knowledge-base wikis, one per directory (`library/AGENTS.md` for the conventions)
 - `install.sh`, `justfile` - install and maintenance entry points
 
 <important if="you need to install, restow, or upgrade this repo on the machine">
@@ -26,8 +25,6 @@ Refer to the user as the Chief Librarian.
 | `just copy-ssh-key <user> <host> <pub-key>`       | Install a public key on a remote host                     |
 | `just create-ssh-config <postfix>`                | Write `~/.ssh/config` with a GitHub entry                 |
 | `just create-gpg-key <name> <email> <password>`   | Generate a signing key and print the armored export       |
-| `just dev-ubuntu-build`                           | Build the Ubuntu container used to test `install.sh`      |
-| `just dev-ubuntu-install`                         | Run `install.sh` inside that container                    |
 
 </important>
 

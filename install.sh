@@ -65,17 +65,11 @@ done
 if [[ "$(uname)" == "Darwin" ]]
 then
   OS="MacOS"
-elif grep -qi "fedora\|nobara" /etc/os-release 2>/dev/null
-then
-  OS="Fedora"
 elif grep -qi "cachyos" /etc/os-release 2>/dev/null
 then
   OS="CachyOS"
-elif grep -qi "ubuntu\|debian" /etc/os-release 2>/dev/null
-then
-  OS="Ubuntu"
 else
-  error "install is only supported on macOS, Ubuntu, Fedora/Nobara, and CachyOS"
+  error "install is only supported on macOS and CachyOS"
 fi
 
 # Set XDG_CONFIG_HOME if not already
@@ -98,65 +92,8 @@ else
  	git clone https://github.com/mortenvester1/library-of-alexandria.git ${REPO_DEST}
 fi
 
-# Linux specific setup + install pkgs
-if [[ "${OS}" == "Ubuntu" || "${OS}" == "Fedora" ]]
-then
-  LINUX_ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-
-  if [[ "${OS}" == "Fedora" ]]
-  then
-    # Fedora / Nobara
-    sudo dnf check-update || true
-    bash ${REPO_DEST}/pkgs/dnf/repos.sh
-    xargs sudo dnf -y install < ${REPO_DEST}/pkgs/dnf/pkgs.txt
-    sudo dnf clean all
-    sudo systemctl enable --now docker
-    sudo usermod -aG docker "$(whoami)"
-
-    wget -P /tmp https://github.com/derailed/k9s/releases/latest/download/k9s_linux_${LINUX_ARCH}.rpm
-    sudo dnf install -y /tmp/k9s_linux_${LINUX_ARCH}.rpm
-    rm /tmp/k9s_linux_${LINUX_ARCH}.rpm
-  else
-    # Ubuntu / Debian
-    sudo add-apt-repository ppa:rmescandon/yq
-    sudo apt update
-    xargs sudo apt -y install < ${REPO_DEST}/pkgs/apt/pkgs.txt
-    sudo apt clean
-
-    wget -P /tmp https://github.com/derailed/k9s/releases/latest/download/k9s_linux_${LINUX_ARCH}.deb
-    sudo apt install -y /tmp/k9s_linux_${LINUX_ARCH}.deb
-    rm /tmp/k9s_linux_${LINUX_ARCH}.deb
-
-    # install just
-    JUST_VERSION=$(curl -s https://api.github.com/repos/casey/just/releases/latest | grep '"tag_name"' | sed 's/.*"\([^"]*\)".*/\1/')
-   curl -fsSL "https://github.com/casey/just/releases/latest/download/just-${JUST_VERSION}-$(uname -m)-unknown-linux-musl.tar.gz" | tar -xz -C "${HOME}/.local/bin/" just
-
-    # install ghostty
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"
-
-    # install fzf
-    FZF_VERSION=$(curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-    mkdir -p "${HOME}/.local/bin"
-    curl -fsSL "https://github.com/junegunn/fzf/releases/latest/download/fzf-${FZF_VERSION}-linux_${LINUX_ARCH}.tar.gz" | tar -xz -C "${HOME}/.local/bin/"
-  fi
-
-  # set zsh as default shell
-  chsh -s "$(which zsh)"
-
-  # download asdf binary
-  curl -L -o /tmp/asdf-linux.tar.gz https://github.com/asdf-vm/asdf/releases/download/v0.19.0/asdf-v0.19.0-linux-${LINUX_ARCH}.tar.gz
-  sudo tar -xzf /tmp/asdf-linux.tar.gz -C /usr/local/bin/
-  rm /tmp/asdf-linux.tar.gz
-
-  # install starship
-  curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "${HOME}/.local/bin" --yes
-
-  # install uv
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-
-  # install ollama
-  # curl -fsSL https://ollama.com/install.sh | sh
-elif [[ "${OS}" == "CachyOS" ]]
+# CachyOS package setup
+if [[ "${OS}" == "CachyOS" ]]
 then
   sudo pacman -Syu --noconfirm
   xargs sudo pacman -S --needed --noconfirm < ${REPO_DEST}/pkgs/pacman/pkgs.txt
