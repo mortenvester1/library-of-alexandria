@@ -1,29 +1,47 @@
+name: jellyfin
+
+# Jellyfin — media server for the movies/shows/music on /mnt/storage.
+#   https://jellyfin.org/docs/general/installation/container
+#
+# Deliberate deltas from the upstream compose example:
+#   - top-level `name:`; the project name was previously taken from the
+#     directory, which happens to produce the same thing but is not stated
+#   - floating `jellyfin/jellyfin` pinned to an exact tag
+#   - `:?`-guarded host paths in place of inline `${HOME}` and hardcoded
+#     /mnt/storage paths — see the footgun note in .env.example
+#   - `ports` dropped: it is silently ignored under network_mode: host, which
+#     this stack needs
+#
+#   cp .env.example .env   # defaults match the existing install; see README.md
+#   ./setup.sh --apply
+#   docker compose up -d
+#
+# host networking is required for DLNA (SSDP on 1900/udp) and client
+# auto-discovery (7359/udp), and it is why this stack cannot also join the
+# `monitoring` network — a container gets host networking or user-defined
+# networks, not both. Logs and cAdvisor container metrics still arrive via the
+# Docker socket that apps/monitoring holds.
+
 services:
   jellyfin:
-    image: jellyfin/jellyfin
+    image: ${JELLYFIN_IMAGE:-jellyfin/jellyfin:12.1.20260915-010956}
     container_name: jellyfin
-    ports:
-      - 8096:8096/tcp
-      - 7359:7359/udp
-      - 1900:1900/udp
-    # requires host mode for dlna
-    # and cannot connect to monitoring network at the same time
+    restart: unless-stopped
+    # Binds 8096/tcp (web), 7359/udp (discovery) and 1900/udp (DLNA) directly on
+    # the host. A `ports:` block here would be ignored with a warning.
     network_mode: "host"
-    # networks:
-    #   - monitoring
     volumes:
-      - ${HOME}/.local/share/jellyfin:/data
-      - ${HOME}/.config/jellyfin:/config
-      - ${HOME}/.cache/jellyfin:/cache
-      - /mnt/storage/shows:/media/shows:ro
-      - /mnt/storage/movies:/media/movies:ro
-      - /mnt/storage/music:/media/music:ro
-    restart: "unless-stopped"
+      # Library database, metadata and playback state. Small but not
+      # regenerable without redoing the library — see README.md on backups.
+      - ${JELLYFIN_DATA_PATH:?set JELLYFIN_DATA_PATH}:/data
+      - ${JELLYFIN_CONFIG_PATH:?set JELLYFIN_CONFIG_PATH}:/config
+      # Transcodes and image caches. Disposable.
+      - ${JELLYFIN_CACHE_PATH:?set JELLYFIN_CACHE_PATH}:/cache
+      # Read-only: Jellyfin never writes to the library.
+      - ${MEDIA_PATH:?set MEDIA_PATH}/shows:/media/shows:ro
+      - ${MEDIA_PATH:?set MEDIA_PATH}/movies:/media/movies:ro
+      - ${MEDIA_PATH:?set MEDIA_PATH}/music:/media/music:ro
     environment:
       - JELLYFIN_DATA_DIR=/data
       - JELLYFIN_CONFIG_DIR=/config
       - JELLYFIN_CACHE_DIR=/cache
-
-# networks:
-#   monitoring:
-#     external: true

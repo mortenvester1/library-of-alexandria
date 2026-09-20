@@ -1,0 +1,123 @@
+name: borgui
+
+# Borg UI — web frontend for Borg Backup, running on gurpgork-bee.
+#   https://docs.borgui.com/installation
+#
+# Deliberate deltas from the upstream compose snippets in that doc, so a version
+# bump stays a clean re-diff:
+#   - top-level `name:`; upstream has none
+#   - `ainullcode/borg-ui:latest` pinned to an exact tag
+#   - `:?` guards on PUID/PGID and the two host paths (upstream defaults
+#     LOCAL_STORAGE_PATH to /home/youruser and PUID/PGID to 1001)
+#   - INITIAL_ADMIN_PASSWORD guarded; upstream default is `admin123`
+#   - the "With Redis (Recommended)" variant, minus upstream's 2gb maxmemory
+#   - docker-socket-proxy taken off upstream's `docker-socket-proxy` profile so
+#     it starts with the stack — the db hooks below do not work without it — and
+#     narrowed to the API surface those hooks actually use
+#   - /local split into three binds instead of one, so the sources stay read-only
+#
+# Setup order — subvolume creation, the `chattr +C` that must run before any data
+# lands, and the two post-install steps in the UI — is in README.md. The stack
+# will start without them and the hooks will fail.
+#
+#   cp .env.example .env   # then fill in the guarded values
+#   docker compose up -d
+#   docker compose logs -f app
+#
+# /mnt/backup/@timemachine is the Samba/vfs_fruit share, not part of this stack.
+# It must be excluded from every backup source, as must /local/backup itself.
+#
+# Logs and cAdvisor container metrics arrive via the Docker socket that
+# apps/monitoring holds and need no network attachment. The app service joins
+# `monitoring` for Borg UI's own metrics endpoint, which stays dark until it is
+# enabled under Settings > Metrics.
+
+services:
+  app:
+    image: ${BORGUI_IMAGE:-ainullcode/borg-ui:2.2.6}
+    container_name: borg-web-ui
+    restart: unless-stopped
+    environment:
+      - PORT=${BORGUI_PORT:-8081}
+      # Owns everything Borg writes. Must match the owner of @borg and of
+      # /mnt/storage/dumps, and must be able to read /mnt/storage.
+      - PUID=${PUID:?set PUID}
+      - PGID=${PGID:?set PGID}
+      - TZ=${TZ:-Europe/Copenhagen}
+      - LOCAL_MOUNT_POINTS=/local/storage,/local/backup,/local/dumps
+      - INITIAL_ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:?set INITIAL_ADMIN_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      # No /var/run/docker.sock mount — hooks reach the daemon through the proxy.
+      - DOCKER_HOST=tcp://docker-socket-proxy:2375
+    volumes:
+      # App database, logs, SSH material, the script library, and the generated
+      # /data/.secret_key. Losing this loses the repo passphrases, so it is a
+      # bind on a path you can back up, not a named volume in /var/lib/docker.
+      # It cannot go into a repo Borg UI itself manages — see hooks/README.md.
+      - ${BORGUI_DATA_PATH:?set BORGUI_DATA_PATH}:/data
+      # Regenerable; a named volume is fine here.
+      - borg_cache:/home/borg/.cache/borg
+      - /etc/localtime:/etc/localtime:ro
+      # Sources are read-only: Borg only ever reads them.
+      - ${STORAGE_PATH:?set STORAGE_PATH}:/local/storage:ro
+      # The pre-backup hooks write here. Independent of the ro bind above, so it
+      # stays writable even though it also lives under the source tree.
+      - ${DUMPS_PATH:?set DUMPS_PATH}:/local/dumps:rw
+      # The repos themselves. Never list this as a backup source.
+      - ${BORG_REPO_PATH:?set BORG_REPO_PATH}:/local/backup:rw
+    ports:
+      - "0.0.0.0:${BORGUI_PORT:-8081}:${BORGUI_PORT:-8081}"
+    networks:
+      # `default` must stay listed — naming any network drops the implicit one.
+      default: {}
+      monitoring:
+        aliases:
+          - borgui
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: ${BORGUI_REDIS_IMAGE:-redis:7.4-alpine}
+    container_name: borg-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # EXEC=1 is what makes `docker exec ... pg_dump` work, and it is effectively
+  # root on any container this daemon runs. The proxy is on `default` only and
+  # publishes no port; keep it that way.
+  docker-socket-proxy:
+    image: ghcr.io/tecnativa/docker-socket-proxy:0.4.2
+    container_name: borg-docker-proxy
+    restart: unless-stopped
+    # Upstream sets `privileged: true`; that is its SELinux-host carryover and
+    # buys nothing on Arch.
+    environment:
+      - CONTAINERS=1
+      - INFO=1
+      - POST=1
+      - EXEC=1
+      - ALLOW_START=1
+      - ALLOW_STOP=1
+      - ALLOW_RESTARTS=1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+volumes:
+  borg_cache:
+
+networks:
+  monitoring:
+    external: true
