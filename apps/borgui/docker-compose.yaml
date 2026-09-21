@@ -99,7 +99,7 @@ services:
   # root on any container this daemon runs. The proxy is on `default` only and
   # publishes no port; keep it that way.
   docker-socket-proxy:
-    image: ghcr.io/tecnativa/docker-socket-proxy:0.4.2
+    image: ghcr.io/tecnativa/docker-socket-proxy:v0.4.2
     container_name: borg-docker-proxy
     restart: unless-stopped
     # Upstream sets `privileged: true`; that is its SELinux-host carryover and
