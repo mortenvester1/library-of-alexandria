@@ -73,6 +73,17 @@ Upstream's template hardcodes the server name there, so the Mac lists the server
 in Time Machine and then cannot connect, because no share by that name exists.
 setup.sh generates the records from `<config>/shares.d`, which the web UI writes.
 
+SMB needs a firewall rule. bee runs `ufw`, and without one smbd binds, logs
+nothing, and the Mac shows the server in Time Machine — mDNS is allowed — but
+never connects, because the SYN to 445 is dropped before smbd sees it:
+
+```bash
+sudo ufw allow from 192.168.0.0/24 to any port 445 proto tcp comment 'timenest smb'
+```
+
+LAN-scoped deliberately, matching `SMB_INTERFACES`. `setup.sh` warns when ufw is
+active with no rule for 445.
+
 ## Two host-level conflicts
 
 **avahi.** gurpgork-bee runs `avahi-daemon` on `:5353` and `apps/entrance`

@@ -110,6 +110,21 @@ else
   rm -f "$tmp"
 fi
 
+echo "== firewall"
+# smbd binds fine and logs nothing while a host firewall drops the SYN, which
+# looks exactly like a Samba problem from the Mac: the server appears in Time
+# Machine (mDNS is allowed) and then will not connect.
+if command -v ufw >/dev/null && systemctl is-active --quiet ufw 2>/dev/null; then
+  if sudo -n ufw status 2>/dev/null | grep -q "445"; then
+    echo "  ok: ufw has a rule for 445"
+  else
+    echo "  ufw is active with no visible rule for 445/tcp. Allow it from the LAN:"
+    echo "    sudo ufw allow from <lan>/24 to any port 445 proto tcp comment 'timenest smb'"
+  fi
+else
+  echo "  ok: ufw not active"
+fi
+
 echo "== monitoring network"
 if docker network inspect monitoring >/dev/null 2>&1; then
   echo "  ok: monitoring network exists"
