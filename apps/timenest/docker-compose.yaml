@@ -25,6 +25,8 @@ name: timenest
 #     bind masks the smb.conf.template the image ships and smbd crash-loops
 #   - `command:` points at entrypoint-samba-compat.sh, which works around
 #     upstream passing smbd a flag its own base image does not accept
+#   - samba healthcheck replaced: upstream's anonymous smbclient listing is
+#     forbidden by upstream's own smb.conf and never passes
 #   - `web` joins the external `monitoring` network for its /metrics endpoint
 #   - the raw docker.sock bind on `web` replaced by a narrowed
 #     docker-socket-proxy, matching apps/borgui
@@ -83,8 +85,14 @@ services:
     # smbd in the published image rejects the `--log-stdout` that upstream's
     # entrypoint passes it; the wrapper rewrites that one flag.
     command: ["/usr/local/bin/entrypoint-samba-compat.sh"]
+    # Upstream's check is `smbclient -L //localhost -N`, an ANONYMOUS listing —
+    # which its own smb.conf.template forbids (restrict anonymous = 2,
+    # map to guest = never, ntlm auth = no). It fails with
+    # NT_STATUS_LOGON_FAILURE on a perfectly healthy smbd, so the container sits
+    # permanently unhealthy. smbcontrol pings the running daemon over Samba's
+    # internal messaging instead: no SMB session, no credentials.
     healthcheck:
-      test: ["CMD", "smbclient", "-L", "//localhost", "-N"]
+      test: ["CMD", "smbcontrol", "smbd", "ping"]
       interval: 30s
       timeout: 5s
       retries: 3

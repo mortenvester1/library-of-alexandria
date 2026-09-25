@@ -46,6 +46,12 @@ wrapper rewrites that one flag and execs upstream's script, so it no-ops once
 upstream fixes it. (Upstream's README claims Samba 4.18+; the published image
 has 4.17.12-Debian.)
 
+The samba healthcheck is `smbcontrol smbd ping`, not upstream's
+`smbclient -L //localhost -N`. That anonymous listing is refused by upstream's
+own `smb.conf.template` (`restrict anonymous = 2`, `map to guest = never`,
+`ntlm auth = no`), so the container reports unhealthy no matter how well smbd is
+running.
+
 ## Two host-level conflicts
 
 **avahi.** gurpgork-bee runs `avahi-daemon` on `:5353` and `apps/entrance`
@@ -75,6 +81,15 @@ docker compose logs -f samba
 Then open `http://gurpgork-bee:8083`, log in as `admin`, and add one user per
 Mac. Each user gets its own `shares.d/<user>.conf` with a
 `fruit:time machine max size` equal to `DEFAULT_QUOTA_GB`.
+
+To confirm the Bonjour records from the host, use the parsable output —
+`avahi-browse` prints friendly type names, so grepping for `adisk` finds
+nothing even when it is working:
+
+```bash
+avahi-browse -atp | grep -i timenest      # _adisk._tcp, _smb._tcp, _device-info._tcp
+avahi-browse -at  | grep -i "Apple TimeMachine"
+```
 
 On the Mac: System Settings → General → Time Machine → Add Backup Disk. The
 share appears as **TimeNest** with a Time Capsule icon. No IP, no `smb://` URL.
