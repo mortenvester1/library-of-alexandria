@@ -42,7 +42,14 @@ owner="${TIMENEST_STATE_OWNER:-$(id -un):storage}"
 for d in "$TIMENEST_SAMBA_STATE" "$TIMENEST_CONFIG_PATH" "$TIMENEST_CONFIG_PATH/shares.d" "$TIMENEST_WEB_DATA"; do
   if [[ -d "$d" ]]; then echo "  exists: $d"; else run sudo mkdir -p "$d"; fi
   run sudo chown "$owner" "$d"
-  run sudo chmod 2775 "$d"
+  # Samba checks its state directory and warns "should have permissions 0755
+  # for browsing to work" on anything else — the setgid bit included. The owner
+  # is already Borg UI's PUID, so 0755 costs it nothing there.
+  if [[ "$d" == "$TIMENEST_SAMBA_STATE" ]]; then
+    run sudo chmod 0755 "$d"
+  else
+    run sudo chmod 2775 "$d"
+  fi
 done
 
 echo "== port 445 (host smbd)"
