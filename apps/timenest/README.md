@@ -17,7 +17,7 @@ This is the **Time Machine** item listed under "Not done yet" in
 | --- | --- |
 | `/mnt/backup/@timemachine` | the share itself; btrfs subvolume, `chattr +C` — created in `apps/borgui/README.md` |
 | `/mnt/storage/timenest/samba` | `passdb.tdb` — the Samba accounts |
-| `/mnt/storage/timenest/config` | `smb.conf` + `shares.d/*.conf`, written by the web UI |
+| `/mnt/storage/timenest/config/shares.d` | one `<user>.conf` share fragment per Mac, written by the web UI |
 | `/mnt/storage/timenest/web` | `auth.db` (bcrypt admin hash), quota bookkeeping |
 | `/etc/avahi/services/timenest.service` | Bonjour advertisement, installed into the **host** avahi |
 
@@ -31,6 +31,12 @@ inside keep whatever mode upstream sets; if a Borg run reports skipped files
 here, that is where to look.
 `/mnt/backup/@timemachine` itself must stay **excluded** from every Borg source —
 `apps/borgui/.env.example` already says so.
+
+Only `shares.d` is bind-mounted into the samba container, not the whole of
+`/etc/timenest`. The image ships `/etc/timenest/smb.conf.template` and the
+entrypoint renders `/etc/samba/smb.conf` from it on every start; binding the
+parent directory — which is what upstream's compose does — masks that file and
+smbd crash-loops on `smb.conf.template: No such file or directory`.
 
 ## Two host-level conflicts
 

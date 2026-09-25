@@ -38,7 +38,8 @@ echo "== state directories"
 # mounts /mnt/storage read-only as PUID:PGID and would otherwise skip these.
 # setgid so anything created underneath keeps the storage group.
 owner="${TIMENEST_STATE_OWNER:-$(id -un):storage}"
-for d in "$TIMENEST_SAMBA_STATE" "$TIMENEST_CONFIG_PATH" "$TIMENEST_WEB_DATA"; do
+# shares.d is the actual bind target for samba; see docker-compose.yaml.
+for d in "$TIMENEST_SAMBA_STATE" "$TIMENEST_CONFIG_PATH" "$TIMENEST_CONFIG_PATH/shares.d" "$TIMENEST_WEB_DATA"; do
   if [[ -d "$d" ]]; then echo "  exists: $d"; else run sudo mkdir -p "$d"; fi
   run sudo chown "$owner" "$d"
   run sudo chmod 2775 "$d"
