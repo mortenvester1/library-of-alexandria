@@ -1,6 +1,6 @@
 # TimeNest
 
-Network Time Machine target for the Macs, on **gurpgork-bee**. Samba 4.18 +
+Network Time Machine target for the Macs, on **gurpgork-bee**. Samba +
 `vfs_fruit` over SMB3, advertised as a Time Capsule over Bonjour, with a FastAPI
 admin UI for per-user accounts and quotas.
 
@@ -37,6 +37,14 @@ Only `shares.d` is bind-mounted into the samba container, not the whole of
 entrypoint renders `/etc/samba/smb.conf` from it on every start; binding the
 parent directory — which is what upstream's compose does — masks that file and
 smbd crash-loops on `smb.conf.template: No such file or directory`.
+
+`command:` overrides the image's CMD with `entrypoint-samba-compat.sh`.
+Upstream's `entrypoint-samba.sh` starts smbd with `--log-stdout`, renamed
+`--debug-stdout` in Samba 4.15; the image is built on bookworm-slim and ships
+4.17.12, so smbd exits on the unknown option and the container crash-loops. The
+wrapper rewrites that one flag and execs upstream's script, so it no-ops once
+upstream fixes it. (Upstream's README claims Samba 4.18+; the published image
+has 4.17.12-Debian.)
 
 ## Two host-level conflicts
 

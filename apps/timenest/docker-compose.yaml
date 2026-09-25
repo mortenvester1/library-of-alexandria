@@ -23,6 +23,8 @@ name: timenest
 #   - ADMIN_PASSWORD guarded (upstream defaults it to `changeme-please`)
 #   - samba binds <config>/shares.d, not all of /etc/timenest — upstream's
 #     bind masks the smb.conf.template the image ships and smbd crash-loops
+#   - `command:` points at entrypoint-samba-compat.sh, which works around
+#     upstream passing smbd a flag its own base image does not accept
 #   - `web` joins the external `monitoring` network for its /metrics endpoint
 #   - the raw docker.sock bind on `web` replaced by a narrowed
 #     docker-socket-proxy, matching apps/borgui
@@ -67,6 +69,9 @@ services:
       # passdb.tdb — the Samba accounts. Losing this means re-enrolling every
       # Mac, and Time Machine treats a re-enrolled share as a fresh backup.
       - ${TIMENEST_SAMBA_STATE:?set TIMENEST_SAMBA_STATE}:/var/lib/samba
+      # Wrapper for upstream's crash-looping entrypoint; see the file header
+      # and `command:` below.
+      - ./entrypoint-samba-compat.sh:/usr/local/bin/entrypoint-samba-compat.sh:ro
       # Only shares.d, NOT all of /etc/timenest. The image ships
       # /etc/timenest/smb.conf.template and entrypoint-samba.sh renders
       # /etc/samba/smb.conf from it on every start; binding the whole directory
@@ -74,6 +79,10 @@ services:
       # "smb.conf.template: No such file or directory". shares.d is the only
       # durable state here — the web UI writes one fragment per user.
       - ${TIMENEST_CONFIG_PATH:?set TIMENEST_CONFIG_PATH}/shares.d:/etc/timenest/shares.d
+    # Replaces the image's CMD (entrypoint-samba.sh). tini stays as ENTRYPOINT.
+    # smbd in the published image rejects the `--log-stdout` that upstream's
+    # entrypoint passes it; the wrapper rewrites that one flag.
+    command: ["/usr/local/bin/entrypoint-samba-compat.sh"]
     healthcheck:
       test: ["CMD", "smbclient", "-L", "//localhost", "-N"]
       interval: 30s
