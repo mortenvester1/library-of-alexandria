@@ -115,8 +115,15 @@ echo "== firewall"
 # looks exactly like a Samba problem from the Mac: the server appears in Time
 # Machine (mDNS is allowed) and then will not connect.
 if command -v ufw >/dev/null && systemctl is-active --quiet ufw 2>/dev/null; then
-  if sudo -n ufw status 2>/dev/null | grep -q "445"; then
-    echo "  ok: ufw has a rule for 445"
+  v4=$(sudo -n ufw status 2>/dev/null | grep -c "^445.*ALLOW" || true)
+  v6=$(sudo -n ufw status 2>/dev/null | grep -c "^445.*(v6).*ALLOW" || true)
+  if (( v4 > 0 && v6 > 0 )); then
+    echo "  ok: ufw has rules for 445 on both address families"
+  elif (( v4 > 0 )); then
+    echo "  ufw allows 445 over IPv4 only. The host also has a AAAA record, and"
+    echo "  macOS will try it: mDNS answers over v6 while SMB is dropped, which"
+    echo "  looks like a Time Machine failure. Add the v6 rule too:"
+    echo "    sudo ufw allow from <lan-v6-prefix>::/64 to any port 445 proto tcp"
   else
     echo "  ufw is active with no visible rule for 445/tcp. Allow it from the LAN:"
     echo "    sudo ufw allow from <lan>/24 to any port 445 proto tcp comment 'timenest smb'"

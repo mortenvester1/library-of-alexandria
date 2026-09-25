@@ -79,10 +79,14 @@ never connects, because the SYN to 445 is dropped before smbd sees it:
 
 ```bash
 sudo ufw allow from 192.168.0.0/24 to any port 445 proto tcp comment 'timenest smb'
+sudo ufw allow from fd65:79df:802d:4378::/64 to any port 445 proto tcp comment 'timenest smb v6'
 ```
 
-LAN-scoped deliberately, matching `SMB_INTERFACES`. `setup.sh` warns when ufw is
-active with no rule for 445.
+Both families are needed. `gurpgork-bee.local` carries an A and a AAAA record,
+and a `ufw allow from <v4 cidr>` creates no v6 rule — mDNS then works over v6
+while SMB does not, so Time Machine finds the disk and fails to connect to it.
+Scoped to the LAN deliberately, matching `SMB_INTERFACES`. `setup.sh` warns when
+ufw is active with no rule for 445.
 
 ## Two host-level conflicts
 
