@@ -1,6 +1,6 @@
 # TimeNest
 
-Network Time Machine target for the Macs, on **gurpgork-bee**. Samba +
+Network Time Machine target for the Macs. Samba 4.18 +
 `vfs_fruit` over SMB3, advertised as a Time Capsule over Bonjour, with a FastAPI
 admin UI for per-user accounts and quotas.
 
@@ -13,13 +13,13 @@ This is the **Time Machine** item listed under "Not done yet" in
 
 ## Layout
 
-| Path | Role |
-| --- | --- |
-| `/mnt/backup/@timemachine` | the share itself; btrfs subvolume, `chattr +C` — created in `apps/borgui/README.md` |
-| `/mnt/storage/timenest/samba` | `passdb.tdb` — the Samba accounts |
-| `/mnt/storage/timenest/config/shares.d` | one `<user>.conf` share fragment per Mac, written by the web UI |
-| `/mnt/storage/timenest/web` | `auth.db` (bcrypt admin hash), quota bookkeeping |
-| `/etc/avahi/services/timenest.service` | Bonjour advertisement, installed into the **host** avahi |
+| Path                                    | Role                                                                                |
+| --------------------------------------- | ----------------------------------------------------------------------------------- |
+| `/mnt/backup/@timemachine`              | the share itself; btrfs subvolume, `chattr +C` — created in `apps/borgui/README.md` |
+| `/mnt/storage/timenest/samba`           | `passdb.tdb` — the Samba accounts                                                   |
+| `/mnt/storage/timenest/config/shares.d` | one `<user>.conf` share fragment per Mac, written by the web UI                     |
+| `/mnt/storage/timenest/web`             | `auth.db` (bcrypt admin hash), quota bookkeeping                                    |
+| `/etc/avahi/services/timenest.service`  | Bonjour advertisement, installed into the **host** avahi                            |
 
 State lives on `/mnt/storage`, not on the backup drive: `passdb.tdb` is the only
 non-regenerable piece here, and it needs to be inside a Borg source. `setup.sh`

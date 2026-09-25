@@ -63,7 +63,7 @@ services:
       DEVICE_MODEL: ${DEVICE_MODEL:-TimeCapsule8,119}
       SMB_INTERFACES: ${SMB_INTERFACES:-}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      TZ: ${TIMEZONE:-Europe/Copenhagen}
+      TZ: ${TIMEZONE:-America/New_York}
     volumes:
       - ${BACKUP_PATH:?set BACKUP_PATH}:/backup
       # passdb.tdb — the Samba accounts. Losing this means re-enrolling every
@@ -102,7 +102,7 @@ services:
       DEFAULT_QUOTA_GB: ${DEFAULT_QUOTA_GB:-500}
       ENABLE_METRICS: ${ENABLE_METRICS:-true}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      TZ: ${TIMEZONE:-Europe/Copenhagen}
+      TZ: ${TIMEZONE:-America/New_York}
       SAMBA_CONTAINER: timenest-samba
       # web/app/samba_mgr.py shells out to the docker CLI (`docker exec -i
       # timenest-samba create-user.sh ...`), and the CLI honours DOCKER_HOST —

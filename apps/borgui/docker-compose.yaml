@@ -43,7 +43,7 @@ services:
       # /mnt/storage/dumps, and must be able to read /mnt/storage.
       - PUID=${PUID:?set PUID}
       - PGID=${PGID:?set PGID}
-      - TZ=${TZ:-Europe/Copenhagen}
+      - TZ=${TZ:-America/New_York}
       - LOCAL_MOUNT_POINTS=/local/storage,/local/backup,/local/dumps
       - INITIAL_ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:?set INITIAL_ADMIN_PASSWORD}
       - REDIS_HOST=redis
