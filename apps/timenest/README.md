@@ -74,7 +74,7 @@ Upstream advertises every volume inside one group named after the server, so a
 Mac authenticates and then fails the tree connect:
 
 ```
-Auth: ... status [NT_STATUS_OK] ... became [TIMENEST]\[gurpgork-square]
+Auth: ... status [NT_STATUS_OK] ... became [TIMENEST]\[<share>]
 find_service() failed to find service timenest
 NT_STATUS_BAD_NETWORK_NAME
 ```
@@ -82,24 +82,24 @@ NT_STATUS_BAD_NETWORK_NAME
 `setup.sh` renders one volume file per fragment in `<config>/shares.d` and
 removes the files for shares that no longer exist.
 
-SMB needs a firewall rule. bee runs `ufw`, and without one smbd binds, logs
-nothing, and the Mac shows the server in Time Machine — mDNS is allowed — but
-never connects, because the SYN to 445 is dropped before smbd sees it:
+SMB needs a firewall rule. This host runs `ufw`, and without one smbd binds,
+logs nothing, and the Mac shows the server in Time Machine — mDNS is allowed —
+but never connects, because the SYN to 445 is dropped before smbd sees it:
 
 ```bash
-sudo ufw allow from 192.168.0.0/24 to any port 445 proto tcp comment 'timenest smb'
-sudo ufw allow from fd65:79df:802d:4378::/64 to any port 445 proto tcp comment 'timenest smb v6'
+sudo ufw allow from <lan-v4-cidr> to any port 445 proto tcp comment 'timenest smb'
+sudo ufw allow from <lan-v6-prefix>::/64 to any port 445 proto tcp comment 'timenest smb v6'
 ```
 
-Both families are needed. `gurpgork-bee.local` carries an A and a AAAA record,
-and a `ufw allow from <v4 cidr>` creates no v6 rule — mDNS then works over v6
-while SMB does not, so Time Machine finds the disk and fails to connect to it.
-Scoped to the LAN deliberately, matching `SMB_INTERFACES`. `setup.sh` warns when
-ufw is active with no rule for 445.
+Both families are needed. The host answers with an A and a AAAA record, and a
+`ufw allow from <v4 cidr>` creates no v6 rule — mDNS then works over v6 while
+SMB does not, so Time Machine finds the disk and fails to connect to it. Scoped
+to the LAN deliberately, matching `SMB_INTERFACES`; `ip -o addr` gives both
+prefixes. `setup.sh` warns when ufw is active with no rule for 445.
 
 ## Two host-level conflicts
 
-**avahi.** gurpgork-bee runs `avahi-daemon` on `:5353` and `apps/entrance`
+**avahi.** This host runs `avahi-daemon` on `:5353` and `apps/entrance`
 depends on it. Upstream ships a host-networked avahi container, which would
 fight it. That service is dropped here; `setup.sh` installs the same service XML
 (`timenest.service`, rendered with `SERVER_NAME`/`DEVICE_MODEL`) into the host's
@@ -123,20 +123,31 @@ docker compose up -d
 docker compose logs -f samba
 ```
 
-Then open `http://gurpgork-bee:8083`, log in as `admin`, and add one user per
-Mac. Each user gets its own `shares.d/<user>.conf` with a
-`fruit:time machine max size` equal to `DEFAULT_QUOTA_GB`.
+Then open `http://<host>:8083`, log in as `admin`, and add one user per Mac.
+
+## Adding a Mac
+
+1. In the web UI, add a user and set its quota. The name must match
+   `[a-z_][a-z0-9_-]{0,31}`, and it becomes both the Samba share and the volume
+   name the Mac sees, so name it after the machine. This writes
+   `shares.d/<user>.conf` with `fruit:time machine max size` set from the quota;
+   the samba container picks it up within 5s and reloads.
+2. On the host, `./setup.sh --apply`. This installs the Bonjour advertisement
+   for the new volume, and removes the ones for users you deleted.
+
+Step 2 is easy to skip and fails confusingly: the share works over `smb://` but
+never appears in Time Machine. `setup.sh` is idempotent — re-run it any time.
+
+On the Mac: System Settings → General → Time Machine → Add Backup Disk, pick the
+volume named after that user, and enter its password.
 
 To confirm the Bonjour records from the host, use the parsable output —
 `avahi-browse` prints friendly type names, so grepping for `adisk` finds
 nothing even when it is working:
 
 ```bash
-avahi-browse -atp | grep -i timenest      # _adisk._tcp, _smb._tcp, _device-info._tcp
-avahi-browse -at  | grep -i "Apple TimeMachine"
-```
-
-On the Mac: System Settings → General → Time Machine → Add Backup Disk. The
+avahi-browse -rtp _adisk._tcp             # one entry per volume, named after the share
+``` The
 share appears as **TimeNest** with a Time Capsule icon. No IP, no `smb://` URL.
 
 ## Versions
@@ -172,7 +183,7 @@ socket that `apps/monitoring` holds.
   `DOCKER_HOST`. `EXEC=1` is still root inside `timenest-samba`, which is a
   privileged container; that is inherent to how TimeNest manages Samba users.
   The proxy publishes no port and sits on `default` only.
-- `SMB_INTERFACES` defaults to `enp2s0` here rather than upstream's empty value,
+- `SMB_INTERFACES` is pinned to the LAN NIC rather than upstream's empty value,
   which would bind `tailscale0` too and offer the share to every tailnet peer.
   The upstream `smb.conf` template sets `server smb encrypt = desired`, not
   `required`, so that exposure is not mitigated by encryption. Re-check the

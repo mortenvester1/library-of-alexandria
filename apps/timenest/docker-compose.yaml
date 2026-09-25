@@ -1,6 +1,6 @@
 name: timenest
 
-# TimeNest — Samba + vfs_fruit Time Machine target for the Macs, on gurpgork-bee.
+# TimeNest — Samba + vfs_fruit Time Machine target for the Macs.
 #   https://github.com/momenbasel/timenest
 #
 # This is the "Time Machine" item under "Not done yet" in apps/borgui/README.md:
@@ -13,7 +13,7 @@ name: timenest
 #     here, so `context: .` would resolve to apps/timenest/ and fail
 #   - `:latest` replaced by digest pins — upstream publishes no semver tags,
 #     only `main` and `latest` (see .env.example)
-#   - the `avahi` service is GONE. gurpgork-bee already runs avahi-daemon on
+#   - the `avahi` service is GONE. This host already runs avahi-daemon on
 #     :5353 and apps/entrance depends on it (/run/avahi-daemon bind). A
 #     host-networked avahi container would fight it. setup.sh installs the same
 #     service XML the container would have rendered into the host's

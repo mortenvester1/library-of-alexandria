@@ -4,7 +4,7 @@
   TimeNest Bonjour advertisement, for the HOST avahi-daemon.
 
   Upstream renders this from env vars inside a host-networked avahi container.
-  gurpgork-bee already runs avahi-daemon (apps/entrance binds
+  This host already runs avahi-daemon (apps/entrance binds
   /run/avahi-daemon), and two daemons cannot share :5353, so setup.sh installs
   this file into /etc/avahi/services/ instead. avahi picks it up without a
   restart. SERVER_NAME and DEVICE_MODEL come from .env.
