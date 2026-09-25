@@ -76,8 +76,29 @@ echo "== Bonjour service file"
 # Replaces upstream's timenest-avahi container. avahi re-reads
 # /etc/avahi/services/ on change; no restart needed.
 command -v envsubst >/dev/null || { echo "  envsubst missing (install gettext)" >&2; exit 1; }
+
+# One dkN record per share. adVN must be the SHARE name — macOS mounts
+# smb://<host>/<adVN>. Upstream advertises the server name there, so the Mac
+# lists the server in Time Machine and then fails to connect to a share that
+# does not exist. Shares are created by the web UI, so re-run this after adding
+# or removing a user.
+ADISK_VOLUMES=""
+i=0
+for conf in "$TIMENEST_CONFIG_PATH"/shares.d/*.conf; do
+  [[ -e "$conf" ]] || break
+  share="$(basename "$conf" .conf)"
+  ADISK_VOLUMES+="    <txt-record>dk${i}=adVN=${share},adVF=0x82</txt-record>"$'\n'
+  echo "  volume dk${i}: ${share}"
+  i=$((i + 1))
+done
+ADISK_VOLUMES="${ADISK_VOLUMES%$'\n'}"
+export ADISK_VOLUMES
+if (( i == 0 )); then
+  echo "  no shares yet — add a user in the web UI, then re-run this script"
+fi
+
 tmp="$(mktemp)"
-envsubst '${SERVER_NAME} ${DEVICE_MODEL}' < ./timenest.service > "$tmp"
+envsubst '${SERVER_NAME} ${DEVICE_MODEL} ${ADISK_VOLUMES}' < ./timenest.service > "$tmp"
 if [[ -f /etc/avahi/services/timenest.service ]] && cmp -s "$tmp" /etc/avahi/services/timenest.service; then
   echo "  up to date: /etc/avahi/services/timenest.service"
   rm -f "$tmp"

@@ -66,6 +66,13 @@ own `smb.conf.template` (`restrict anonymous = 2`, `map to guest = never`,
 `ntlm auth = no`), so the container reports unhealthy no matter how well smbd is
 running.
 
+**After adding or removing a user in the web UI, re-run `./setup.sh --apply`.**
+The `_adisk._tcp` record carries one `dkN=adVN=<share>` entry per Time Machine
+volume, and `adVN` must name a *share* — macOS mounts `smb://<host>/<adVN>`.
+Upstream's template hardcodes the server name there, so the Mac lists the server
+in Time Machine and then cannot connect, because no share by that name exists.
+setup.sh generates the records from `<config>/shares.d`, which the web UI writes.
+
 ## Two host-level conflicts
 
 **avahi.** gurpgork-bee runs `avahi-daemon` on `:5353` and `apps/entrance`
