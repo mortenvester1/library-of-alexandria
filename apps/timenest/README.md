@@ -67,11 +67,20 @@ own `smb.conf.template` (`restrict anonymous = 2`, `map to guest = never`,
 running.
 
 **After adding or removing a user in the web UI, re-run `./setup.sh --apply`.**
-The `_adisk._tcp` record carries one `dkN=adVN=<share>` entry per Time Machine
-volume, and `adVN` must name a *share* — macOS mounts `smb://<host>/<adVN>`.
-Upstream's template hardcodes the server name there, so the Mac lists the server
-in Time Machine and then cannot connect, because no share by that name exists.
-setup.sh generates the records from `<config>/shares.d`, which the web UI writes.
+Each Time Machine volume is advertised in its own Bonjour service group named
+after the *share* (`timenest-<share>.service`), because macOS mounts
+`smb://<host>/<service instance name>` — not the `adVN` in the TXT record.
+Upstream advertises every volume inside one group named after the server, so a
+Mac authenticates and then fails the tree connect:
+
+```
+Auth: ... status [NT_STATUS_OK] ... became [TIMENEST]\[gurpgork-square]
+find_service() failed to find service timenest
+NT_STATUS_BAD_NETWORK_NAME
+```
+
+`setup.sh` renders one volume file per fragment in `<config>/shares.d` and
+removes the files for shares that no longer exist.
 
 SMB needs a firewall rule. bee runs `ufw`, and without one smbd binds, logs
 nothing, and the Mac shows the server in Time Machine — mDNS is allowed — but

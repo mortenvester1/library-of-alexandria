@@ -1,0 +1,32 @@
+<?xml version="1.0" standalone='no'?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<!--
+  One Time Machine volume, advertised under the SHARE's own name.
+
+  macOS mounts smb://<host>/<service instance name>, so the <name> here must be
+  the Samba share, not the server. Upstream advertises every volume inside the
+  server's own service group and puts the share in the adVN TXT record instead;
+  a Mac then authenticates and fails the tree connect with
+  NT_STATUS_BAD_NETWORK_NAME on a share named after the server.
+
+  setup.sh renders one of these per fragment in <config>/shares.d.
+-->
+
+<service-group>
+
+  <name replace-wildcards="yes">${SHARE_NAME}</name>
+
+  <service>
+    <type>_adisk._tcp</type>
+    <port>9</port>
+    <txt-record>sys=waMa=0,adVF=0x100</txt-record>
+    <txt-record>dk0=adVN=${SHARE_NAME},adVF=0x82</txt-record>
+  </service>
+
+  <service>
+    <type>_device-info._tcp</type>
+    <port>0</port>
+    <txt-record>model=${DEVICE_MODEL}</txt-record>
+  </service>
+
+</service-group>

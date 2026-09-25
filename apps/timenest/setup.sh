@@ -77,38 +77,46 @@ echo "== Bonjour service file"
 # /etc/avahi/services/ on change; no restart needed.
 command -v envsubst >/dev/null || { echo "  envsubst missing (install gettext)" >&2; exit 1; }
 
-# One dkN record per share. adVN must be the SHARE name — macOS mounts
-# smb://<host>/<adVN>. Upstream advertises the server name there, so the Mac
-# lists the server in Time Machine and then fails to connect to a share that
-# does not exist. Shares are created by the web UI, so re-run this after adding
-# or removing a user.
-ADISK_VOLUMES=""
-i=0
+# macOS mounts smb://<host>/<service instance name>, so each Time Machine volume
+# gets its own service group named after the SHARE — see timenest-volume.service.
+# Shares are created by the web UI, so re-run this after adding a user.
+shares=()
 for conf in "$TIMENEST_CONFIG_PATH"/shares.d/*.conf; do
   [[ -e "$conf" ]] || break
-  share="$(basename "$conf" .conf)"
-  ADISK_VOLUMES+="    <txt-record>dk${i}=adVN=${share},adVF=0x82</txt-record>"$'\n'
-  echo "  volume dk${i}: ${share}"
-  i=$((i + 1))
+  shares+=("$(basename "$conf" .conf)")
 done
-ADISK_VOLUMES="${ADISK_VOLUMES%$'\n'}"
-export ADISK_VOLUMES
-if (( i == 0 )); then
-  echo "  no shares yet — add a user in the web UI, then re-run this script"
-fi
+(( ${#shares[@]} )) || echo "  no shares yet — add a user in the web UI, then re-run this script"
+
+install_service() {  # <rendered-tmp> <dest> <label>
+  if [[ -f "$2" ]] && cmp -s "$1" "$2"; then
+    echo "  up to date: $2"
+  else
+    echo "  install $2 ($3)"
+    (( APPLY )) && sudo install -m 0644 "$1" "$2"
+  fi
+  rm -f "$1"
+}
 
 tmp="$(mktemp)"
-envsubst '${SERVER_NAME} ${DEVICE_MODEL} ${ADISK_VOLUMES}' < ./timenest.service > "$tmp"
-if [[ -f /etc/avahi/services/timenest.service ]] && cmp -s "$tmp" /etc/avahi/services/timenest.service; then
-  echo "  up to date: /etc/avahi/services/timenest.service"
-  rm -f "$tmp"
-else
-  echo "  install /etc/avahi/services/timenest.service (SERVER_NAME=$SERVER_NAME)"
-  if (( APPLY )); then
-    sudo install -m 0644 "$tmp" /etc/avahi/services/timenest.service
-  fi
-  rm -f "$tmp"
-fi
+envsubst '${SERVER_NAME} ${DEVICE_MODEL}' < ./timenest.service > "$tmp"
+install_service "$tmp" /etc/avahi/services/timenest.service "server ${SERVER_NAME}"
+
+for share in ${shares[@]+"${shares[@]}"}; do
+  tmp="$(mktemp)"
+  SHARE_NAME="$share" envsubst '${SHARE_NAME} ${DEVICE_MODEL}' < ./timenest-volume.service > "$tmp"
+  install_service "$tmp" "/etc/avahi/services/timenest-${share}.service" "volume ${share}"
+done
+
+# Drop volumes whose share is gone, or macOS keeps offering a dead disk.
+for existing in /etc/avahi/services/timenest-*.service; do
+  [[ -e "$existing" ]] || break
+  name="$(basename "$existing" .service)"; name="${name#timenest-}"
+  found=0
+  for share in ${shares[@]+"${shares[@]}"}; do
+    [[ "$share" == "$name" ]] && found=1
+  done
+  (( found )) || run sudo rm -f "$existing"
+done
 
 echo "== firewall"
 # smbd binds fine and logs nothing while a host firewall drops the SYN, which
