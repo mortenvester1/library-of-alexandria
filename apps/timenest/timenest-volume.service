@@ -1,13 +1,18 @@
 <?xml version="1.0" standalone='no'?>
 <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
 <!--
-  One Time Machine volume, advertised under the SHARE's own name.
+  One Time Machine volume: SMB, model and Apple Disk records together, in a
+  single service group whose <name> is the Samba share.
 
-  macOS mounts smb://<host>/<service instance name>, so the <name> here must be
-  the Samba share, not the server. Upstream advertises every volume inside the
-  server's own service group and puts the share in the adVN TXT record instead;
-  a Mac then authenticates and fails the tree connect with
-  NT_STATUS_BAD_NETWORK_NAME on a share named after the server.
+  Two things upstream gets wrong here, and they have to be fixed together:
+
+    - macOS mounts smb://<host>/<service instance name>, not the adVN in the
+      TXT record, so the group must be named after the SHARE. Naming it after
+      the server makes a Mac authenticate and then fail the tree connect with
+      NT_STATUS_BAD_NETWORK_NAME.
+    - _adisk must sit in the SAME group as the _smb record it belongs to.
+      Advertising the volume in its own group, with _smb left under the server's
+      name, makes the disk disappear from Time Machine entirely.
 
   setup.sh renders one of these per fragment in <config>/shares.d.
 -->
@@ -17,16 +22,21 @@
   <name replace-wildcards="yes">${SHARE_NAME}</name>
 
   <service>
-    <type>_adisk._tcp</type>
-    <port>9</port>
-    <txt-record>sys=waMa=0,adVF=0x100</txt-record>
-    <txt-record>dk0=adVN=${SHARE_NAME},adVF=0x82</txt-record>
+    <type>_smb._tcp</type>
+    <port>445</port>
   </service>
 
   <service>
     <type>_device-info._tcp</type>
     <port>0</port>
     <txt-record>model=${DEVICE_MODEL}</txt-record>
+  </service>
+
+  <service>
+    <type>_adisk._tcp</type>
+    <port>9</port>
+    <txt-record>sys=waMa=0,adVF=0x100</txt-record>
+    <txt-record>dk0=adVN=${SHARE_NAME},adVF=0x82</txt-record>
   </service>
 
 </service-group>
