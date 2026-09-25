@@ -38,13 +38,27 @@ entrypoint renders `/etc/samba/smb.conf` from it on every start; binding the
 parent directory — which is what upstream's compose does — masks that file and
 smbd crash-loops on `smb.conf.template: No such file or directory`.
 
-`command:` overrides the image's CMD with `entrypoint-samba-compat.sh`.
-Upstream's `entrypoint-samba.sh` starts smbd with `--log-stdout`, renamed
-`--debug-stdout` in Samba 4.15; the image is built on bookworm-slim and ships
-4.17.12, so smbd exits on the unknown option and the container crash-loops. The
-wrapper rewrites that one flag and execs upstream's script, so it no-ops once
-upstream fixes it. (Upstream's README claims Samba 4.18+; the published image
-has 4.17.12-Debian.)
+`command:` overrides the image's CMD with `entrypoint-samba-compat.sh`, which
+works around three bugs in the published image before execing upstream's own
+entrypoint. Each is written so it no-ops once upstream fixes it.
+
+1. **`--log-stdout`.** `entrypoint-samba.sh` starts smbd with `--log-stdout`,
+   renamed `--debug-stdout` in Samba 4.15. The image is bookworm-slim with
+   4.17.12, so smbd exits on the unknown option and the container crash-loops.
+   (Upstream's README claims Samba 4.18+; the image has 4.17.12-Debian.)
+2. **`include = …/shares.d/*.conf`.** Samba's `include` takes one file and does
+   not glob; a wildcard matches nothing and is dropped **silently** — no
+   testparm warning, no log line. Every per-user share the web UI writes is
+   invisible to smbd, so a Mac discovers the server, authenticates, and finds
+   nothing to back up to. The wrapper points the include at a single aggregate
+   file and a 5s poll keeps it in sync with `shares.d`, reloading smbd when it
+   changes.
+3. **POSIX accounts are not persisted.** `create-user.sh` runs `useradd` inside
+   the container, but only `/var/lib/samba` is on a bind. Any recreate resets
+   `/etc/passwd` while `passdb.tdb` keeps the Samba accounts, and every login
+   then fails with "Failed to find a Unix account for &lt;user&gt;". The wrapper
+   rebuilds an account per share fragment, reusing the uid/gid that already owns
+   that user's backup directory so existing data stays reachable.
 
 The samba healthcheck is `smbcontrol smbd ping`, not upstream's
 `smbclient -L //localhost -N`. That anonymous listing is refused by upstream's

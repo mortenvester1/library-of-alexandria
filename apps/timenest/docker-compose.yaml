@@ -23,8 +23,10 @@ name: timenest
 #   - ADMIN_PASSWORD guarded (upstream defaults it to `changeme-please`)
 #   - samba binds <config>/shares.d, not all of /etc/timenest — upstream's
 #     bind masks the smb.conf.template the image ships and smbd crash-loops
-#   - `command:` points at entrypoint-samba-compat.sh, which works around
-#     upstream passing smbd a flag its own base image does not accept
+#   - `command:` points at entrypoint-samba-compat.sh, which works around three
+#     bugs in the published image: the smbd flag it rejects, the wildcard
+#     `include` Samba silently ignores, and POSIX accounts that do not survive
+#     a container recreate. See that file's header and README.md.
 #   - samba healthcheck replaced: upstream's anonymous smbclient listing is
 #     forbidden by upstream's own smb.conf and never passes
 #   - `web` joins the external `monitoring` network for its /metrics endpoint
@@ -71,8 +73,7 @@ services:
       # passdb.tdb — the Samba accounts. Losing this means re-enrolling every
       # Mac, and Time Machine treats a re-enrolled share as a fresh backup.
       - ${TIMENEST_SAMBA_STATE:?set TIMENEST_SAMBA_STATE}:/var/lib/samba
-      # Wrapper for upstream's crash-looping entrypoint; see the file header
-      # and `command:` below.
+      # Wrapper for upstream's entrypoint; see the file header and `command:`.
       - ./entrypoint-samba-compat.sh:/usr/local/bin/entrypoint-samba-compat.sh:ro
       # Only shares.d, NOT all of /etc/timenest. The image ships
       # /etc/timenest/smb.conf.template and entrypoint-samba.sh renders
