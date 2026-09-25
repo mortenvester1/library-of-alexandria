@@ -119,6 +119,18 @@ prometheus.scrape "seafile" {
   }
 }
 
+// Scrape TimeNest's web UI. Port 8080 is the container port, not the published
+// one — apps/timenest publishes 8083 on the host. /metrics carries no auth
+// dependency upstream, so it is also reachable on that host port; it exposes
+// per-user backup sizes and timestamps, nothing secret. Dark when
+// ENABLE_METRICS=false in apps/timenest/.env, which degrades to up=0 here only.
+prometheus.scrape "timenest" {
+  targets         = [{__address__ = "timenest:8080"}]
+  forward_to      = [ prometheus.remote_write.local.receiver ]
+  scrape_interval = "10s"
+  metrics_path    = "/metrics"
+}
+
 // ###############################
 // #### Logging Configuration ####
 // ###############################

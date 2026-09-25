@@ -1,0 +1,144 @@
+name: timenest
+
+# TimeNest — Samba + vfs_fruit Time Machine target for the Macs, on gurpgork-bee.
+#   https://github.com/momenbasel/timenest
+#
+# This is the "Time Machine" item under "Not done yet" in apps/borgui/README.md:
+# Samba >= 4.8 with vfs_fruit on the already-created /mnt/backup/@timemachine
+# subvolume, advertised over Bonjour as _adisk._tcp.
+#
+# Deliberate deltas from upstream's docker-compose.yml, so a version bump stays
+# a clean re-diff:
+#   - both `build:` blocks dropped: the TimeNest source tree is not vendored
+#     here, so `context: .` would resolve to apps/timenest/ and fail
+#   - `:latest` replaced by digest pins — upstream publishes no semver tags,
+#     only `main` and `latest` (see .env.example)
+#   - the `avahi` service is GONE. gurpgork-bee already runs avahi-daemon on
+#     :5353 and apps/entrance depends on it (/run/avahi-daemon bind). A
+#     host-networked avahi container would fight it. setup.sh installs the same
+#     service XML the container would have rendered into the host's
+#     /etc/avahi/services/ instead — identical advertisement, no second daemon.
+#   - `./data/*` relative binds replaced by `:?`-guarded absolute paths; see the
+#     footgun note in apps/jellyfin/.env.example
+#   - ADMIN_PASSWORD guarded (upstream defaults it to `changeme-please`)
+#   - `web` joins the external `monitoring` network for its /metrics endpoint
+#   - the raw docker.sock bind on `web` replaced by a narrowed
+#     docker-socket-proxy, matching apps/borgui
+#
+#   cp .env.example .env   # then fill in the guarded values
+#   ./setup.sh --apply
+#   docker compose up -d
+#
+# Setup order matters: the host must have smbd stopped and masked, the data
+# directories must exist, and the avahi service file must be installed. The
+# stack will start without the last one and simply never appear in Finder.
+# See README.md.
+#
+# /mnt/backup/@timemachine must stay excluded from every Borg source — it is
+# already listed as such in apps/borgui/.env.example.
+#
+# Logs and cAdvisor container metrics arrive via the Docker socket that
+# apps/monitoring holds and need no network attachment. `samba` is host-networked
+# and therefore cannot also join `monitoring`; it exports no metrics of its own.
+
+services:
+  samba:
+    image: ${TIMENEST_SAMBA_IMAGE:?set TIMENEST_SAMBA_IMAGE}
+    container_name: timenest-samba
+    restart: unless-stopped
+    # Binds 445/tcp directly on the host. SMB cannot usefully be remapped —
+    # macOS will not mount a Time Machine share on a non-standard port.
+    network_mode: host
+    cap_add:
+      # Upstream asks for both. SYS_ADMIN is what lets smbd set the xattrs
+      # vfs_fruit stores Apple metadata in.
+      - NET_ADMIN
+      - SYS_ADMIN
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-TimeNest}
+      DEVICE_MODEL: ${DEVICE_MODEL:-TimeCapsule8,119}
+      SMB_INTERFACES: ${SMB_INTERFACES:-}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      TZ: ${TIMEZONE:-Europe/Copenhagen}
+    volumes:
+      - ${BACKUP_PATH:?set BACKUP_PATH}:/backup
+      # passdb.tdb — the Samba accounts. Losing this means re-enrolling every
+      # Mac, and Time Machine treats a re-enrolled share as a fresh backup.
+      - ${TIMENEST_SAMBA_STATE:?set TIMENEST_SAMBA_STATE}:/var/lib/samba
+      # smb.conf and shares.d/*.conf; written by the web UI, read by smbd.
+      - ${TIMENEST_CONFIG_PATH:?set TIMENEST_CONFIG_PATH}:/etc/timenest
+    healthcheck:
+      test: ["CMD", "smbclient", "-L", "//localhost", "-N"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  web:
+    image: ${TIMENEST_WEB_IMAGE:?set TIMENEST_WEB_IMAGE}
+    container_name: timenest-web
+    restart: unless-stopped
+    environment:
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD}
+      BACKUP_PATH: /backup
+      # Becomes `fruit:time machine max size` on each per-user share, which is
+      # the cap apps/borgui/README.md asks for — partition geometry is not it.
+      DEFAULT_QUOTA_GB: ${DEFAULT_QUOTA_GB:-500}
+      ENABLE_METRICS: ${ENABLE_METRICS:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      TZ: ${TIMEZONE:-Europe/Copenhagen}
+      SAMBA_CONTAINER: timenest-samba
+      # web/app/samba_mgr.py shells out to the docker CLI (`docker exec -i
+      # timenest-samba create-user.sh ...`), and the CLI honours DOCKER_HOST —
+      # so the proxy below works without an upstream change. No docker.sock
+      # bind here; see the proxy service.
+      DOCKER_HOST: tcp://timenest-docker-proxy:2375
+    volumes:
+      - ${BACKUP_PATH:?set BACKUP_PATH}:/backup:ro
+      # App state: the bcrypt admin hash in auth.db, plus quota bookkeeping.
+      - ${TIMENEST_WEB_DATA:?set TIMENEST_WEB_DATA}:/data
+      - ${TIMENEST_SAMBA_STATE:?set TIMENEST_SAMBA_STATE}:/samba:ro
+      - ${TIMENEST_CONFIG_PATH:?set TIMENEST_CONFIG_PATH}:/config:ro
+    ports:
+      - "0.0.0.0:${WEB_PORT:-8080}:8080"
+    networks:
+      # `default` must stay listed — naming any network drops the implicit one.
+      default: {}
+      monitoring:
+        aliases:
+          - timenest
+    depends_on:
+      samba:
+        condition: service_started
+      docker-socket-proxy:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Upstream binds /var/run/docker.sock straight into `web`. Read-only or not,
+  # that is root on this host. This is apps/borgui's pattern, narrowed to what
+  # samba_mgr.py actually issues: container inspect + exec. No ALLOW_START /
+  # ALLOW_STOP / ALLOW_RESTARTS — TimeNest never restarts the samba container.
+  #
+  # EXEC=1 is still effectively root inside timenest-samba, which is a
+  # privileged container. The proxy sits on `default` only and publishes no
+  # port; keep it that way.
+  docker-socket-proxy:
+    image: ${TIMENEST_SOCKET_PROXY_IMAGE:-ghcr.io/tecnativa/docker-socket-proxy:v0.4.2}
+    container_name: timenest-docker-proxy
+    restart: unless-stopped
+    environment:
+      - CONTAINERS=1
+      - POST=1
+      - EXEC=1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+networks:
+  # Created outside this stack (docker network create monitoring); shared with
+  # apps/monitoring so Alloy can scrape timenest:8080/metrics.
+  monitoring:
+    external: true

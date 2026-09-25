@@ -1,0 +1,43 @@
+<?xml version="1.0" standalone='no'?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<!--
+  TimeNest Bonjour advertisement, for the HOST avahi-daemon.
+
+  Upstream renders this from env vars inside a host-networked avahi container.
+  gurpgork-bee already runs avahi-daemon (apps/entrance binds
+  /run/avahi-daemon), and two daemons cannot share :5353, so setup.sh installs
+  this file into /etc/avahi/services/ instead. avahi picks it up without a
+  restart. The two placeholders below are filled in from .env by envsubst at
+  install time.
+
+  Records:
+    _smb._tcp          the SMB share itself (445)
+    _device-info._tcp  hardware model; drives the Finder icon
+    _adisk._tcp        marks the volume Time Machine-capable
+
+  Syntax: man 5 avahi.service, Apple TN2154.
+-->
+
+<service-group>
+
+  <name replace-wildcards="yes">${SERVER_NAME}</name>
+
+  <service>
+    <type>_smb._tcp</type>
+    <port>445</port>
+  </service>
+
+  <service>
+    <type>_device-info._tcp</type>
+    <port>0</port>
+    <txt-record>model=${DEVICE_MODEL}</txt-record>
+  </service>
+
+  <service>
+    <type>_adisk._tcp</type>
+    <port>9</port>
+    <txt-record>sys=waMa=0,adVF=0x100</txt-record>
+    <txt-record>dk0=adVN=${SERVER_NAME},adVF=0x82</txt-record>
+  </service>
+
+</service-group>
