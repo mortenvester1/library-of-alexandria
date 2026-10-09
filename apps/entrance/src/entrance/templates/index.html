@@ -140,7 +140,7 @@
         {% for app in apps %}
           <div
             class="app-card"
-            onclick="window.location.href = 'http://' + ('{{ app.host or "" }}' || window.location.hostname) + ':{{ app.port }}{{ app.route }}'"
+            onclick="window.location.href = '{{ app.scheme }}://' + ('{{ app.host or "" }}' || window.location.hostname) + ':{{ app.port }}{{ app.route }}'"
             data-app-name="{{ app.name }}"
           >
             <div class="status-indicator" data-app="{{ app.name }}"></div>

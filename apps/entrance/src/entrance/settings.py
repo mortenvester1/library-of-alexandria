@@ -3,7 +3,7 @@ import logging
 import os
 import socket
 from functools import lru_cache
-from typing import Set
+from typing import Literal, Set
 
 import httpx
 from pydantic import BaseModel, Field, field_validator
@@ -42,6 +42,7 @@ class LocalhostApp(BaseModel):
     Attributes:
         name: Display name of the application
         port: Port number where the application is running
+        scheme: URL scheme to reach the application with
         description: Optional description of the application
         host: Hostname or IP address for the application (overrides global hostname)
 
@@ -53,6 +54,7 @@ class LocalhostApp(BaseModel):
     name: str = Field(..., min_length=1, description="Application name")
     port: int = Field(..., ge=1, le=65535, description="Port number (1-65535)")
     route: str = Field(default="", description="Optional route")
+    scheme: Literal["http", "https"] = Field(default="http", description="URL scheme to reach the app with")
     host: str | None = Field(default=None, description="Hostname or IP address (e.g., 192.168.1.10 or blabla.local)")
     use_host_ip: bool = Field(default=False, description="Use host IP address instead of hostname")
     description: str | None = Field(default=None, description="Optional application description")
@@ -223,20 +225,23 @@ def get_settings():
     return Settings()
 
 
-async def check_app_reachable(host: str, port: int, route: str = "", timeout: float = 2.0) -> bool:
-    """Check if an app is reachable via HTTP.
+async def check_app_reachable(
+    host: str, port: int, route: str = "", scheme: str = "http", timeout: float = 2.0
+) -> bool:
+    """Check if an app is reachable over HTTP or HTTPS.
 
     Args:
         host: Hostname or IP address
         port: Port number
         route: Optional route to probe instead of the root path
+        scheme: URL scheme to probe with
         timeout: Request timeout in seconds
 
     Returns:
         True if reachable, False otherwise
     """
     try:
-        url = f"http://{host}:{port}{route or '/'}"
+        url = f"{scheme}://{host}:{port}{route or '/'}"
         # local_address forces IPv4: some hosts advertise an unreachable IPv6/mDNS
         # address alongside a working IPv4 one, and httpx doesn't race the two.
         transport = httpx.AsyncHTTPTransport(local_address="0.0.0.0")

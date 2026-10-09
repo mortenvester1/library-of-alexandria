@@ -1,0 +1,17 @@
+# Port map for scripts/tailscale-serve.sh. Copy to tailscale-serve-port-map,
+# which is gitignored — the real mapping names which services this machine
+# runs, so it stays out of the repo.
+#
+# One app per line: <https port> <local port> <name>
+#   https port  the tailnet-only port the certificate is served on; must be
+#               unique, and must not collide with a port the host already binds
+#   local port  reached over loopback, so an app bound to 127.0.0.1 works too
+#   name        label for the output only
+#
+# Take https ports from the reserved 44xx block. Blank lines and # comments are
+# ignored. `serve` is per-node, so each machine needs its own copy listing only
+# the apps it runs.
+
+1234 5678  first-app
+2345 6789  second-app
+3456 7890  third-app

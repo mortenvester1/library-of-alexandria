@@ -99,19 +99,20 @@ Enable HTTPS for the tailnet in the Tailscale admin console
 
 ### Serving a service
 
-    tailscale serve --bg --https=5984 http://127.0.0.1:5984   # CouchDB
-    tailscale serve --bg --https=8443 http://127.0.0.1:2283   # Immich
+`scripts/tailscale-serve.sh` declares the whole mapping for this machine. It is
+idempotent and dry-runs by default:
 
-Each service needs its own port; the certificate covers the hostname, not the
-port. Check the current mapping with:
+    cp scripts/tailscale-serve-port-map.example scripts/tailscale-serve-port-map
+    ./scripts/tailscale-serve.sh            # show what it would do
+    sudo ./scripts/tailscale-serve.sh --apply
+
+Check the live mapping with:
 
     tailscale serve status
 
 `serve` intercepts inside tailscaled, ahead of the host's own sockets, so a
 `--https` port that a container already publishes will shadow it for tailnet
-traffic. Avoid `--https=443` in particular — `apps/plane` binds 443 on the host.
-
-Use `serve`, not `funnel` — `funnel` publishes to the public internet.
+traffic.
 
 ### Certificates
 

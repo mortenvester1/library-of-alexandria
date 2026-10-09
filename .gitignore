@@ -24,6 +24,7 @@ dotfiles/zsh/.config/zsh/*.local
 pkgs/homebrew/Brewfile.local
 pkgs/aur/pkgs.local.txt
 pkgs/pacman/pkgs.local.txt
+scripts/tailscale-serve-port-map
 
 # Python - Abbreviated version of github
 # Source: https://github.com/github/gitignore/blob/main/Python.gitignore

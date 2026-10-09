@@ -94,7 +94,7 @@ async def get_app_status(settings: Annotated[Settings, Depends(get_settings)]):
     for app in settings.apps:
         host = app.host or settings.hostname
         app_names.append(app.name)
-        tasks.append(check_app_reachable(host, app.port, app.route))
+        tasks.append(check_app_reachable(host, app.port, app.route, app.scheme))
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
