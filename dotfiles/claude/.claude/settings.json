@@ -4,7 +4,8 @@
   },
   "attribution": {
     "pr": "",
-    "sessionUrl": false
+    "sessionUrl": false,
+    "commit": ""
   },
   "permissions": {
     "allow": [
@@ -18,6 +19,9 @@
       "Bash(cargo fmt *)",
       "Bash(cargo test *)",
       "Bash(cat *)",
+      "Bash(cmp *)",
+      "Bash(md5sum *)",
+      "Bash(pgrep *)",
       "Bash(command -v *)",
       "Bash(cut *)",
       "Bash(date *)",
