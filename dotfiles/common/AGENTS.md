@@ -9,6 +9,7 @@ Applies across projects. More local instructions override these defaults when th
 
 - Be concise and specific by default. No filler, intros, restated requirements, or flattery. Do not agree with an incorrect premise.
 - Do not write documentation or summarize changes unless explicitly asked.
+- When resuming after a break, a compaction or a long background wait, open with one line on where things stand.
 - Answer direct questions directly. Example: `pytest -vvvs`, not `The command to run tests is pytest -vvvs.`
 
 ## Uncertainty
@@ -39,6 +40,8 @@ Proceed once the execution path, constraints, and regression surface are clear e
 ## Shell and paths
 
 - Never put `cd` in a compound Bash command. Relative paths after a `cd` cannot be resolved statically, so tooling cannot verify what they point at. Pass absolute paths for file arguments.
+- The shell is zsh. An unmatched glob is an error (`no matches found`), so quote globs that may not match; `echo ===` fails (`= not found`), so separate output with `echo ---`; `pkill -f` can match its own shell, so use `pkill -x` or a pid.
+- Wait for background work with the Monitor tool or a background command's notification, never `sleep N; check`.
 - The session working directory is the repo root for this task, even when it is outside `~/git`. If it is a linked worktree (`.git` is a file, not a directory), keep every path at that worktree root. Never substitute the `~/git/<repo>` checkout of the same repo, which is on a different branch with different contents. Reach into `~/git/<other-repo>` only when you genuinely need a _different_ repository.
 
 <important if="a tool call was denied by the user, a permission rule, the auto-mode classifier, a hook or a built-in safety check">
