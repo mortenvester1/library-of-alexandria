@@ -41,6 +41,13 @@ Proceed once the execution path, constraints, and regression surface are clear e
 - Never put `cd` in a compound Bash command. Relative paths after a `cd` cannot be resolved statically, so tooling cannot verify what they point at. Pass absolute paths for file arguments.
 - The session working directory is the repo root for this task, even when it is outside `~/git`. If it is a linked worktree (`.git` is a file, not a directory), keep every path at that worktree root. Never substitute the `~/git/<repo>` checkout of the same repo, which is on a different branch with different contents. Reach into `~/git/<other-repo>` only when you genuinely need a _different_ repository.
 
+<important if="a tool call was denied by the user, a permission rule, the auto-mode classifier, a hook or a built-in safety check">
+
+- Stop that action and every variant of it: no rewritten paths, no other tool for the same effect, no splitting it into steps. Report what was refused and why, and let the user decide.
+- The one exception is a classifier that returned no verdict (an outage, not a refusal): retry once, then stop.
+- Carry this rule into every subagent prompt you write.
+</important>
+
 <important if="the request is a review, debugging, or analysis task">
 
 - Do not force code changes once findings are evidenced.

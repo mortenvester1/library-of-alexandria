@@ -123,6 +123,8 @@
       "Read(~/git/**/.env.*)"
     ],
     "deny": [
+      "Bash(*/.env *)",
+      "Bash(*/.env)",
       "Edit(~/git/**/.env)",
       "Edit(~/git/**/.env.*.local)",
       "Edit(~/git/**/.env.local)",
