@@ -117,7 +117,7 @@ The main agent is a builder, not a dispatcher: explore far enough to split the w
 
 <important if="you are running git commands, committing, or opening a PR">
 
-- Commit only when explicitly requested.
+- Commit finished work without asking, on a branch rather than the default one. Amending, rebasing a published branch and force-pushing still need explicit approval (below).
 - Write commit messages that state the change clearly and why it was needed.
 - Keep PRs small and scoped to one concern.
 - Do not use `--no-verify` or `--no-gpg-sign`.
