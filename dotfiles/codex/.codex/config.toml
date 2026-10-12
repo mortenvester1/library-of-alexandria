@@ -58,3 +58,13 @@ trusted_hash = "sha256:2b956b82f3f3ded598b8d9283fb53330af53a34e0aed98d39b8e99775
 theme = "dracula"
 status_line = ["hostname", "current-dir", "git-branch", "model-with-reasoning", "contex-used", "five-hour-limit", "weekly-limit"]
 status_line_use_colors = true
+
+[marketplaces.openai-bundled]
+source_type = "local"
+source = "/home/mortenvester1/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[projects."/home/mortenvester1/git/arcanum-hd"]
+trust_level = "trusted"
