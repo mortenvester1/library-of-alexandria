@@ -1,0 +1,5 @@
+# Emails to KEEP — one per line. Copy to emails.txt and edit (do NOT put real
+# addresses in this .example file — it is committed to git).
+# Everything in the "email" category NOT listed in emails.txt is purged on Apply.
+# Matching is case-insensitive and trimmed. Blank lines and '#' comments ignored.
+you@example.com

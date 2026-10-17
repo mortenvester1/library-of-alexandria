@@ -1,0 +1,18 @@
+# Never commit anything derived from the form-history DB — it holds emails/OTP codes.
+backups/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# Allowlists hold the user's real emails/names/addresses (PII). Keep templates.
+allow/*
+!allow/*.example
+
+# Python / build / test artifacts
+.venv/
+dist/
+htmlcov/
+.coverage
+.pytest_cache/
+.ruff_cache/
+__pycache__/

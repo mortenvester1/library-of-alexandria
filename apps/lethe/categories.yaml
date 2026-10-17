@@ -1,0 +1,31 @@
+# Category classifiers over the flat fieldname/value form-history store.
+#
+# An entry belongs to a category when it matches EVERY pattern that is set
+# (field_regex AND value_regex); an unset pattern is ignored.
+#   - value_regex is the strong signal (e.g. email shape).
+#   - field_regex is best-effort — names/addresses can only be guessed from the
+#     fieldname, which is messy and per-site. Review the report before purging.
+#
+# allowlist: filename under allow/ listing the values to KEEP (one per line,
+# '#' comments allowed). An allowlist-purge deletes every category entry whose
+# value is NOT in that file. Purge is refused if the allowlist is empty/missing.
+
+categories:
+  - name: email
+    value_regex: '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+    allowlist: emails.txt
+
+  - name: phone
+    value_regex: '^\+?[\d\s().-]{7,}$'
+    field_regex: '(?i)(phone|tel|mobile|cell)'
+    allowlist: phones.txt
+    # Compare on digits only: +1 929 395 3469 and 9293953469 match one entry.
+    normalize: phone
+
+  - name: name
+    field_regex: '(?i)(name|fname|lname|given|surname|first|last)'
+    allowlist: names.txt
+
+  - name: address
+    field_regex: '(?i)(address|street|addr|city|state|zip|postal|country)'
+    allowlist: addresses.txt

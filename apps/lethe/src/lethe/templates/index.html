@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lethe — Firefox form history</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 1.5rem;
+        color: #222;
+      }
+      .container { max-width: 1200px; margin: 0 auto; }
+      h1 { color: #fff; text-align: center; margin-bottom: 1rem; font-size: 2.2rem; text-shadow: 2px 2px 4px rgba(0,0,0,.2); }
+      .panel { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+      .banner { border-radius: 12px; padding: .75rem 1rem; margin-bottom: 1rem; font-weight: 600; }
+      .banner.warn { background: #fff3cd; color: #7a5b00; }
+      .banner.err { background: #f8d7da; color: #842029; }
+      .banner.ok { background: #d1e7dd; color: #0f5132; }
+      .controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+      input[type="text"], select { padding: .45rem .6rem; border: 1px solid #ccc; border-radius: 6px; font-size: .9rem; max-width: 260px; }
+      .ms { position: relative; display: inline-block; }
+      .ms-btn { background: #fff; color: #222; border: 1px solid #ccc; border-radius: 6px; padding: .45rem .6rem; font-weight: 500; min-width: 190px; text-align: left; }
+      .ms-panel { display: none; position: absolute; z-index: 10; top: 100%; left: 0; margin-top: 2px; width: 300px; max-height: 320px; overflow: auto; background: #fff; border: 1px solid #ccc; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.2); padding: .4rem; }
+      .ms.open .ms-panel { display: block; }
+      .ms-search { width: 100%; margin-bottom: .3rem; position: sticky; top: 0; }
+      .ms-all { font-weight: 600; border-bottom: 1px solid #eee; }
+      .ms-panel label { display: flex; align-items: center; gap: .4rem; padding: .2rem .3rem; font-size: .85rem; cursor: pointer; overflow-wrap: anywhere; }
+      .ms-panel label:hover { background: #f4f4fb; }
+      button { padding: .45rem .9rem; border: 0; border-radius: 6px; background: #667eea; color: #fff; font-weight: 600; cursor: pointer; }
+      button.danger { background: #dc3545; }
+      button:disabled { opacity: .5; cursor: not-allowed; }
+      a.link { color: #667eea; text-decoration: none; font-weight: 600; cursor: pointer; }
+      .spacer { flex: 1 1 auto; }
+      .preview-head { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-bottom: .6rem; }
+      table { width: 100%; border-collapse: collapse; margin-top: .6rem; }
+      th, td { padding: .5rem .6rem; text-align: left; font-size: .85rem; border-bottom: 1px solid #eee; overflow-wrap: anywhere; }
+      th.sort { cursor: pointer; user-select: none; }
+      thead th { background: #f4f4fb; }
+      td.value { max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      tr:hover td { background: #faf9ff; }
+      .muted { color: #888; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Lethe — Firefox form history</h1>
+
+      {% if error %}
+        <div class="banner err">⚠ {{ error }}</div>
+      {% endif %}
+      {% if firefox_running %}
+        <div class="banner warn">🔒 Firefox is running — read-only mode. Close Firefox to delete or purge entries.</div>
+      {% else %}
+        <div class="banner ok">✅ Firefox is closed — writes are allowed.</div>
+      {% endif %}
+
+      {% if category_reports %}
+      <div class="panel">
+        <h2 style="margin-bottom:.6rem;font-size:1.1rem">Categories — allowlist cleanup</h2>
+        <p class="muted" style="margin-bottom:.75rem">
+          Each category keeps values in its <code>allow/&lt;file&gt;</code> and purges the rest. Edit the allowlist file, then
+          Preview — the entries below are that category's purge candidates; tick and delete.
+        </p>
+        <table>
+          <thead>
+            <tr><th>category</th><th>matched</th><th>allowlist</th><th>keep</th><th>purgeable</th><th style="text-align:right">actions</th></tr>
+          </thead>
+          <tbody>
+            {% for r in category_reports %}
+            <tr>
+              <td>
+                <strong>{{ r.name }}</strong>
+                {% if r.allowlist_size == 0 %}<span title="Allowlist allow/&lt;{{ r.name }}&gt; is empty or missing — nothing to preview">⚠️</span>{% endif %}
+              </td>
+              <td>{{ r.total }}</td>
+              <td>{{ r.allowlist_size }}</td>
+              <td>{{ r.keep }}</td>
+              <td>{{ r.purge_count }}</td>
+              <td style="text-align:right">
+                <button onclick="previewCategory('{{ r.name }}')" {% if r.allowlist_size == 0 %}disabled{% endif %}>Preview</button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <div class="panel">
+        <div class="preview-head">
+          <strong style="font-size:1.1rem">Preview</strong>
+          <span class="muted" id="counts"></span>
+          <span id="cat-active" class="muted"></span>
+          <span class="spacer"></span>
+          <button id="btn-delete" class="danger" onclick="deleteSelected()" {% if firefox_running %}disabled{% endif %}>delete selected</button>
+        </div>
+        <div class="controls">
+          <div class="ms" id="ms-field">
+            <button type="button" class="ms-btn" onclick="msToggle('ms-field')"></button>
+            <div class="ms-panel">
+              <input type="text" class="ms-search" placeholder="search…" oninput="msFilter('ms-field')" />
+              <label class="ms-all"><input type="checkbox" onchange="msAll('ms-field', this.checked)" /> (select all)</label>
+              <div class="ms-opts"></div>
+            </div>
+          </div>
+          <div class="ms" id="ms-value">
+            <button type="button" class="ms-btn" onclick="msToggle('ms-value')"></button>
+            <div class="ms-panel">
+              <input type="text" class="ms-search" placeholder="search…" oninput="msFilter('ms-value')" />
+              <label class="ms-all"><input type="checkbox" onchange="msAll('ms-value', this.checked)" /> (select all)</label>
+              <div class="ms-opts"></div>
+            </div>
+          </div>
+          <select id="f-preset" onchange="applyFilter()">
+            <option value="">preset: none</option>
+            <option value="numeric">2FA numeric (^\d{4,8}$)</option>
+          </select>
+        </div>
+
+        <table id="tbl">
+          <colgroup>
+            <col style="width:2rem" />
+            <col />
+            <col style="width:30%" />
+            <col style="width:10%" />
+            <col style="width:10%" />
+            <col style="width:10%" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="check-all" onclick="toggleAll(this)" /></th>
+              <th class="sort" onclick="sortBy(1,false)">fieldname</th>
+              <th class="sort" onclick="sortBy(2,false)">value</th>
+              <th class="sort" onclick="sortBy(3,true)">timesUsed</th>
+              <th class="sort" onclick="sortBy(4,true)">lastUsed</th>
+              <th>sources</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in entries %}
+            <tr data-times="{{ e.times_used or 0 }}" data-last="{{ e.last_used.timestamp() if e.last_used else 0 }}">
+              <td><input type="checkbox" class="row-check" value="{{ e.id }}" /></td>
+              <td>{{ e.fieldname }}</td>
+              <td class="value" title="{{ e.value }}">{{ e.value }}</td>
+              <td>{{ e.times_used if e.times_used is not none else "" }}</td>
+              <td>{{ e.last_used.strftime("%Y-%m-%d %H:%M") if e.last_used else "" }}</td>
+              <td class="muted">{{ e.sources|join(", ") }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      const tbody = document.querySelector("#tbl tbody");
+      const rows = () => Array.from(tbody.querySelectorAll("tr"));
+      const rowId = (r) => r.querySelector(".row-check").value;
+
+      async function post(url, body) {
+        const res = await fetch(url, { method: "POST", body });
+        return res.json();
+      }
+
+      // ---- custom multi-select dropdowns of the distinct values that exist ----
+      function msSelected(id) {
+        return Array.from(document.querySelectorAll("#" + id + " .ms-opt:checked")).map(c => c.value);
+      }
+      function msBuild(id, noun, items) {
+        const el = document.getElementById(id);
+        el.dataset.noun = noun;
+        const opts = el.querySelector(".ms-opts");
+        opts.innerHTML = "";
+        items.forEach(t => {
+          const lab = document.createElement("label");
+          const cb = document.createElement("input");
+          cb.type = "checkbox"; cb.className = "ms-opt"; cb.value = t;
+          lab.appendChild(cb);
+          lab.appendChild(document.createTextNode(" " + t));
+          opts.appendChild(lab);
+        });
+        msSync(id);
+      }
+      function msSync(id) {
+        const el = document.getElementById(id);
+        const n = msSelected(id).length;
+        const total = el.querySelectorAll(".ms-opt").length;
+        el.querySelector(".ms-btn").textContent = (n ? n + " " + el.dataset.noun : "All " + el.dataset.noun) + " ▾";
+        el.querySelector(".ms-all input").checked = n > 0 && n === total;
+      }
+      function msToggle(id) {
+        const el = document.getElementById(id);
+        document.querySelectorAll(".ms.open").forEach(o => { if (o !== el) o.classList.remove("open"); });
+        el.classList.toggle("open");
+      }
+      function msFilter(id) {
+        const q = document.querySelector("#" + id + " .ms-search").value.toLowerCase();
+        document.querySelectorAll("#" + id + " .ms-opt").forEach(cb => {
+          cb.closest("label").style.display = cb.value.toLowerCase().includes(q) ? "" : "none";
+        });
+      }
+      function msAll(id, checked) {
+        document.querySelectorAll("#" + id + " .ms-opt").forEach(cb => { cb.checked = checked; });
+        msSync(id); applyFilter();
+      }
+      function msReset(id) {
+        document.querySelectorAll("#" + id + " .ms-opt").forEach(cb => { cb.checked = false; });
+        const s = document.querySelector("#" + id + " .ms-search");
+        s.value = ""; msFilter(id); msSync(id);
+      }
+      function buildDropdowns() {
+        const fields = new Set(), values = new Set();
+        rows().forEach(r => { fields.add(r.cells[1].textContent); values.add(r.cells[2].textContent); });
+        msBuild("ms-field", "fieldnames", [...fields].sort((a, b) => a.localeCompare(b)));
+        msBuild("ms-value", "values", [...values].sort((a, b) => a.localeCompare(b)));
+      }
+
+      // ---- client-side live filtering ----
+      function applyFilter() {
+        const fs = msSelected("ms-field");
+        const vs = msSelected("ms-value");
+        const preset = document.getElementById("f-preset").value;
+        let shown = 0;
+        rows().forEach(r => {
+          const fn = r.cells[1].textContent, val = r.cells[2].textContent;
+          let ok = (!fs.length || fs.includes(fn)) && (!vs.length || vs.includes(val)) && (!preset || /^\d{4,8}$/.test(val));
+          r.style.display = ok ? "" : "none";
+          if (ok) shown++;
+        });
+        document.getElementById("counts").textContent = rows().length + " loaded · " + shown + " shown";
+        document.getElementById("check-all").checked = false;
+        rows().forEach(r => { if (r.style.display === "none") r.querySelector(".row-check").checked = false; });
+        updateDeleteBtn();
+      }
+
+      let sortState = {};
+      function sortBy(colIdx, numeric) {
+        const key = colIdx === 3 ? "times" : "last";
+        const dir = sortState[colIdx] === "asc" ? "desc" : "asc";
+        sortState = { [colIdx]: dir };
+        rows().sort((a, b) => {
+          let av, bv;
+          if (numeric) { av = parseFloat(a.dataset[key]); bv = parseFloat(b.dataset[key]); }
+          else { av = a.cells[colIdx].textContent; bv = b.cells[colIdx].textContent; }
+          if (av < bv) return dir === "asc" ? -1 : 1;
+          if (av > bv) return dir === "asc" ? 1 : -1;
+          return 0;
+        }).forEach(r => tbody.appendChild(r));
+      }
+
+      // ---- selection ----
+      function toggleAll(cb) {
+        rows().forEach(r => { if (r.style.display !== "none") r.querySelector(".row-check").checked = cb.checked; });
+        updateDeleteBtn();
+      }
+      function selectedRows() {
+        return rows().filter(r => r.style.display !== "none" && r.querySelector(".row-check").checked);
+      }
+      function updateDeleteBtn() {
+        {% if not firefox_running %}
+        document.getElementById("btn-delete").disabled = selectedRows().length === 0;
+        {% endif %}
+      }
+
+      // ---- category preview: load its purge candidates into the table ----
+      function msSetSelection(id, wanted) {
+        document.querySelectorAll("#" + id + " .ms-opt").forEach(cb => { cb.checked = wanted.has(cb.value); });
+        document.querySelector("#" + id + " .ms-search").value = ""; msFilter(id); msSync(id);
+      }
+      async function previewCategory(name) {
+        const fd = new FormData(); fd.append("name", name); fd.append("dry_run", "true");
+        const data = await post("/purge_category", fd);
+        if (data.error) { alert(data.error); return; }
+        const ents = data.entries || [];
+        if (!ents.length) { alert('No purge candidates for "' + name + '" — its allowlist covers everything.'); return; }
+        msSetSelection("ms-field", new Set(ents.map(e => e.fieldname)));
+        msSetSelection("ms-value", new Set(ents.map(e => e.value)));
+        document.getElementById("f-preset").value = "";
+        document.getElementById("cat-active").innerHTML =
+          '· ' + name + ' — <a class="link" onclick="clearCategory()">clear</a>';
+        applyFilter();
+        document.getElementById("tbl").scrollIntoView({ behavior: "smooth" });
+      }
+      function clearCategory() {
+        msReset("ms-field"); msReset("ms-value");
+        document.getElementById("cat-active").innerHTML = "";
+        applyFilter();
+      }
+
+      async function deleteSelected() {
+        const sel = selectedRows();
+        if (!sel.length) return;
+        const ids = sel.map(rowId);
+        const n = ids.length;
+        if (!confirm(`Delete ${n} entr${n === 1 ? "y" : "ies"}? This cannot be undone.`)) return;
+        const fd = new FormData();
+        fd.append("ids", ids.join(","));
+        fd.append("dry_run", "false");
+        const res = await post("/delete", fd);
+        if (res.error) { alert(res.error); return; }
+        const deleted = res.deleted ?? 0;
+        if (deleted !== n) alert(`Deleted ${deleted}; ${n - deleted} row(s) no longer existed.`);
+        location.reload();
+      }
+
+      // ---- wiring ----
+      tbody.addEventListener("change", e => { if (e.target.classList.contains("row-check")) updateDeleteBtn(); });
+      ["ms-field", "ms-value"].forEach(id => {
+        document.querySelector("#" + id + " .ms-opts").addEventListener("change", () => { msSync(id); applyFilter(); });
+      });
+      document.addEventListener("click", e => {
+        if (!e.target.closest(".ms")) document.querySelectorAll(".ms.open").forEach(o => o.classList.remove("open"));
+      });
+      buildDropdowns();
+      applyFilter();
+    </script>
+  </body>
+</html>

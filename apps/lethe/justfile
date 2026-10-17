@@ -1,0 +1,48 @@
+# Lethe - Justfile
+# Run `just --list` to see all available recipes
+
+# Default recipe (shown when just is run without arguments)
+default:
+    @just --list
+
+# Format
+[group('uv')]
+fmt:
+    uvx ruff format src/
+
+# Lint
+[group('uv')]
+lint:
+    uvx ruff check src/
+
+# Build wheel
+[group('uv')]
+build:
+    uv build
+
+# Run unit tests
+[group('uv')]
+test args="":
+    uv run pytest \
+      --cov=lethe \
+      --cov-report=html \
+      {{ args }}
+
+# Update dependencies
+[group('uv')]
+sync:
+    uv sync --extra dev
+
+# Run app in dev mode, opening it in a browser (not Firefox — it must stay closed)
+# Override the browser: `just dev Safari`
+[group('uv')]
+dev browser="Google Chrome":
+    ( sleep 1.5 && open -a "{{ browser }}" http://127.0.0.1:8600 ) &
+    uv run uvicorn lethe.app:app \
+      --log-config logging.json \
+      --reload \
+      --reload-include "*.html" \
+      --reload-include "logging.json" \
+      --reload-include "categories.yaml" \
+      --host 127.0.0.1 \
+      --port 8600
