@@ -14,7 +14,7 @@ name: iroh-relay
 #
 #   cp .env.example .env
 #   docker compose up -d
-#   tailscale serve --bg --https=4410 http://127.0.0.1:3340
+#   scripts/tailscale-serve.sh   # with `4410 3340 iroh-relay` in its port map
 #   curl -fsS https://gurpgork-bee.tailb0f9be.ts.net:4410/healthz
 #
 # Then on the first machine:   reason-network relay https://gurpgork-bee.tailb0f9be.ts.net:4410
