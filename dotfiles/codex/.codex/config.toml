@@ -68,3 +68,10 @@ enabled = true
 
 [projects."/home/mortenvester1/git/arcanum-hd"]
 trust_level = "trusted"
+
+[mcp_servers.reason-network]
+command = "/bin/sh"
+args = ["-c", 'exec "$HOME/.local/bin/reason-network" mcp']
+env = { REASON_NETWORK_AGENT = "codex" }
+tool_timeout_sec = 660
+default_tools_approval_mode = "approve"
