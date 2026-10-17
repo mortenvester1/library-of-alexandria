@@ -1,0 +1,13 @@
+[project]
+name = "scrolls"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mutagen>=1.47.0",
+]
+
+[project.scripts]
+album-art = 'scrolls.album_art:main'
+401k-sim = 'scrolls.sim_401k:main'
