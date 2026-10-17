@@ -1,0 +1,42 @@
+name: iroh-relay
+
+# iroh relay for Reason Network (reason-network), so the team's machines use
+# this box instead of n0's public relays and DNS.
+#   https://github.com/reason-machines/reason-network/blob/main/DESIGN.md#network-layer-m1
+#   https://github.com/n0-computer/iroh/tree/main/iroh-relay
+#
+# Deliberate deltas from the upstream `docker run` example:
+#   - plain HTTP on 127.0.0.1 only; TLS comes from `tailscale serve` (below),
+#     not the relay's own Manual/LetsEncrypt cert modes — 443 is apps/plane's
+#   - `--config-path`, not the `--config` the upstream Docker README shows
+#   - no QUIC address discovery (needs the relay's own TLS), no published
+#     metrics, non-root, read-only root filesystem
+#
+#   cp .env.example .env
+#   docker compose up -d
+#   tailscale serve --bg --https=4410 http://127.0.0.1:3340
+#   curl -fsS https://gurpgork-bee.tailb0f9be.ts.net:4410/healthz
+#
+# Then on the first machine:   reason-network relay https://gurpgork-bee.tailb0f9be.ts.net:4410
+# (or `reason-network init <team> --relay <url>`). Once set, machines stop
+# contacting n0 and fall back to mDNS only when this relay is down.
+
+services:
+  iroh-relay:
+    # Keep in step with the iroh-relay version in reason-network's Cargo.lock.
+    image: ${IROH_RELAY_IMAGE:-n0computer/iroh-relay:v1.3.0}
+    container_name: iroh-relay
+    restart: unless-stopped
+    command: ["--config-path", "/config/iroh-relay.toml"]
+    user: "65534:65534"
+    read_only: true
+    volumes:
+      - ./iroh-relay.toml:/config/iroh-relay.toml:ro
+    ports:
+      - "127.0.0.1:${IROH_RELAY_PORT:-3340}:3340"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3340/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

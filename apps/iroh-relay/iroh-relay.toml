@@ -1,0 +1,18 @@
+# iroh-relay v1.3.0 config — field names from iroh-relay/src/main.rs at that tag.
+#
+# No [tls] section: plain HTTP, with `tailscale serve` terminating TLS in front.
+# The relay handshake falls back from TLS keying-material auth to
+# challenge-response when a proxy sits in between (protos/handshake.rs).
+
+# IPv4 only: Docker publishes [::] without working ip6tables forwarding on this host.
+http_bind_addr = "0.0.0.0:3340"
+
+# Requires the relay's own TLS, which it does not have here.
+enable_quic_addr_discovery = false
+
+# Port 9090 inside the container only; not published (host 9090 is Prometheus).
+enable_metrics = true
+
+# Reachable only over the tailnet, the relay forwards ciphertext only, and
+# reason-network drops connections from endpoints not on the team roster.
+access = "everyone"
