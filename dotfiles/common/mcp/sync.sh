@@ -2,8 +2,8 @@
 # Render servers.json (+ the gitignored servers.local.json) into every agent
 # framework's MCP config.
 #
-# Non-secret values (url, extra headers) are expanded from the environment here,
-# because only claude/opencode interpolate env vars in those fields. Bearer
+# Non-secret values (url, extra headers) stay ${VAR} references for claude and
+# opencode, which interpolate them, and are expanded here for omp and codex. Bearer
 # tokens are never read — each target gets an env var *name* in its own syntax.
 set -euo pipefail
 
@@ -36,6 +36,13 @@ if [[ -n "${incomplete}" ]]; then
   echo "servers missing url or bearer_token_env: ${incomplete}" >&2
   exit 1
 fi
+if [[ "$(jq '.servers | length' <<<"${merged}")" == "0" ]]; then
+  echo "no servers defined in ${SRC} or ${SRC_LOCAL}; nothing to sync" >&2
+  exit 1
+fi
+
+# claude and opencode expand env vars themselves, so they keep the references.
+raw="$(jq '.servers | with_entries(.value.headers //= {})' <<<"${merged}")"
 
 # Expand ${VAR} in url + headers, tagging unset ones so we can fail loudly.
 resolved="$(jq '
@@ -78,7 +85,7 @@ write_atomic() { local dest="$1"; cat >"${dest}.tmp" && mv "${dest}.tmp" "${dest
 
 # claude — merge only; the file also holds project and session state.
 [[ -f "${CLAUDE_CFG}" ]] || echo '{}' >"${CLAUDE_CFG}"
-jq --argjson servers "${resolved}" '
+jq --argjson servers "${raw}" '
   .mcpServers = (.mcpServers // {}) + ($servers | with_entries(.value = {
     type: "http",
     url: .value.url,
@@ -97,18 +104,25 @@ jq -n --argjson servers "${resolved}" '{
 }' | write_atomic "${OMP_CFG}"
 
 assert_only_managed "${OPENCODE_CFG}" '.mcp'
-jq -n --argjson servers "${resolved}" '{
+jq -n --argjson servers "${raw}" '
+  def opencode_env: gsub("\\$\\{(?<v>[A-Za-z_][A-Za-z0-9_]*)\\}"; "{env:\(.v)}");
+  {
   "$schema": "https://opencode.ai/config.json",
   mcp: ($servers | with_entries(.value = {
     type: "remote",
-    url: .value.url,
+    url: (.value.url | opencode_env),
     enabled: true,
-    headers: ({ "Authorization": "Bearer {env:\(.value.bearer_token_env)}" } + .value.headers)
+    headers: ({ "Authorization": "Bearer {env:\(.value.bearer_token_env)}" }
+              + (.value.headers | map_values(opencode_env)))
   }))
 }' | write_atomic "${OPENCODE_CFG}"
 
 # codex — TOML, and the only target taking the token as a bare env var name.
-while read -r name; do
+# The file also holds hand-kept local settings, so only the marked block is
+# rewritten; it goes last because TOML top-level keys must precede all tables.
+CODEX_BEGIN="# >>> just sync-mcp (generated) >>>"
+CODEX_END="# <<< just sync-mcp (generated) <<<"
+codex_block="$(while read -r name; do
   jq -r --arg n "${name}" '
     .[$n] as $s
     | "[mcp_servers.\($n)]",
@@ -120,7 +134,26 @@ while read -r name; do
        else empty end),
       ""
   ' <<<"${resolved}"
-done <<<"${names}" | write_atomic "${CODEX_CFG}"
+done <<<"${names}")"
+codex_kept=""
+if [[ -f "${CODEX_CFG}" ]]; then
+  if grep -qF "${CODEX_BEGIN}" "${CODEX_CFG}"; then
+    codex_kept="$(awk -v b="${CODEX_BEGIN}" -v e="${CODEX_END}" \
+      '$0 == b { skip = 1; next } $0 == e { skip = 0; next } !skip' "${CODEX_CFG}")"
+  elif grep -qE "^\[mcp_servers\.($(paste -sd'|' - <<<"${names}"))[].]" "${CODEX_CFG}"; then
+    # Appending would define these servers twice, which TOML rejects.
+    echo "${CODEX_CFG} already defines a managed server outside the '${CODEX_BEGIN}' block;" >&2
+    echo "delete those [mcp_servers.<name>] tables from it and re-run" >&2
+    exit 1
+  else
+    codex_kept="$(cat "${CODEX_CFG}")"
+  fi
+fi
+{
+  [[ -n "${codex_kept//[$'\n']/}" ]] && printf '%s\n\n' "${codex_kept}"
+  printf '%s\n%s\n%s\n' "${CODEX_BEGIN}" "${codex_block}" "${CODEX_END}"
+} | write_atomic "${CODEX_CFG}"
+chmod 600 "${CODEX_CFG}"
 
 echo "synced $(tr '\n' ' ' <<<"${names}")into:"
 echo "  ${CLAUDE_CFG} (merged)"
