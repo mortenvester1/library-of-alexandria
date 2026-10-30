@@ -7,9 +7,9 @@ logging {
 // #### Metrics Configuration ####
 // ###############################
 
-prometheus.remote_write "bee" {
+prometheus.remote_write "monitoring" {
   endpoint {
-    url = "http://gurpgork-bee.local:9090/api/v1/write"
+    url = "http://monitoring-host:9090/api/v1/write"
   }
 }
 
@@ -33,7 +33,7 @@ discovery.relabel "cadvisor" {
 
 prometheus.scrape "cadvisor" {
   targets         = discovery.relabel.cadvisor.output
-  forward_to      = [prometheus.remote_write.bee.receiver]
+  forward_to      = [prometheus.remote_write.monitoring.receiver]
   scrape_interval = "10s"
 }
 
@@ -53,7 +53,7 @@ discovery.relabel "gpu" {
 
 prometheus.scrape "gpu" {
   targets         = discovery.relabel.gpu.output
-  forward_to      = [prometheus.remote_write.bee.receiver]
+  forward_to      = [prometheus.remote_write.monitoring.receiver]
   scrape_interval = "10s"
   metrics_path    = "/metrics"
 }
@@ -85,11 +85,11 @@ loki.source.docker "default" {
   host          = "unix:///var/run/docker.sock"
   targets       = discovery.docker.linux.targets
   relabel_rules = discovery.relabel.logs_integrations_docker.rules
-  forward_to    = [loki.write.bee.receiver]
+  forward_to    = [loki.write.monitoring.receiver]
 }
 
-loki.write "bee" {
+loki.write "monitoring" {
   endpoint {
-    url = "http://gurpgork-bee.local:3100/loki/api/v1/push"
+    url = "http://monitoring-host:3100/loki/api/v1/push"
   }
 }

@@ -2,7 +2,7 @@ name: monitoring
 
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.15.1
     container_name: prometheus
     command:
       - --web.enable-remote-write-receiver
@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:13.3.0
     container_name: grafana
     command: ["./run.sh", "-disable-reporting"]
     ports:
@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.7.9
     container_name: loki
     command:
       - -config.file=/etc/loki/local-config.yaml
@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
 
   alloy:
-    image: grafana/alloy:latest
+    image: grafana/alloy:v1.21.3
     container_name: alloy
     privileged: true
     ports:
@@ -83,7 +83,7 @@ services:
     restart: unless-stopped
 
   grafana-mcp:
-    image: grafana/mcp-grafana:latest
+    image: grafana/mcp-grafana:2.1.1
     container_name: grafana-mcp
     command: ["-t", "streamable-http", "--allowed-hosts", "${GRAFANA_MCP_ALLOWED_HOSTS:-localhost:8000,127.0.0.1:8000}"]
     ports:

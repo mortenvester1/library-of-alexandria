@@ -41,7 +41,7 @@ and move the three binds under it.
 
 ## Backup plan sources
 
-Host paths confirmed from `docker inspect` on gurpgork-bee. `/local/storage` is
+Host paths as the app stacks mount them. `/local/storage` is
 `/mnt/storage`.
 
 | Plan | Sources | Excludes |
@@ -59,7 +59,7 @@ video and music dedup near zero and compress worse than not at all.
 
 **The only database content in any archive comes from `/local/dumps`.** A live
 database directory is torn by definition; an archive containing one restores to
-nothing and looks fine doing it. On this host they sit right next to the data:
+nothing and looks fine doing it. They sit right next to the data:
 
 | Live DB — never a source | Belongs to |
 | --- | --- |

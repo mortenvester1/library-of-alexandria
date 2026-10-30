@@ -82,7 +82,7 @@ NT_STATUS_BAD_NETWORK_NAME
 `setup.sh` renders one volume file per fragment in `<config>/shares.d` and
 removes the files for shares that no longer exist.
 
-SMB needs a firewall rule. This host runs `ufw`, and without one smbd binds,
+SMB needs a firewall rule if the host runs `ufw`. Without one smbd binds,
 logs nothing, and the Mac shows the server in Time Machine — mDNS is allowed —
 but never connects, because the SYN to 445 is dropped before smbd sees it:
 
@@ -99,14 +99,14 @@ prefixes. `setup.sh` warns when ufw is active with no rule for 445.
 
 ## Two host-level conflicts
 
-**avahi.** This host runs `avahi-daemon` on `:5353` and `apps/entrance`
+**avahi.** The host runs `avahi-daemon` on `:5353`, and `apps/entrance`
 depends on it. Upstream ships a host-networked avahi container, which would
 fight it. That service is dropped here; `setup.sh` installs the same service XML
 (`timenest.service`, rendered with `SERVER_NAME`/`DEVICE_MODEL`) into the host's
 `/etc/avahi/services/`. avahi re-reads that directory on change — no restart.
 
-**smbd.** `:445` must be free. Host `smbd` is currently inactive on bee;
-`setup.sh` refuses to proceed if it comes back. To retire it permanently:
+**smbd.** `:445` must be free, so host `smbd` must not run;
+`setup.sh` refuses to proceed if it does. To retire it permanently:
 
 ```bash
 sudo systemctl disable --now smbd nmbd && sudo systemctl mask smbd
@@ -154,7 +154,7 @@ share appears as **TimeNest** with a Time Capsule icon. No IP, no `smb://` URL.
 
 Upstream publishes no semver tags — `ghcr.io/momenbasel/timenest-*` carry only
 `main` and `latest`, and both move. The images are therefore pinned by manifest
-digest in `.env.example` (resolved 2026-09-22). To bump:
+digest in `docker-compose.yaml` (resolved 2026-09-22). To bump:
 
 ```bash
 docker buildx imagetools inspect ghcr.io/momenbasel/timenest-web:latest
@@ -183,7 +183,7 @@ socket that `apps/monitoring` holds.
   `DOCKER_HOST`. `EXEC=1` is still root inside `timenest-samba`, which is a
   privileged container; that is inherent to how TimeNest manages Samba users.
   The proxy publishes no port and sits on `default` only.
-- `SMB_INTERFACES` is pinned to the LAN NIC rather than upstream's empty value,
+- Set `SMB_INTERFACES` to the LAN NIC rather than upstream's empty value,
   which would bind `tailscale0` too and offer the share to every tailnet peer.
   The upstream `smb.conf` template sets `server smb encrypt = desired`, not
   `required`, so that exposure is not mitigated by encryption. Re-check the

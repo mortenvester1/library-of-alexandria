@@ -2,7 +2,7 @@ name: comfyui
 
 services:
   comfyui:
-    image: yanwk/comfyui-boot:rocm7
+    image: yanwk/comfyui-boot:rocm7-20261027
     container_name: comfyui
     ports:
       - "${COMFYUI_PORT:-8188}:8188"

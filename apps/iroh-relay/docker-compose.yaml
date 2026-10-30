@@ -14,17 +14,17 @@ name: iroh-relay
 #
 #   cp .env.example .env
 #   docker compose up -d
-#   scripts/tailscale-serve.sh   # with `4410 3340 iroh-relay` in its port map
-#   curl -fsS https://gurpgork-bee.tailb0f9be.ts.net:4410/healthz
+#   scripts/tailscale-serve.sh   # with `<https-port> 3340 iroh-relay` in its port map
+#   curl -fsS https://<machine>.<tailnet>.ts.net:<https-port>/healthz
 #
-# Then on the first machine:   reason-network relay https://gurpgork-bee.tailb0f9be.ts.net:4410
+# Then on the first machine:   reason-network relay https://<machine>.<tailnet>.ts.net:<https-port>
 # (or `reason-network init <team> --relay <url>`). Once set, machines stop
 # contacting n0 and fall back to mDNS only when this relay is down.
 
 services:
   iroh-relay:
     # Keep in step with the iroh-relay version in reason-network's Cargo.lock.
-    image: ${IROH_RELAY_IMAGE:-n0computer/iroh-relay:v1.3.0}
+    image: n0computer/iroh-relay:v1.4.1
     container_name: iroh-relay
     restart: unless-stopped
     command: ["--config-path", "/config/iroh-relay.toml"]

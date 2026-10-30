@@ -1,6 +1,6 @@
 name: borgui
 
-# Borg UI — web frontend for Borg Backup, running on gurpgork-bee.
+# Borg UI — web frontend for Borg Backup.
 #   https://docs.borgui.com/installation
 #
 # Deliberate deltas from the upstream compose snippets in that doc, so a version
@@ -34,7 +34,7 @@ name: borgui
 
 services:
   app:
-    image: ${BORGUI_IMAGE:-ainullcode/borg-ui:2.2.6}
+    image: ainullcode/borg-ui:2.4.5
     container_name: borg-web-ui
     restart: unless-stopped
     environment:
@@ -43,7 +43,7 @@ services:
       # /mnt/storage/dumps, and must be able to read /mnt/storage.
       - PUID=${PUID:?set PUID}
       - PGID=${PGID:?set PGID}
-      - TZ=${TZ:-America/New_York}
+      - TZ=${TZ:-UTC}
       - LOCAL_MOUNT_POINTS=/local/storage,/local/backup,/local/dumps
       - INITIAL_ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:?set INITIAL_ADMIN_PASSWORD}
       - REDIS_HOST=redis
@@ -80,7 +80,7 @@ services:
         condition: service_healthy
 
   redis:
-    image: ${BORGUI_REDIS_IMAGE:-redis:7.4-alpine}
+    image: redis:7.4-alpine
     container_name: borg-redis
     restart: unless-stopped
     command: >

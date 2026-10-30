@@ -80,7 +80,7 @@ x-app-env: &app-env
 
 services:
   web:
-    image: makeplane/plane-frontend:${APP_RELEASE:-v1.4.2}
+    image: makeplane/plane-frontend:v1.4.3
     deploy:
       replicas: ${WEB_REPLICAS:-1}
       restart_policy:
@@ -90,7 +90,7 @@ services:
       - worker
 
   space:
-    image: makeplane/plane-space:${APP_RELEASE:-v1.4.2}
+    image: makeplane/plane-space:v1.4.3
     deploy:
       replicas: ${SPACE_REPLICAS:-1}
       restart_policy:
@@ -101,7 +101,7 @@ services:
       - web
 
   admin:
-    image: makeplane/plane-admin:${APP_RELEASE:-v1.4.2}
+    image: makeplane/plane-admin:v1.4.3
     deploy:
       replicas: ${ADMIN_REPLICAS:-1}
       restart_policy:
@@ -111,7 +111,7 @@ services:
       - web
 
   live:
-    image: makeplane/plane-live:${APP_RELEASE:-v1.4.2}
+    image: makeplane/plane-live:v1.4.3
     environment:
       <<: [*live-env, *redis-env]
     deploy:
@@ -123,7 +123,7 @@ services:
       - web
 
   api:
-    image: makeplane/plane-backend:${APP_RELEASE:-v1.4.2}
+    image: makeplane/plane-backend:v1.4.3
     command: ./bin/docker-entrypoint-api.sh
     deploy:
       replicas: ${API_REPLICAS:-1}
@@ -139,7 +139,7 @@ services:
       - plane-mq
 
   worker:
-    image: makeplane/plane-backend:${APP_RELEASE:-v1.4.2}
+    image: makeplane/plane-backend:v1.4.3
     command: ./bin/docker-entrypoint-worker.sh
     deploy:
       replicas: ${WORKER_REPLICAS:-1}
@@ -156,7 +156,7 @@ services:
       - plane-mq
 
   beat-worker:
-    image: makeplane/plane-backend:${APP_RELEASE:-v1.4.2}
+    image: makeplane/plane-backend:v1.4.3
     command: ./bin/docker-entrypoint-beat.sh
     deploy:
       replicas: ${BEAT_WORKER_REPLICAS:-1}
@@ -173,7 +173,7 @@ services:
       - plane-mq
 
   migrator:
-    image: makeplane/plane-backend:${APP_RELEASE:-v1.4.2}
+    image: makeplane/plane-backend:v1.4.3
     command: ./bin/docker-entrypoint-migrator.sh
     deploy:
       replicas: 1
@@ -231,7 +231,7 @@ services:
 
   # Comment this if you using any external s3 compatible storage
   plane-minio:
-    image: minio/minio:latest
+    image: docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z
     command: server /export --console-address ":9090"
     deploy:
       replicas: 1
@@ -252,7 +252,7 @@ services:
 
   # Comment this if you already have a reverse proxy running
   proxy:
-    image: makeplane/plane-proxy:${APP_RELEASE:-v1.4.2}
+    image: makeplane/plane-proxy:v1.4.3
     deploy:
       replicas: 1
       restart_policy:
@@ -293,7 +293,7 @@ services:
   # client_id/secret, and an issuer URL that is HTTPS or loopback — the MCP SDK
   # raises "Issuer URL must be HTTPS" on anything else and the container exits.
   mcp:
-    image: makeplane/plane-mcp-server:${MCP_RELEASE:-v0.3.2}
+    image: makeplane/plane-mcp-server:v0.3.5
     container_name: plane-mcp
     environment:
       PLANE_INTERNAL_BASE_URL: ${PLANE_INTERNAL_BASE_URL:-http://api:8000}

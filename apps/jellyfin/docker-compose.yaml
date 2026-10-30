@@ -24,7 +24,8 @@ name: jellyfin
 
 services:
   jellyfin:
-    image: ${JELLYFIN_IMAGE:-jellyfin/jellyfin:12.1.20260915-010956}
+    # Dated tags are immutable; the bare `12.1` moves.
+    image: jellyfin/jellyfin:12.1.20260915-010956
     container_name: jellyfin
     restart: unless-stopped
     # Binds 8096/tcp (web), 7359/udp (discovery) and 1900/udp (DLNA) directly on

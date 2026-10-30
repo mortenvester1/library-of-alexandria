@@ -1,14 +1,14 @@
 # Borg UI
 
-Web frontend for [Borg Backup](https://www.borgbackup.org/), running on
-gurpgork-bee. Backs up the self-hosted app data and media on that machine to the
-8TB btrfs drive at `/mnt/backup`, with database dumps driven by pre-backup hooks.
+Web frontend for [Borg Backup](https://www.borgbackup.org/). Backs up the
+self-hosted app data and media on the host to the btrfs drive at `/mnt/backup`,
+with database dumps driven by pre-backup hooks.
 
 Docs: <https://docs.borgui.com/>
 
 ## Layout on disk
 
-The 8TB drive is one btrfs filesystem, split by subvolume rather than by
+The backup drive is one btrfs filesystem, split by subvolume rather than by
 partition — same isolation, pooled free space, and no need to guess the
 borg/Time Machine ratio up front.
 
@@ -78,7 +78,7 @@ docker compose up -d
 docker compose logs -f app
 ```
 
-The UI comes up on `http://gurpgork-bee:8081`. Log in as `admin` with
+The UI comes up on `http://<host>:8081`. Log in as `admin` with
 `INITIAL_ADMIN_PASSWORD` and change it immediately — upstream's default is
 `admin123`, so the compose file guards the variable rather than inheriting it.
 
@@ -141,9 +141,9 @@ require the thing being restored. Send it to the offsite target or a plain
 scheduled `tar`. Keep the repo passphrases themselves somewhere off this machine
 too: an unrecoverable repo is worse than no repo.
 
-One drive in one machine is also not a backup. Media, app data, and every Mac's
-history currently fail together; an offsite replication target is cheap to add
-now and awkward to retrofit.
+One drive in one machine is also not a backup. Without an offsite target,
+media, app data, and every Mac's history fail together; one is cheap to add early
+and awkward to retrofit.
 
 ## Not done yet
 

@@ -82,16 +82,6 @@ claude-local() {
   ANTHROPIC_BASE_URL="http://localhost:1234" claude --model "$1"
 }
 
-# Docker - Open WebUI for LLM stuff. Becomes available at http://{IP}:8080
-docker-open-webui() {
-  sudo docker run -d --network=host \
-      -v ${HOME}/open-webui:/app/backend/data \
-      -e OLLAMA_BASE_URL=http://127.0.0.1:11434 \
-      --name open-webui \
-      --restart always \
-      ghcr.io/open-webui/open-webui:main
-}
-
 # json <-> yaml conversion
 yaml-to-json() {
 	yq -P --output-format json $1
