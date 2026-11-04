@@ -2,7 +2,7 @@ name: immich
 services:
   immich-server:
     container_name: immich_server
-    image: ghcr.io/immich-app/immich-server:v3.3.5
+    image: ghcr.io/immich-app/immich-server:v3.3.6
     volumes:
       - ${UPLOAD_LOCATION:?set UPLOAD_LOCATION}:/data
       - /etc/localtime:/etc/localtime:ro
@@ -31,7 +31,7 @@ services:
 
   immich-machine-learning:
     container_name: immich_machine_learning
-    image: ghcr.io/immich-app/immich-machine-learning:v3.3.5
+    image: ghcr.io/immich-app/immich-machine-learning:v3.3.6
     volumes:
       - model-cache:/cache
     environment:
@@ -41,6 +41,7 @@ services:
       DB_DATABASE_NAME: ${DB_DATABASE_NAME}
       DB_DATA_LOCATION: ${DB_DATA_LOCATION}
       IMMICH_LOG_FORMAT: json
+      ORT_DISABLE_TELEMETRY: "1"
     restart: unless-stopped
     healthcheck:
       disable: false
