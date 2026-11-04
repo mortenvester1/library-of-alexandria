@@ -2,10 +2,6 @@
 
 # regenerate external completions if they are older than executeble
 mkdir -p ${ZSH_COMPLETIONS_DIR}
-if [ ! -f "${ZSH_COMPLETIONS_DIR}/_asdf" ] || [ "${ZSH_COMPLETIONS_DIR}/_asdf" -ot "$(which asdf)" ]; then
-  asdf completion zsh > "${ZSH_COMPLETIONS_DIR}/_asdf"
-fi;
-
 if [ ! -f "${ZSH_COMPLETIONS_DIR}/_uv" ] || [ "${ZSH_COMPLETIONS_DIR}/_uv" -ot "$(which uv)" ]; then
   uv --generate-shell-completion zsh > "${ZSH_COMPLETIONS_DIR}/_uv"
 fi

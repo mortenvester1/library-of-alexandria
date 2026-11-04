@@ -35,7 +35,6 @@ setopt SHARE_HISTORY             # Share history between all sessions.
 
 # OS dependent
 # Set LS_COLORS
-# on Linux set set source asdf
 if [[ "$(uname)" == "Darwin" ]]
 then
   eval $(gdircolors -b)

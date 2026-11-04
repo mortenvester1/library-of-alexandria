@@ -152,7 +152,7 @@ fi
 info "installing dotfiles..."
 # Ensure gitignored AGENTS.local.md exists so tracked symlinks aren't dangling after fresh clone
 touch "${REPO_DEST}/dotfiles/common/AGENTS.local.md"
-stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding asdf git gnupg starship vim zsh k9s ghostty
+stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding git gnupg starship vim zsh k9s ghostty
 chmod 700 "${HOME}/.config/gnupg"
 if [[ "${OS}" == "MacOS" || "${OS}" == "CachyOS" ]]
 then
@@ -165,15 +165,6 @@ then
   info "syncing skills..."
   skillshare sync
 fi
-
-# setup asdf - merge .tool-version files if local exist
-zsh -c "source ${REPO_DEST}/dotfiles/zsh/.config/zsh/aliases.zsh && asdf-merge"
-
-# add packages to be controlled by asdf
-info "installing asdf dependencies..."
-cat ${HOME}/.tool-versions | grep -v '^#' | xargs -L1 env GIT_CONFIG_GLOBAL=/dev/null zsh -c 'bootstrap_asdf() { asdf plugin add "$1"; }; bootstrap_asdf "$@"' _
-ASDF_DIR="${XDG_CONFIG_HOME}/asdf" ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf" asdf install
-ASDF_DIR="${XDG_CONFIG_HOME}/asdf" ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf" asdf reshim
 
 # bootstrap zinit + plugins; bypass stowed git insteadOf rewrite (no SSH keys yet on fresh installs)
 info "bootstrapping zinit..."

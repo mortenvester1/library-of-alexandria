@@ -9,7 +9,6 @@ library/*
 !library/CLAUDE.md
 
 # dotfiles + pkgs local
-dotfiles/asdf/.config/asdf/.tool-versions.local
 dotfiles/common/AGENTS.local.md
 dotfiles/common/mcp/servers.local.json
 dotfiles/common/skills/local/

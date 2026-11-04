@@ -12,12 +12,6 @@ export XDG_STATE_HOME="${HOME}/.local/state"
 # The location is standard, but the env var name is not part of the convention
 export XDG_BIN_HOME="${HOME}/.local/bin"
 
-# asdf
-export ASDF_DIR="${XDG_CONFIG_HOME}/asdf"
-export ASDF_DATA_DIR="${XDG_DATA_HOME}/asdf"
-
-[ -d "${ASDF_DATA_DIR}/completions" ] || mkdir -p "${ASDF_DATA_DIR}/completions"
-
 # bash completion - used by some completions in zsh
 export BASH_COMPLETION_USER_DIR="${XDG_DATA_HOME}/bash-completion"
 [ -d "${BASH_COMPLETION_USER_DIR}" ] || mkdir -p "${BASH_COMPLETION_USER_DIR}"

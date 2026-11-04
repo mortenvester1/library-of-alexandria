@@ -12,9 +12,6 @@ fi
 # Used by among other things by UV tools
 export PATH="${XDG_BIN_HOME}:$PATH"
 
-# asdf - add packages/shims to path (# takes precedence over brew install+system)
-export PATH="${ASDF_DATA_DIR}/shims:$PATH"
-
 # LM Studio
 export PATH="${PATH}:${HOME}/.lmstudio/bin"
 

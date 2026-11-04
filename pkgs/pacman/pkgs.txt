@@ -4,6 +4,7 @@ bat
 bitwarden
 bzip2
 claude-code
+direnv
 docker
 docker-buildx
 docker-compose
@@ -17,6 +18,7 @@ jdk-openjdk
 jq
 just
 k9s
+kubectl
 minidlna
 ncurses
 nss-mdns

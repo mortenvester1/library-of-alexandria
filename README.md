@@ -12,7 +12,6 @@ library-of-alexandria/
 │   └── entrance/      # An application gateway for accessing self-hosted services
 ├── cron/              # Contains various cronjobs
 ├── dotfiles/          # Configuration files of software (managed via stow)
-│   ├── asdf/          # default tools managed with asdf
 │   ├── claude/        # default configuration of claude code
 │   ├── codex/         # codex configuration
 │   ├── common/        # config shared across agents, incl. the skill collection
@@ -140,7 +139,6 @@ The install requires bash, curl, git, sudo to be installed on your system. Run t
 After initial install, overrides and additional tool installations can be configured in the following files. Simply rerun the install script for the overrides to take effect.
 
 ```sh
-${XDG_CONFIG_HOME}/asdf/.tool-versions.local
 ${XDG_CONFIG_HOME}/git/.gitlocal
 
 ${XDG_CONFIG_HOME}/zsh/.zshrc.local
