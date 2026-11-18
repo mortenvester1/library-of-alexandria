@@ -156,7 +156,7 @@ stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding git gnupg st
 chmod 700 "${HOME}/.config/gnupg"
 if [[ "${OS}" == "MacOS" || "${OS}" == "CachyOS" ]]
 then
-  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude omp codex skillshare
+  stow --target ${HOME} --dir "${REPO_DEST}/dotfiles" -R --no-folding zed opencode claude omp codex skillshare rex
 fi
 
 # link personal skills into every agent skill dir

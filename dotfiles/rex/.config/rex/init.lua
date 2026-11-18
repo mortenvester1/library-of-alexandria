@@ -1,0 +1,5 @@
+rex.bind("cmd+k", "com.superlogical.terminal.clear")
+rex.bind("shift+cmd+k", "session.switch")
+rex.bind("cmd+left", "pane.focus_previous")
+rex.bind("shift+cmd+left", "client.tab.move", { direction = "backward" })
+rex.bind("cmd+right", "pane.focus_next")
